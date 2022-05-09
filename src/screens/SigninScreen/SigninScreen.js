@@ -1,5 +1,5 @@
 import React, {useState,useContext} from 'react';
-import {View, Text, SafeAreaView,StyleSheet,StatusBar} from 'react-native';
+import {View, Text, SafeAreaView,StyleSheet,Image} from 'react-native';
 import FormInput_2 from '../../components/shared/FormInput_2';
 import { COLORS } from '../../components/constants/theme';
 import SocialButton from '../../components/shared/SocialButton';
@@ -19,6 +19,7 @@ const SigninScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       
+        
     <SafeAreaView
       style={{
         backgroundColor: COLORS.white,
@@ -26,17 +27,13 @@ const SigninScreen = ({navigation}) => {
         alignItems: 'center',
         justifyContent: 'flex-start',
         padding: 20,
+        
       }}>
-      {/* 상단 */}
-      <Text
-        style={{
-          fontSize: 24,
-          color: COLORS.black,
-          fontWeight: 'bold',
-          marginVertical: 64,
-        }}>
-        로그인
-      </Text>
+      <Image
+        source={require('../../../assets/logo2.png')}
+        style={styles.logo}
+      />  
+     
      
       {/* 이메일 */}
       <FormInput_2
@@ -93,8 +90,12 @@ const SigninScreen = ({navigation}) => {
           회원가입
         </Text>
       </View>
+      
     </SafeAreaView>
+    
+    
     </View>
+    
   );
 };
 
@@ -108,5 +109,29 @@ const styles = StyleSheet.create({
   errorMsg: {
     color: '#FF0000',
     fontSize: 14,
+},
+title: {
+  fontSize: 50,
+  color: 'orange',
+  fontWeight: 'bold',
+
+  
+},
+titleContainer: {
+  marginTop: 20,
+  marginBottom: 20,
+},  
+bgImage: {
+  flex: 1,
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  justifyContent: 'center',
+},
+logo: {
+  height: 250,
+  width: 350,
+  resizeMode: 'cover',
+  marginBottom: 20,
 },
 });

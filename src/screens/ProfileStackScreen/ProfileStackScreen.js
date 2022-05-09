@@ -16,8 +16,13 @@ const Stack = createNativeStackNavigator();
 const ProfileStackScreen = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: true}}>
-                <Stack.Screen name='Profile' component={ProfileScreen}
-                 options={{headerShown: false}}/>
+                <Stack.Screen
+                    name="ProfileScreen"
+                    component={ProfileScreen}
+                    options={{
+                    headerShown: false,
+                    }}
+                    />
              
                 
 
@@ -190,27 +195,7 @@ const ProfileStackScreen = () => {
                     }}
                   />
 
-                <Stack.Screen
-                    name="SNSProfile"
-                    component={SNSProfileScreen}
-                    options={{
-                    title: '',
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                    backgroundColor: '#fff',
-                    shadowColor: '#fff',
-                    elevation: 0,
-                    
-          
-                    },
-                    headerBackTitleVisible: false,
-                    headerBackImage: () => (
-                    <View style={{marginLeft: 15}}>
-                    <Ionicons name="arrow-back" size={25} color="#2e64e5" />
-                      </View>
-                    ),
-                    }}
-                  />
+                
 
                 
             </Stack.Navigator>

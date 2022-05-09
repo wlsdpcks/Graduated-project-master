@@ -20,7 +20,7 @@ import ChatScreen from '../screens/ChatScreen/ChatScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import Header from '../Chat/Components/common/Header';
 import ChatNavigator from '../Chat/ChatNavigator'
-import test from '../screens/StoreScreen/test';
+import SNSProfileScreen from '../screens/ProfileScreen/SNSprofileScreen'; 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -71,46 +71,35 @@ const FeedStack = ({navigation}) => (
       }}
     />
     <Stack.Screen
-      name="Home"
-      component={ProfileScreen}
+      name="SNSProfile"
+      component={SNSProfileScreen}
       options={{
-        title: '',
-        headerTitleAlign: 'center',
-        headerStyle: {
-          backgroundColor: '#fff',
-          shadowColor: '#fff',
-          elevation: 0,
+      title: '',
+      headerTitleAlign: 'center',
+      headerStyle: {
+      backgroundColor: '#fff',
+      shadowColor: '#fff',
+      elevation: 0,
+                    
           
-        },
-        headerBackTitleVisible: false,
-        headerBackImage: () => (
-          <View style={{marginLeft: 15}}>
-            <Ionicons name="arrow-back" size={25} color="#2e64e5" />
-          </View>
-        ),
-      }}
-    />
-
-    <Stack.Screen
-      name="HomeProfile"
-      component={ProfileScreen}
-      options={{
-        title: '',
-        headerTitleAlign: 'center',
-        headerStyle: {
-          backgroundColor: '#fff',
-          shadowColor: '#fff',
-          elevation: 0,
-          
-        },
-        headerBackTitleVisible: false,
-        headerBackImage: () => (
-          <View style={{marginLeft: 15}}>
-            <Ionicons name="arrow-back" size={25} color="#2e64e5" />
-          </View>
-        ),
-      }}
-    />
+      },
+       headerBackTitleVisible: false,
+       headerBackImage: () => (
+       <View style={{marginLeft: 15}}>
+       <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+       </View>
+       ),
+       }}
+       />
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+        headerShown: false,
+        }}
+        />
+      
+    
   </Stack.Navigator>
 );
 

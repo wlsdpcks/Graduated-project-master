@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  ScrollView
 } from 'react-native';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -35,7 +36,7 @@ const AddPostScreen = () => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState([null]);
   const [tag, setTag] = useState(null);
 
   const takePhotoFromCamera = () => {
@@ -71,6 +72,7 @@ const AddPostScreen = () => {
     firestore()
     .collection('posts')
     .add({
+  
       uid: user.uid,
       post: post,
       tag: tag,
@@ -145,6 +147,7 @@ const AddPostScreen = () => {
   };
 
   return (
+    
     <View style={styles.container}>
       <InputWrapper>
         {image != null ? <AddImage source={{uri: image}} /> : null}
@@ -152,7 +155,7 @@ const AddPostScreen = () => {
         <InputField
           placeholder="게시물 내용을 작성하세요!"
           multiline
-          numberOfLines={4}
+          numberOfLines={3}
           value={post}
           onChangeText={(content) => setPost(content)}
         />
@@ -160,7 +163,7 @@ const AddPostScreen = () => {
         <InputField
           placeholder="게시물 주제를 작성하세요!"
           multiline
-          numberOfLines={4}
+          numberOfLines={2}
           value={tag}
           onChangeText={(content) => setTag(content)}
         />
@@ -178,18 +181,19 @@ const AddPostScreen = () => {
       <ActionButton buttonColor="#FF6347">
         <ActionButton.Item
           buttonColor="#9b59b6"
-          title="Take Photo"
+          title="사진 촬영"
           onPress={takePhotoFromCamera}>
           <Icon name="camera-outline" style={styles.actionButtonIcon} />
         </ActionButton.Item>
         <ActionButton.Item
           buttonColor="#3498db"
-          title="Choose Photo"
+          title="갤러리에서 선택"
           onPress={choosePhotoFromLibrary}>
           <Icon name="md-images-outline" style={styles.actionButtonIcon} />
         </ActionButton.Item>
       </ActionButton>
     </View>
+    
   );
 };
 
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 17.5,
+    paddingHorizontal: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: 'black',
     alignItems: 'center'

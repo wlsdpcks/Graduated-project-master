@@ -137,7 +137,7 @@ const SNSProfileScreen = ({navigation, route}) => {
             <Text style={styles.userInfoTitle}>{posts.length}</Text>
             <Text style={styles.userInfoSubTitle}>Posts</Text>
           </View>
-          <TouchableOpacity style={styles.userInfoTitle} onPress={() => navigation.navigate('HomeProfile', {uid: userData.uid})}>
+          <TouchableOpacity style={styles.userInfoTitle} onPress={() => navigation.navigate('ProfileScreen', {uid: userData.uid})}>
                 <Text style={styles.userInfoTitle}>미니홈피 방문</Text>
               </TouchableOpacity>
         </View>

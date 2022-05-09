@@ -34,7 +34,7 @@ const EditProfile = () => {
   const {placeX,setplaceX} = useStore();
 
   const onprofile = () => {
-    navigation.navigate('Home');
+    navigation.navigate('ProfileScreen');
   };
   const getUser = async() => {
     const currentUser = await firestore()
@@ -69,9 +69,11 @@ const EditProfile = () => {
     })
     .then(() => {
       console.log('업데이트');
+      navigation.navigate('ProfileScreen');
       Alert.alert(
         '프로필이 업데이트 됬습니다!',
-        '당신의 프로필이 성공적으로 바뀌었습니다!.'
+        '당신의 프로필이 성공적으로 바뀌었습니다!',
+        
       );
     })
   }

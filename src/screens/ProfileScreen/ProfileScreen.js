@@ -22,7 +22,7 @@ const ProfileScreen = ({navigation,route}) => {
   const {user, logout} = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
-  const [friendData, setFriendData] = useState(null);
+  const [friendData, setFriendData] = useState([]);
 
   
   
@@ -49,8 +49,8 @@ const ProfileScreen = ({navigation,route}) => {
         .collection('friendsinfo')
         .get()
         .then((querySnapshot) => {
-           console.log('Total Posts: ', querySnapshot.size);
-
+           console.log('Total Friends: ', querySnapshot.size);
+          
           querySnapshot.forEach((doc) => {
             const {
               name,
@@ -71,17 +71,17 @@ const ProfileScreen = ({navigation,route}) => {
         setLoading(false);
       }
 
-      console.log('Posts: ', friendData);
+      console.log('Friends: ', friendData );
     } catch (e) {
       console.log(e);
     }
-  };
+  };  
   
   useEffect(() => {
     getUser();
     fetchFriends();
-    
-  }, []);
+    navigation.addListener("focus", () => setLoading(!loading));
+  }, [navigation, loading]);
 
 
 

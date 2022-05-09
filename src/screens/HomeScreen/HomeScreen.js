@@ -43,8 +43,8 @@ const HomeScreen = ({navigation,route}) => {
 
           querySnapshot.forEach((doc) => {
             const {
+              
               uid,
-              post,
               postImg,
               postTime,
               likes,  
@@ -53,11 +53,7 @@ const HomeScreen = ({navigation,route}) => {
             list.push({
               id: doc.id,
               uid,
-              userName: 'Test Name',
-              userImg:
-                'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
               postTime: postTime,
-              post,
               postImg,
               liked: false,
               likes,
@@ -89,8 +85,8 @@ const HomeScreen = ({navigation,route}) => {
 
   const handleDelete = (postId) => {
     Alert.alert(
-      'Delete post',
-      'Are you sure?',
+      '글 삭제하기',
+      '확실합니까?',
       [
         {
           text: 'Cancel',
@@ -124,7 +120,7 @@ const HomeScreen = ({navigation,route}) => {
             imageRef
               .delete()
               .then(() => {
-                console.log(`${postImg} has been deleted successfully.`);
+                console.log(`${postImg} 성공적으로 삭제되었습니다.`);
                 deleteFirestoreData(postId);
               })
               .catch((e) => {
@@ -145,8 +141,8 @@ const HomeScreen = ({navigation,route}) => {
       .delete()
       .then(() => {
         Alert.alert(
-          'Post deleted!',
-          'Your post has been deleted successfully!',
+          '글이 삭제되었습니다.',
+          '당신의 글이 성공적으로 삭제되었습니다!',
         );
         setDeleted(true);
       })

@@ -30,7 +30,7 @@ import moment from 'moment';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 
-const PostCard = ({item, likesCount, onPress}) => {
+const PostCard = ({item, likesCount, onPress,onDelete}) => {
   const {user, logout} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [likeIcon, setLikeIcon] = useState(false)
@@ -137,8 +137,12 @@ const onDislikePress = (userId, postId, item) => {
           <FontistoIcon name="comment" size={23} color={'#545454'}  />
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => console.log('Pressed Direct Message')}>
-          <Ionicons name ="paper-plane-outline" size={23} color={'#545454'}  />
+        <TouchableOpacity onPress={() => onDelete(item.id)}>
+        {user.uid == item.uid ? (
+         
+            <Ionicons name="md-trash-bin" size={23} />
+          
+        ) : null}
         </TouchableOpacity>
         </View>
       </View>
