@@ -1,14 +1,23 @@
-import {View ,StyleSheet,Animated,PanResponder,Image } from 'react-native';
-import React,{useRef} from 'react'
+import {View ,StyleSheet,Animated,PanResponder,Image,Button } from 'react-native';
+import React,{useRef, useState,useEffect} from 'react'
 import useStore from '../../../store/store';
 import { Text } from 'react-native-paper';
+import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app'
 
-
-const MiniroomBox =({test}) => {
+const MiniroomBox =() => {
   const {isaddress,setIsaddress} = useStore();
-  const {placeX,setplaceX} = useStore();
-  const {placeY,setplaceY} = useStore();
-  console.log(isaddress);
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room');
+  const addItem = (x,y,address) => {
+    addminiroom.add({
+        getx:x,
+        gety:y,
+        image:address
+      })
+      console.log('x좌표: ',x);
+      console.log('y좌표: ',y);
+      console.log('save complete');
+  };
     const pan = useRef(new Animated.ValueXY()).current;
     const panResponder = useRef(
     PanResponder.create({
@@ -23,22 +32,22 @@ const MiniroomBox =({test}) => {
         [
           null,
           { dx: pan.x, dy: pan.y,}
-        ]
+        ],{ useNativeDriver: false }, //오류 메시지를 없애기용 
       ),
       onPanResponderRelease: () => {
         pan.flattenOffset();
       },
       onPanResponderEnd: (evt , gesture) => {
-        setplaceX(gesture.moveX);
-        setplaceY(gesture.moveY);
-      }
+        console.log('주소는~');
+        console.log(`${isaddress}`)
+        addItem(gesture.moveX,gesture.moveY,isaddress);
+      },
     })
   ).current;
     return(
         <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers}>
             <View style={styles.box}>
-                <Image source={{uri:`${test}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
-                
+                <Image source={{uri:`${isaddress}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
             </View>
       </Animated.View>
         )

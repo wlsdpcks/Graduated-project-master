@@ -40,11 +40,11 @@ const ProductItem = ({src,name,price,classification}) => {
         // 화면 전환시 ripple 효과를 줌
     }
     return (
-        <Card style={ styles.product }>
+        <Card style={ styles.container }>
             <View>
             <TouchableOpacity onPress={addItem}>
             <View style={{alignItems: 'center',}}>
-                <View style={{width:150,height:150,borderWidth:1,borderRadius:100,overflow: 'hidden',}}>
+                <View style={styles.product}>
                 <Image
                     style={ styles.image }
                     source={{uri:src}}
@@ -63,21 +63,26 @@ const ProductItem = ({src,name,price,classification}) => {
 }
 
 const styles = StyleSheet.create({
-    product: {
+    product:{
+        width:150,
+        height:150,
+        borderWidth:1,
+        borderRadius:100,
+        overflow: 'hidden',
+        margin:10
+    },
+    container: {
         width: 165,
         height: 250,
         margin: 20,
         borderWidth:1
     },
     image: {
-        //flex:1,
         resizeMode:'stretch',
-        aspectRatio: 1,
+        aspectRatio: 1.0,
     },
     details: {
-        borderWidth:1,
         alignItems: 'center',
-         margin: 10
     },
 })
 

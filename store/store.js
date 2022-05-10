@@ -1,15 +1,27 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 
-const store = (set) => ({
-    isaddress: 'ss', //상점 아이템 url주소값용
+const store = (set => ({
+    isaddress: '', //상점 아이템 url주소값용
     setIsaddress: (input) => set({ isaddress: input }),//상점 아이템 url주소값용
-    placeX: '200', //미니룸 아이템 배치 좌표저장용
-    placeY: '200', //미니룸 아이템 배치 좌표저장용
+    placeX: '', //미니룸 아이템 배치 좌표저장용
     setplaceX: (input) => set({placeX:input}), //미니룸 아이템 배치 좌표저장용
+    placeY: '', //미니룸 아이템 배치 좌표저장용
     setplaceY: (input) => set({placeY:input}), //미니룸 아이템 배치 좌표저장용
 
-  })
+    name:'',// 에딧프로필 수정용
+    age:'',// 에딧프로필 수정용
+    about:'',// 에딧프로필 수정용
+    phone:'',// 에딧프로필 수정용
+    birthday:'',// 에딧프로필 수정용
+    userImg:'',// 에딧프로필 수정용
+    setname: (input) => set({name:input}), // 에딧프로필 수정용
+    setage: (input) => set({age:input}), // 에딧프로필 수정용
+    setabout: (input) => set({about:input}), // 에딧프로필 수정용
+    setphone: (input) => set({phone:input}), // 에딧프로필 수정용
+    setbirthday: (input) => set({birthday:input}), // 에딧프로필 수정용
+    setuserImg: (input) => set({userImg:input}), // 에딧프로필 수정용
+  }));
 
 const useStore = create(devtools(store));
 

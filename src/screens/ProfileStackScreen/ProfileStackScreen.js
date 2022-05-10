@@ -10,8 +10,7 @@ import Follow from '../Follow/Follow';
 import Miniroom from '../Miniroom/Miniroom';
 import ProfileScreen from '../ProfileScreen/ProfileScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import SNSProfileScreen from '../ProfileScreen/SNSprofileScreen';
-import test from '../StoreScreen/test';
+import Requset from '../Friend/Requset';
 const Stack = createNativeStackNavigator();
 const ProfileStackScreen = () => {
   return (
@@ -69,6 +68,28 @@ const ProfileStackScreen = () => {
                     }}
                   />
                   <Stack.Screen
+                    name="Requset"
+                    component={Requset}
+                    options={{
+                    title: '친구 요청',
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                    backgroundColor: '#fff',
+                    shadowColor: '#fff',
+                    elevation: 0,
+                    
+          
+                    },
+                    headerBackTitleVisible: false,
+                    headerBackImage: () => (
+                    <View style={{marginLeft: 15}}>
+                    <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+                      </View>
+                    ),
+                    }}
+                  />
+
+                  <Stack.Screen
                     name="Friend"
                     component={Friend}
                     options={{
@@ -93,7 +114,7 @@ const ProfileStackScreen = () => {
                     name="Diary"
                     component={Diary}
                     options={{
-                    title: '',
+                    title: '다이어리',
                     headerTitleAlign: 'center',
                     headerStyle: {
                     backgroundColor: '#fff',
@@ -114,7 +135,7 @@ const ProfileStackScreen = () => {
                     name="Album"
                     component={Album}
                     options={{
-                    title: '',
+                    title: '앨범',
                     headerTitleAlign: 'center',
                     headerStyle: {
                     backgroundColor: '#fff',
@@ -135,7 +156,7 @@ const ProfileStackScreen = () => {
                     name="Weblog"
                     component={Weblog}
                     options={{
-                    title: '',
+                    title: '방명록',
                     headerTitleAlign: 'center',
                     headerStyle: {
                     backgroundColor: '#fff',

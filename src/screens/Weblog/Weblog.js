@@ -7,9 +7,7 @@ const Weblog = () => {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>방명록</Text>
-        </View>
+        
         <View style={styles.guestbook}>
           <Text style={styles.post}> 방명록 :{contents}</Text>
         <View style={styles.input}></View>

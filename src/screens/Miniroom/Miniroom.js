@@ -22,9 +22,9 @@ const Miniroom = () => {
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
           <DraxProvider> 
-          
             <Image style={{width:'100%',height:'100%'}}source={{uri: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'}}/>
             <MiniroomBox test={isaddress}/>
+            
             
     </DraxProvider>
         <View style={styles.miniroom}>

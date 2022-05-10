@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useCallback} from 'react';
 import {
   View,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   FlatList,
   SafeAreaView,
   Alert,
+  RefreshControl,
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
@@ -23,11 +24,24 @@ import { AuthContext } from '../../utils/AuthProvider';
 
 
 const HomeScreen = ({navigation,route}) => {
-  
+  const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
+  
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
+    
+    useEffect(() => {
+      fetchPosts();
+    }, [refreshing,deleted]);
+
   const fetchPosts = async () => {
     try {
       const list = [];
@@ -43,7 +57,7 @@ const HomeScreen = ({navigation,route}) => {
 
           querySnapshot.forEach((doc) => {
             const {
-              
+              post,
               uid,
               postImg,
               postTime,
@@ -55,6 +69,7 @@ const HomeScreen = ({navigation,route}) => {
               uid,
               postTime: postTime,
               postImg,
+              post,
               liked: false,
               likes,
               comments,
@@ -173,6 +188,12 @@ const HomeScreen = ({navigation,route}) => {
             ListHeaderComponent={ListHeader}
             ListFooterComponent={ListHeader}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }
           />
         </Container>
     

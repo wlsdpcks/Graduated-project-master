@@ -6,14 +6,11 @@ const Album = () => {
     return (
       <SafeAreaView style={styles.container}>
       <View style={styles.titleConainer}>
-      <Text style={{fontSize:30}}>사진첩</Text>
+     
       </View>
         
         
-        <View style={styles.miniroom}>
-            <Text>BGM 편집 기능 추가/수정/삭제</Text>
-        </View>
-
+        
       </SafeAreaView>
     
   );
@@ -26,8 +23,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column', // 혹은 'column'
       backgroundColor: '#fff',
       padding: 20,
-      borderWidth: 1,
-      borderColor: 'blue',
+     
       alignItems: 'center',
     },
     titleConainer:{
@@ -45,7 +41,6 @@ const styles = StyleSheet.create({
       marginTop: 30,
       paddingVertical: 8,
       paddingHorizontal: 12,
-      borderWidth: 1,
-      borderColor: 'green',
+     
     },
   });

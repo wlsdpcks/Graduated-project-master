@@ -17,15 +17,10 @@ const ToolInven = () => {
   const {isaddress,setIsaddress} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const [tool, setTool] = useState();
-
-  const MakeBox = (item) => {
-    setIsaddress(item);
-    console.log(isaddress);
-  }
   const getShopData = async () => {
     try {
       const data = await usersCollection.get();
-      setTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      setTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
     } catch (error) {
       console.log(error.message);
     }
@@ -41,40 +36,12 @@ const ToolInven = () => {
       {
         tool?.map((row, idx) => {
          {
-            return  <TouchableOpacity onPress={()=>{MakeBox(row.address)}} style={{borderWidth:1}}>
+            return  <TouchableOpacity onPress={()=>{setIsaddress(row.address)}} style={{borderWidth:1}}>
             <Image source ={{uri:row.address}} style={{width:70,height:70,}} resizeMode="contain" ></Image>
             </TouchableOpacity>;} 
       })
       }
     </View>
-
-
-    <DraxProvider>
-    <View style={styles.container}>
-        <DraxView
-            style={styles.draggable}
-            onDragStart={() => {
-                console.log('start drag');
-            }}
-            payload="world"
-        >
-        </DraxView>
-        <DraxView
-            style={styles.receiver}
-            onReceiveDragEnter={({ dragged: { payload } }) => {
-                console.log(`hello ${payload}`);
-                
-            }}
-            onReceiveDragExit={({ dragged: { payload } }) => {
-                console.log(`goodbye ${payload}`);
-            }}
-            onReceiveDragDrop={({ dragged: { payload } }) => {
-                console.log(`received ${payload}`);
-            }}
-        />
-    </View>
-</DraxProvider>
-    
     </ScrollView>
     </GestureHandlerRootView>
   )

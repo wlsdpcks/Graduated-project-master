@@ -16,14 +16,15 @@ import { AuthContext } from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
-import { blue100 } from 'react-native-paper/lib/typescript/styles/colors';
-
+import songs from '../../data/songdata';
+import {songT} from '../../components/MusicPlayer/MusicPlayer'
 const ProfileScreen = ({navigation,route}) => {
 
   const {user, logout} = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
   const [friendData, setFriendData] = useState([]);
+  const [songIndex, setSongIndex]=useState(0);
 
   
   
@@ -89,11 +90,16 @@ const ProfileScreen = ({navigation,route}) => {
   const onprofilePressed = () => {
     navigation.navigate('EditProfile');
 };
-  const onMusicPressed = () => {
+const onMusicPressed = () => {
+  
     navigation.navigate('Music');
 };
 const onEditFriendPressed = () => {
   navigation.navigate('Friend');
+};
+
+const onRequsetPressed = () => {
+  navigation.navigate('Requset');
 };
   const onweblogpress = () => {
     navigation.navigate('Weblog');
@@ -121,16 +127,7 @@ const handleDelete = () => {};
       </View>
       
       <TouchableOpacity style={styles.music} onPress={() => onMusicPressed()}>
-      <MarqueeText
-          style={{ fontSize: 20 }}
-          duration={4000}
-          marqueeOnStart
-          loop
-          marqueeDelay={1500}
-          marqueeResetDelay={1500}
-        >
-        now playing  now playing  now playing  now playing  now playing  now playing  now playing
-        </MarqueeText>
+      <Text style={{ fontSize: 15, textAlign: 'center'}}>{songs[songIndex].title} - {songs[songIndex].artist}</Text>
             </TouchableOpacity>
       <ScrollView
         style={styles.container}
@@ -198,7 +195,7 @@ const handleDelete = () => {};
           
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => onEditFriendPressed()}>
+          <TouchableOpacity onPress={() => onRequsetPressed()}>
           <View style={styles.userInfoItem}>
           <Text style={styles.userInfoTitle2}>요청 목록</Text>
             
