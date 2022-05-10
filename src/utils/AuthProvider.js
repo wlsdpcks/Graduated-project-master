@@ -106,7 +106,7 @@ export const AuthProvider = ({children}) => {
             console.log({error});
           }
         },*/
-        register: async (email, password,phone,name,age,about,birthday,uid) => { 
+        register: async (email, password,phone,name,age,birthday,about,uid) => { 
           try {
             await auth().createUserWithEmailAndPassword(email, password)
             .then(() => {
@@ -117,9 +117,9 @@ export const AuthProvider = ({children}) => {
                   phone: phone,
                   age: age,
                   uid: auth().currentUser.uid,
-                  point: null,
+                  point: 100,
                   about: null,
-                  birthday: null,
+                  birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),
                   userImg: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AppImage%2Fprofile.jpg?alt=media&token=719929c2-defb-4cbf-99ca-fddd21bfeaa4',
 

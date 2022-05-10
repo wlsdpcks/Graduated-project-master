@@ -16,6 +16,7 @@ import { AuthContext } from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
+import { blue100 } from 'react-native-paper/lib/typescript/styles/colors';
 
 const ProfileScreen = ({navigation,route}) => {
 
@@ -146,20 +147,21 @@ const handleDelete = () => {};
           
           <View style={styles.rightcontainer}>
             <View style={styles.action}>
-            <Text>이름                     {userData ? userData.name : ''}</Text>
+            <Text style={{color : 'black'}}>이름                         <Text style={{textAlign:'center',  }}>{userData ? userData.name : ''}</Text></Text>
             </View>
             
             <View style={styles.action}>
-            <Text>나이                          {userData ? userData.age : ''}</Text>
+            <Text style={{color : 'black'}}>나이                          <Text style={{textAlign:'center',  }}>{userData ? userData.age : ''}</Text></Text>
             </View>
             <View style={styles.action}>
-            <Text>생일                  {userData ? userData.birthday : ''}</Text>
+            <Text style={{color : 'black'}}>생일                  <Text style={{textAlign:'center',  }}>{userData ? userData.birthday : ''}</Text></Text>
             </View>
             <View style={styles.action}>
-            <Text>Today                        0</Text>
+            <Text style={{color : 'black'}}>오늘의 기분             <Text style={{textAlign:'center',  }}>행복</Text></Text>
+            
             </View>
             <View style={styles.action}>
-            <Text>오늘의 기분             행복</Text>
+            <Text style={{color : 'black'}}>Point                       {userData ? userData.point : ''}</Text>
             </View>
             
             </View>
@@ -187,11 +189,25 @@ const handleDelete = () => {};
             <>
                  <TouchableOpacity onPress={() => onEditFriendPressed()}>
           <View style={styles.userInfoItem}>
-          <Text style={styles.userInfoSubTitle}>친구</Text>
-            <Text style={styles.userInfoTitle}>{friendData.length}</Text>
+          <Text style={styles.userInfoTitle2}>친구 <Text style={styles.userInfoTitle}>{friendData.length}</Text></Text>
+            
+            
             
           </View>
+
+          
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => onEditFriendPressed()}>
+          <View style={styles.userInfoItem}>
+          <Text style={styles.userInfoTitle2}>요청 목록</Text>
+            
+            
+          </View>
+
+          
+          </TouchableOpacity>
+          
           <TouchableOpacity onPress={() => navigation.navigate('SNSProfile', {uid: userData.uid})}>
           <View style={styles.userInfoItem}>
             <Text style={styles.userInfoTitle2}>SNS 방문</Text>
@@ -215,7 +231,7 @@ const handleDelete = () => {};
         </View>
         <TouchableOpacity style={styles.miniroom} onPress={() => onMiniroompress()}>
         <View>
-        <Text style={{fontSize:20,textAlign:'center',marginBottom:10 }}>{userData ? userData.name : ''}님의 미니룸</Text>
+        <Text style={{fontSize:20,textAlign:'center',marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
           <Image source={{uri: 'https://t1.daumcdn.net/cafeattach/MT4/648d42cb50cafc47f7d02fdfc380f91449afca84'}}
        style={{width: 400, height: 230,marginTop:0}}>
 
@@ -272,6 +288,7 @@ const styles = StyleSheet.create({
    
   },
   titleText:{
+    fontFamily: "DungGeunMo",
     fontSize: 20,
     color:'#fff',
    
@@ -284,6 +301,7 @@ const styles = StyleSheet.create({
     
   },
   action: {
+    
     flexDirection: 'row',
     marginTop: 2,
     marginBottom: 1,
@@ -308,6 +326,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   userBtnTxt: {
+    fontFamily: "DungGeunMo",
     color: '#fff',
     textAlign:'center',  
     fontSize:15,
@@ -322,19 +341,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   userInfoTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: 'black',
+
+    fontSize: 18,
+    
     marginBottom: 5,
     textAlign: 'center',
   },
   userInfoTitle2: {
-    fontSize: 25,
-    fontWeight: 'bold',
+    color: '#129fcd',
+    fontFamily: "DungGeunMo",
+    fontSize: 18,
     marginBottom: 5,
-    textAlign: 'center',
   },
   userInfoSubTitle: {
-    fontSize: 12,
+    
+    fontSize: 20,
     color: '#666',
     textAlign: 'center',
   },

@@ -28,13 +28,14 @@ const Friend = () => {
   const RenderCard = ({item})=>{
     return (
       
+      
       <View style={styles.title}>
-
-      <Text style={{justifyContent:'space-between',}}>{item.name}</Text>
-      <Text >{item.sname}</Text>
-      <Text >{item.birthday}</Text>
-
-    </View>
+      <Text style={{}}>{item.name}</Text>
+      <Text style={{}}>{item.sname}</Text>
+      <Text style={{}}>{item.birthday}</Text>
+      </View>
+   
+    
 
       
      

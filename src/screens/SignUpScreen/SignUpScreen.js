@@ -9,6 +9,7 @@ const SignUpScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [birthday, setBirthday] = useState('');
   const [phone, setPhone] = useState('');
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -86,6 +87,14 @@ const SignUpScreen = ({navigation}) => {
         iconType="check"
         onChangeText={(userAge) => setAge(userAge)}
       />
+       {/* 생일 */}
+       <FormInput_2
+        labelValue={birthday}
+        labelText="Birthday"
+        placeholderText="생일 0000/00/00 "
+        iconType="user"
+        onChangeText={(userBirthday) => setBirthday(userBirthday)}
+      />
       {/* 핸드폰 */}
       <FormInput_2
         labelValue={phone}
@@ -99,7 +108,7 @@ const SignUpScreen = ({navigation}) => {
       {/* 가입 버튼 */}
       <FormButton_2
         buttonTitle="회원가입"
-        onPress={() => register(email, password,phone,name,age)}
+        onPress={() => register(email, password,phone,name,age,birthday)}
         
       />
 
