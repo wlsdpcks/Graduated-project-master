@@ -1,12 +1,10 @@
 import React,{useState,useEffect,useContext} from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import { GiftedChat,Bubble,InputToolbar,} from 'react-native-gifted-chat'
 import firestore from '@react-native-firebase/firestore'
 import { AuthContext } from '../../utils/AuthProvider'
 import ChatHeader from '../../Chat/Components/messages/ChatHeader'
 
-import { UserImg } from '../../../styles/FeedStyles'
-import ChatInput from '../../Chat/Components/messages/ChatInput'
 export default function ChatScreen({route}) {
   const [messages, setMessages] = useState([]);
   const {uid} = route.params;

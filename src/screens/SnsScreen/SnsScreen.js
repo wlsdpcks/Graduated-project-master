@@ -23,7 +23,7 @@ import { AuthContext } from '../../utils/AuthProvider';
 
 
 
-const HomeScreen = ({navigation,route}) => {
+const SnsScreen = ({navigation,route}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,9 +38,7 @@ const HomeScreen = ({navigation,route}) => {
     wait(2000).then(() => setRefreshing(false));
   }, []);
     
-    useEffect(() => {
-      fetchPosts();
-    }, [refreshing,deleted]);
+    
 
   const fetchPosts = async () => {
     try {
@@ -83,20 +81,18 @@ const HomeScreen = ({navigation,route}) => {
         setLoading(false);
       }
 
-      console.log('Posts: ', posts);
+    
     } catch (e) {
       console.log(e);
     }
   };
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+
 
   useEffect(() => {
     fetchPosts();
     setDeleted(false);
-  }, [deleted]);
+  }, [deleted,refreshing]);
 
   const handleDelete = (postId) => {
     Alert.alert(
@@ -179,7 +175,7 @@ const HomeScreen = ({navigation,route}) => {
                 onPress={() =>
                   {
                   navigation.navigate('SNSProfile', {uid: item.uid})
-                  console.log(item.uid);
+                  
                   }
                 }
               />
@@ -201,4 +197,4 @@ const HomeScreen = ({navigation,route}) => {
   );
 };
 
-export default HomeScreen;
+export default SnsScreen;

@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import SigninScreen from '../screens/SigninScreen';
-import SignUpScreen from '../screens/SignUpScreen';
+import SigninScreen from '../screens/SignScreen/SigninScreen';
+import SignUpScreen from '../screens/SignScreen/SignUpScreen';
 import {GoogleSignin} from '@react-native-community/google-signin';
 const Stack = createStackNavigator();
 

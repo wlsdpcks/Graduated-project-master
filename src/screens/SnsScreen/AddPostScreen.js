@@ -23,9 +23,9 @@ import {
   SubmitBtn,
   SubmitBtnText,
   StatusWrapper,
-} from '../../styles/AddPost';
+} from '../../../styles/AddPost';
 
-import { AuthContext } from '../utils/AuthProvider';
+import { AuthContext } from '../../utils/AuthProvider';
 
 const AddPostScreen = () => {
 

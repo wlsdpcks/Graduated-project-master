@@ -5,8 +5,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { AuthContext } from "../../../utils/AuthProvider";
 import { theme } from "../../ChatTheme";
 import firestore from '@react-native-firebase/firestore'
-import MessagesScreen from "../../../screens/MessagesScreen";
-
+import MessagesScreen from "../../../screens/ChatScreen/MessagesScreen";
 const ChatHeader = ({ username, bio, picture, onlineStatus, onPress }) => {
 	const {user, logout} = useContext(AuthContext);
 	const [userData, setUserData] = useState(null);
@@ -71,7 +70,7 @@ const ChatHeader = ({ username, bio, picture, onlineStatus, onPress }) => {
 const styles = StyleSheet.create({
 	container: {
 		flexDirection: "row",
-		backgroundColor: '#FF6347',
+		backgroundColor: 'orange',
 		
 		paddingBottom: 10,
 	},

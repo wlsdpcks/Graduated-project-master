@@ -1,7 +1,5 @@
 import { View, Text,TouchableOpacity,StyleSheet,Image,SafeAreaView,Button,Dimensions,Animated,PanResponder} from 'react-native';
 import React,{useState,useEffect,useRef} from 'react'
-import storage from '@react-native-firebase/storage';
-import firestore from '@react-native-firebase/firestore';
 import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import ToolInven from './ToolInven';
@@ -9,8 +7,8 @@ import MinimiInven from './MinimiInven';
 import MusicInven from './MusicInven';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
-import MiniroomBox from '../../components/MiniroomBox/MiniroomBox';
-import useStore from '../../../store/store';
+import MiniroomBox from '../../../components/MiniroomBox/MiniroomBox';
+import useStore from '../../../../store/store';
 import firebase  from '@react-native-firebase/app';
 
 

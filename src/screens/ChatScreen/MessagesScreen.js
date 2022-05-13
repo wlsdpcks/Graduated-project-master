@@ -1,13 +1,12 @@
 import React,{useState,useEffect,useContext} from 'react'
 import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput} from 'react-native'
 import firestore from '@react-native-firebase/firestore'
-import { AuthContext } from '../utils/AuthProvider'
+import { AuthContext } from '../../utils/AuthProvider'
 import {FAB} from 'react-native-paper'
 
 
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { theme } from '../Chat/ChatTheme';
-import SearchInput from '../Chat/Components/common/SearchInput'
+import { theme } from '../../Chat/ChatTheme';
+import SearchInput from '../../Chat/Components/common/SearchInput'
   
 const MessagesScreen = ({navigation}) => {
      console.log(user)

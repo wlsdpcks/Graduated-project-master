@@ -1,6 +1,6 @@
 import { View, Text,TouchableOpacity,StyleSheet,FlatList} from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
-import { AuthContext } from '../../utils/AuthProvider';
+import { AuthContext } from '../../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
 
@@ -43,12 +43,17 @@ const Friend = () => {
 }
     return (
     <View style={styles.container}>
-        <Text style={{fontSize:20, paddingBottom: 10}}>요청 목록</Text>
+        <Text style={{fontSize:20, paddingBottom: 10}}>친구 목록</Text>
         <View style={styles.title}>
-          
+          <Text style={{flex:1,textAlign: 'center',}}>이름</Text>
+          <Text style={{flex:1,textAlign: 'center',}}>별명</Text>
+          <Text style={{flex:1,textAlign: 'center',}}>생일</Text>  
           
         </View>
-       
+        <FlatList 
+          data={friendData}
+          renderItem={({item})=> {return <RenderCard item={item} /> }}
+        />
         
         
         

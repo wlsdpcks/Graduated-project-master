@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text,TouchableOpacity,StyleSheet,} from 'react-native';
-import MusicPlayer from '../../components/MusicPlayer/MusicPlayer';
+import MusicPlayer from '../../../components/MusicPlayer/MusicPlayer';
 
 const Music = () => {
 

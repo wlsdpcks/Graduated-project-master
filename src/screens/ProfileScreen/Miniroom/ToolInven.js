@@ -7,8 +7,8 @@ import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
-import useStore from '../../../store/store';
-import MiniroomBox from '../../components/MiniroomBox/MiniroomBox';
+import useStore from '../../../../store/store';
+import MiniroomBox from '../../../components/MiniroomBox/MiniroomBox';
 import { renderNode } from 'react-native-elements/dist/helpers';
 
 const gestureRootViewStyle = { flex: 1 };

@@ -10,7 +10,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import StoriesScreen from "./ChatScreens/StoriesScreen";
-import MessagesScreen from "../screens/MessagesScreen";
+import MessagesScreen from "../screens/ChatScreen/MessagesScreen";
 import CallsScreens from "./ChatScreens/CallsScreen";
 import { theme } from "./ChatTheme";
 const { width } = Dimensions.get("screen");

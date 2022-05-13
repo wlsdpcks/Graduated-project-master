@@ -7,17 +7,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import HomeScreen from '../screens/HomeScreen/HomeScreen';
+import SnsScreen from '../screens/SnsScreen/SnsScreen';
 import SearchScreen from '../screens/SearchScreen/SearchScreen';
 import StoreScreen from '../screens/StoreScreen/Store';
-import ChatStackScreen from '../screens/ChatStackScreen/ChatStackScreen'
 import SettingScreen from '../screens/SettingScreen/SettingScreen';
-import AddPostScreen from '../screens/AddPostScreen';
+import AddPostScreen from '../screens/SnsScreen/AddPostScreen';
 import ProfileScreen from '../screens/ProfileScreen/ProfileScreen';
-import ProfileStackScreen from '../screens/ProfileStackScreen/ProfileStackScreen';
-import EditProfile from '../screens/EditProfile/EditProfile';
+import ProfileStackScreen from '../screens/ProfileScreen/ProfileStackScreen';
+import EditProfile from '../screens/ProfileScreen/EditProfile';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import MessagesScreen from '../screens/MessagesScreen';
 import Header from '../Chat/Components/common/Header';
 import ChatNavigator from '../Chat/ChatNavigator'
 import SNSProfileScreen from '../screens/ProfileScreen/SNSprofileScreen'; 
@@ -27,7 +25,7 @@ const FeedStack = ({navigation}) => (
   <Stack.Navigator>
     <Stack.Screen
       name="SNS"
-      component={HomeScreen}
+      component={SnsScreen}
       options={{
         
         headerTitleStyle: {
@@ -56,6 +54,7 @@ const FeedStack = ({navigation}) => (
       component={AddPostScreen}
       options={{
         title: '',
+        tabBarStyle: { display: 'none' },
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: 'white',
@@ -116,6 +115,7 @@ const MessageStack = ({navigation}) => (
       options={({route}) => ({
         
         headerShown: false,
+        tabBarStyle: { display: 'none' }
       })}
     >
       {props => <ChatScreen {...props}  /> }
@@ -164,10 +164,11 @@ const AppStack = () => {
   };
 
   return (
-    <Tab.Navigator screenOptions={{headerShown: false}}
-      tabBarOptions={{
-        activeTintColor: '#2e64e5',
-        keyboardHidesTabBar: true,
+    <Tab.Navigator screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#2e64e5',
+        tabBarHideOnKeyboard: true,
+        
         
       }}>
             <Tab.Screen
@@ -185,8 +186,9 @@ const AppStack = () => {
       name="Search"
       component={SearchScreen}
       options={{
-        tabBarIcon: ({size}) => (
-          <Feather name="search" size={size} color={'#3d3d29'} />
+        
+        tabBarIcon: ({color,size}) => (
+          <Feather name="search" size={size} color={color} />
         ),
       }}
     />
@@ -214,6 +216,7 @@ const AppStack = () => {
         options={({route}) => ({
           tabBarVisible: getTabBarVisibility(route),
           tabBarLabel: 'CHAT',
+          
           // Or Hide tabbar when push!
           // https://github.com/react-navigation/react-navigation/issues/7677
           // tabBarVisible: route.state && route.state.index === 0,
@@ -231,8 +234,9 @@ const AppStack = () => {
       name="STORE"
       component={StoreScreen}
       options={{
-        tabBarIcon: ({size}) => (
-          <AntDesign name="hearto" size={size} color={'#3d3d29'} />
+        
+        tabBarIcon: ({size,color}) => (
+          <AntDesign name="hearto" size={size} color={color} />
         ),
       }}
     />
@@ -240,11 +244,12 @@ const AppStack = () => {
       name="SETTING"
       component={SettingScreen}
       options={{
-        tabBarIcon: ({size}) => (
+        
+        tabBarIcon: ({size,color}) => (
           <MaterialCommunityIcons
             name="server"
             size={size}
-            color={'#3d3d29'}
+            color={color}
           />
         ),
       }}
