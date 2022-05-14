@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Alert,
   
   
 } from 'react-native';
@@ -17,6 +18,8 @@ import firestore from '@react-native-firebase/firestore';
 import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
 import songs from '../../data/songdata';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
 const ProfileScreen = ({navigation,route}) => {
 
@@ -25,6 +28,8 @@ const ProfileScreen = ({navigation,route}) => {
   const [userData, setUserData] = useState(null);
   const [friendData, setFriendData] = useState([]);
   const [songIndex, setSongIndex]=useState(0);
+  const [LoginuserData, setLoginUserData] = useState(null);
+
 
   
   
@@ -37,6 +42,18 @@ const ProfileScreen = ({navigation,route}) => {
       if( documentSnapshot.exists ) {
         console.log('User Data', documentSnapshot.data());
         setUserData(documentSnapshot.data());
+      }
+    })
+  }
+  const getLoginUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setLoginUserData(documentSnapshot.data());
       }
     })
   }
@@ -82,10 +99,58 @@ const ProfileScreen = ({navigation,route}) => {
   useEffect(() => {
     getUser();
     fetchFriends();
+    getLoginUser();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
+  const FriendRequest = () => {
+    Alert.alert(
+      '회원님에게 친구요청을 보냅니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => Requset(),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
 
+  const Requset = () => {
+    
+
+    firestore()
+      .collection('Request')
+      .doc(route.params ? route.params.uid : user.uid)
+      .collection('RequestInfo')
+      .doc(firebase.auth().currentUser.uid)
+      .set({
+  
+        uid: firebase.auth().currentUser.uid,
+        name: LoginuserData.name,
+        sname: '별명',
+        birthday: LoginuserData.birthday,
+        userimg: LoginuserData.userImg,
+      })
+      .then(() => {
+        console.log('requset Added!');
+        Alert.alert(
+          '회원님에게 친구를 요청하였습니다',
+        );
+  
+        
+      })
+      .catch((error) => {
+        console.log('error.', error);
+      });
+    
+  };
 
   const onprofilePressed = () => {
     navigation.navigate('EditProfile');
@@ -120,12 +185,33 @@ const onMiniroompress = () => {
 const handleDelete = () => {};
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
-       
-        
-      </View>
       
+      <View style={styles.title}>
+      {route.params ? (
+        <>
+        
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
+         
+          
+         <Ionicons name="arrow-back" size={25} color="#fff" />
+
+        </TouchableOpacity>
+          <View style={{ justifyContent : 'center', marginLeft: 75}}>
+                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
+          </View>
+        
+      
+      </>
+      ) : (
+        <>
+        
+        <View style={{ justifyContent : 'center', marginLeft: 105}}>
+                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
+          </View>
+        </>
+          )}
+        </View>
+
       <TouchableOpacity style={styles.music} onPress={() => onMusicPressed()}>
       <Text style={{ fontSize: 15, textAlign: 'center'}}>{songs[songIndex].title} - {songs[songIndex].artist}</Text>
             </TouchableOpacity>
@@ -170,7 +256,7 @@ const handleDelete = () => {};
         <View style={styles.userInfoWrapper}>
         {route.params ? (
         <>
-        <TouchableOpacity onPress={() => onEditFriendPressed()}>
+        <TouchableOpacity onPress={() => FriendRequest()}>
           <View style={styles.userInfoItem}>
             
             <Text style={styles.userInfoTitle2}>친구요청</Text>
@@ -275,19 +361,19 @@ const styles = StyleSheet.create({
     marginLeft:25,
     marginRight:25,
   },
+
   title:{ 
     height:50,
     backgroundColor: 'orange',
-    justifyContent: "center",
-    flexDirection: 'row',
-    alignItems: "center",
+    flexDirection: 'row', 
     
    
   },
   titleText:{
     fontFamily: "DungGeunMo",
+    justifyContent: 'space-around',
     fontSize: 20,
-    color:'#fff',
+    color:'white',
    
   },
   userImg: {
@@ -321,6 +407,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   userBtnTxt: {
     fontFamily: "DungGeunMo",

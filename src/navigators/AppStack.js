@@ -54,7 +54,6 @@ const FeedStack = ({navigation}) => (
       component={AddPostScreen}
       options={{
         title: '',
-        tabBarStyle: { display: 'none' },
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: 'white',

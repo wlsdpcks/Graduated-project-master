@@ -125,7 +125,7 @@ export const AuthProvider = ({children}) => {
 
                   
               })
-              firestore().collection('miniroom').doc(auth().currentUser.uid).set({
+              firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').set({
                 background: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
               })
               

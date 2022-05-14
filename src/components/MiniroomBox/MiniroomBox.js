@@ -7,9 +7,9 @@ import firebase from '@react-native-firebase/app'
 
 const MiniroomBox =() => {
   const {isaddress,setIsaddress} = useStore();
-  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room');
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
   const addItem = (x,y,address) => {
-    addminiroom.add({
+    addminiroom.collection('tool').add({
         getx:x,
         gety:y,
         image:address
