@@ -9,21 +9,39 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import MiniroomBox from '../../../components/MiniroomBox/MiniroomBox';
 import useStore from '../../../../store/store';
+import firestore from '@react-native-firebase/firestore'; 
 import firebase  from '@react-native-firebase/app';
 
 
 const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
-
 const Miniroom = () => {  
-  const {isaddress,setIsaddress} = useStore();
+  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background'); 
+  const {tooladdress,settooladdress,Backaddress} = useStore();
+  const [Back, setBack] = useState();
+  const getBackgroundData = async () => {
+    try {
+      const data = await usersBackgroundCollection.get();
+      setBack(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    getBackgroundData();
+  }, []);
+  const getBack = a => {
+    if(!a){
+    return <Text>없어용</Text>
+  } return <View>
+                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Backaddress}`}}/> 
+</View>
+  }
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
           <DraxProvider> 
-            <Image style={{width:'100%',height:'100%'}}source={{uri: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'}}/>
-            <MiniroomBox test={isaddress}/>
-            
-            
+            {getBack(Back)}
+            <MiniroomBox test={tooladdress}/>
     </DraxProvider>
         <View style={styles.miniroom}>
         <Tab.Navigator>

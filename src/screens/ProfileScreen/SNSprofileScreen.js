@@ -7,9 +7,10 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { AuthContext } from '../../utils/AuthProvider';
-
+import firebase  from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import PostCard from '../../utils/PostCard';
 const SNSProfileScreen = ({navigation, route}) => {
@@ -19,6 +20,7 @@ const SNSProfileScreen = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [LoginuserData, setLoginUserData] = useState(null);
 
   const fetchPosts = async () => {
     try {
@@ -68,7 +70,54 @@ const SNSProfileScreen = ({navigation, route}) => {
       console.log(e);
     }
   };
+  const FriendRequest = () => {
+    Alert.alert(
+      '회원님에게 친구요청을 보냅니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => Requset(),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
 
+  const Requset = () => {
+    
+
+    firestore()
+      .collection('Request')
+      .doc(route.params ? route.params.uid : user.uid)
+      .collection('RequestInfo')
+      .doc(firebase.auth().currentUser.uid)
+      .set({
+  
+        uid: firebase.auth().currentUser.uid,
+        name: LoginuserData.name,
+        sname: '별명',
+        birthday: LoginuserData.birthday,
+        userimg: LoginuserData.userImg,
+      })
+      .then(() => {
+        console.log('requset Added!');
+        Alert.alert(
+          '회원님에게 친구를 요청하였습니다',
+        );
+  
+        
+      })
+      .catch((error) => {
+        console.log('error.', error);
+      });
+    
+  };
   const getUser = async() => {
     await firestore()
     .collection('users')
@@ -81,10 +130,22 @@ const SNSProfileScreen = ({navigation, route}) => {
       }
     })
   }
-
+  const getLoginUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setLoginUserData(documentSnapshot.data());
+      }
+    })
+  }
   useEffect(() => {
     getUser();
     fetchPosts();
+    getLoginUser();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
@@ -111,7 +172,7 @@ const SNSProfileScreen = ({navigation, route}) => {
               <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
                 <Text style={styles.userBtnTxt}>메세지</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
+              <TouchableOpacity style={styles.userBtn} onPress={() => FriendRequest()}>
                 <Text style={styles.userBtnTxt}>친구 요청</Text>
               </TouchableOpacity>
               

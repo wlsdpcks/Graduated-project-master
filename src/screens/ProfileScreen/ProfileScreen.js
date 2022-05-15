@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
+  Alert,
   
   
 } from 'react-native';
@@ -25,9 +26,8 @@ const ProfileScreen = ({navigation,route}) => {
   const [userData, setUserData] = useState(null);
   const [friendData, setFriendData] = useState([]);
   const [songIndex, setSongIndex]=useState(0);
+  const [LoginuserData, setLoginUserData] = useState(null);
 
-  
-  
   const getUser = async() => {
     await firestore()
     .collection('users')
@@ -37,6 +37,18 @@ const ProfileScreen = ({navigation,route}) => {
       if( documentSnapshot.exists ) {
         console.log('User Data', documentSnapshot.data());
         setUserData(documentSnapshot.data());
+      }
+    })
+  }
+  const getLoginUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setLoginUserData(documentSnapshot.data());
       }
     })
   }
@@ -82,10 +94,58 @@ const ProfileScreen = ({navigation,route}) => {
   useEffect(() => {
     getUser();
     fetchFriends();
+    getLoginUser();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
+  const FriendRequest = () => {
+    Alert.alert(
+      '회원님에게 친구요청을 보냅니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => Requset(),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
 
+  const Requset = () => {
+    
+
+    firestore()
+      .collection('Request')
+      .doc(route.params ? route.params.uid : user.uid)
+      .collection('RequestInfo')
+      .doc(firebase.auth().currentUser.uid)
+      .set({
+  
+        uid: firebase.auth().currentUser.uid,
+        name: LoginuserData.name,
+        sname: '별명',
+        birthday: LoginuserData.birthday,
+        userimg: LoginuserData.userImg,
+      })
+      .then(() => {
+        console.log('requset Added!');
+        Alert.alert(
+          '회원님에게 친구를 요청하였습니다',
+        );
+  
+        
+      })
+      .catch((error) => {
+        console.log('error.', error);
+      });
+    
+  };
 
   const onprofilePressed = () => {
     navigation.navigate('EditProfile');
@@ -170,7 +230,7 @@ const handleDelete = () => {};
         <View style={styles.userInfoWrapper}>
         {route.params ? (
         <>
-        <TouchableOpacity onPress={() => onEditFriendPressed()}>
+        <TouchableOpacity onPress={() => FriendRequest()}>
           <View style={styles.userInfoItem}>
             
             <Text style={styles.userInfoTitle2}>친구요청</Text>
