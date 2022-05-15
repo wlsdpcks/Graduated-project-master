@@ -18,6 +18,8 @@ import firestore from '@react-native-firebase/firestore';
 import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
 import songs from '../../data/songdata';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
 const ProfileScreen = ({navigation,route}) => {
 
@@ -180,12 +182,33 @@ const onMiniroompress = () => {
 const handleDelete = () => {};
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
-       
-        
-      </View>
       
+      <View style={styles.title}>
+      {route.params ? (
+        <>
+        
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
+         
+          
+         <Ionicons name="arrow-back" size={25} color="#fff" />
+
+        </TouchableOpacity>
+          <View style={{ justifyContent : 'center', marginLeft: 75}}>
+                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
+          </View>
+        
+      
+      </>
+      ) : (
+        <>
+        
+        <View style={{ justifyContent : 'center', marginLeft: 105}}>
+                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
+          </View>
+        </>
+          )}
+        </View>
+
       <TouchableOpacity style={styles.music} onPress={() => onMusicPressed()}>
       <Text style={{ fontSize: 15, textAlign: 'center'}}>{songs[songIndex].title} - {songs[songIndex].artist}</Text>
             </TouchableOpacity>
@@ -335,19 +358,19 @@ const styles = StyleSheet.create({
     marginLeft:25,
     marginRight:25,
   },
+
   title:{ 
     height:50,
     backgroundColor: 'orange',
-    justifyContent: "center",
-    flexDirection: 'row',
-    alignItems: "center",
+    flexDirection: 'row', 
     
    
   },
   titleText:{
     fontFamily: "DungGeunMo",
+    justifyContent: 'space-around',
     fontSize: 20,
-    color:'#fff',
+    color:'white',
    
   },
   userImg: {
@@ -381,6 +404,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   userBtnTxt: {
     fontFamily: "DungGeunMo",

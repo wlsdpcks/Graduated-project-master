@@ -1,14 +1,26 @@
-import { View, Text,TouchableOpacity,StyleSheet,FlatList} from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,Alert,RefreshControl,TextInput} from 'react-native';
+import React, {useState, useEffect, useContext,useCallback} from 'react';
 import { AuthContext } from '../../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
+import { useNavigation } from "@react-navigation/native";
 
 const Friend = () => {
+  const [refreshing, setRefreshing] = useState(false);
 
   const {user, logout} = useContext(AuthContext);
   const [friendData, setFriendData] = useState(null);
+  const [deleted, setDeleted] = useState(false);
 
+  const navigation = useNavigation();
+
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const getFriend = async() => {
     const querySanp = await firestore()
     .collection('friends')
@@ -21,40 +33,127 @@ const Friend = () => {
       
     
   }
+
+  const DeleteFriendCheck = (item) => {
+    Alert.alert(
+      '친구을 삭제합니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => DeleteFriend(item),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const ChangeSname = (item) => {
+    Alert.alert(
+      '친구을 삭제합니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => DeleteFriend(item),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  
+  const DeleteFriend = (item) => {
+    
+
+    firestore()
+      .collection('friends')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('friendsinfo')
+      .doc(item.uid)
+      .delete()
+      .then(() => {
+       
+        console.log('삭제 성공!');
+        Alert.alert(
+          '친구 삭제 완료!',
+          );
+
+        setDeleted(true);
+
+        
+  
+        
+      })
+      .catch((error) => {
+        console.log('error.', error);
+      });
+    
+  };
   useEffect(() => {
     getFriend();
-  }, []);
+    setDeleted(false);
+  }, [deleted,refreshing]);
+
 
   const RenderCard = ({item})=>{
     return (
-      
-      
-      <View style={styles.title}>
-      <Text style={{}}>{item.name}</Text>
-      <Text style={{}}>{item.sname}</Text>
-      <Text style={{}}>{item.birthday}</Text>
-      </View>
-   
-    
-
-      
-     
+        <View style={{flexDirection:'row',flex:1,width:370,marginBottom: 10}}>
+          
+          <View style={{width:40,height:40,marginRight:20}}>
+                 <TouchableOpacity style={styles.imageContainer} onPress={() => navigation.navigate('ProfileScreen', {uid: item.uid})}>
+            <Image style={styles.image} source={{uri: item.userimg}}/>
+          </TouchableOpacity>
+          </View>
+          
+          <View style={{flexDirection:'row',flex: 1, justifyContent: "space-between", alignItems: "center"}}>
+          <Text style={{marginRight:10,flex: 1}}>{item.name}</Text>
+          <TouchableOpacity style={{marginRight:10,flex: 1}} onPress={() => ChangeSname(item)}>
+          <Text style={{}}>{item.sname}</Text>
+          </TouchableOpacity>
+          <Text style={{marginRight:10,flex: 1}}>{item.birthday}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => DeleteFriendCheck(item)}>
+              <Text style={styles.userBtnTxt}>삭제</Text>
+          </TouchableOpacity>
+          </View>
+        
+        </View>
     )
 }
     return (
     <View style={styles.container}>
         <Text style={{fontSize:20, paddingBottom: 10}}>친구 목록</Text>
         <View style={styles.title}>
+        <View style={{width:40}}></View>
           <Text style={{flex:1,textAlign: 'center',}}>이름</Text>
           <Text style={{flex:1,textAlign: 'center',}}>별명</Text>
           <Text style={{flex:1,textAlign: 'center',}}>생일</Text>  
+          <View style={{width:40}}></View>
           
         </View>
         <FlatList 
           data={friendData}
-          renderItem={({item})=> {return <RenderCard item={item} /> }}
-        />
+          renderItem={({item})=> {return <RenderCard item={item} />
         
+        }}
+
+        refreshControl={
+          <RefreshControl
+             refreshing={refreshing}
+             onRefresh={onRefresh}
+           />
+         }
+        />
+      
         
         
         </View>
@@ -89,5 +188,51 @@ const styles = StyleSheet.create({
       paddingVertical: 8,
       paddingHorizontal: 12,
       borderColor: 'green',
+
+    },
+    imageContainer: {
+      borderRadius: 20,
+      height: 40,
+      width: 40,
+      overflow: 'hidden',
+    },
+    image: {
+      height: 40,
+      width: 40
+    },
+    userBtnTxt: {
+      fontFamily: "DungGeunMo",
+      color: '#fff',
+      textAlign:'center',  
+      fontSize:15,
+      
+    },
+    textInput: {
+      marginTop: 20,
+      marginBottom: 10,
+      paddingHorizontal: 10,
+      height: 40,
+      borderRadius: 10,
+      borderColor: 'gray',
+      borderWidth: 1
+    },
+    button: {
+      width: 50,
+      height: 30,
+      backgroundColor: "orange",
+      borderColor: 'orange',
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+      borderBottomColor:'#fff',
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    userBtnTxt: {
+      fontFamily: "DungGeunMo",
+      color: '#fff',
+      textAlign:'center',  
+      fontSize:15,
     },
   });

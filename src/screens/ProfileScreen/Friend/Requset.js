@@ -1,13 +1,25 @@
-import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,Button} from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,Button,Alert,RefreshControl} from 'react-native';
+import React, {useState, useEffect, useContext,useCallback} from 'react';
 import { AuthContext } from '../../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
+import { useNavigation } from "@react-navigation/native";
 
 const Request = () => {
-
+  const [refreshing, setRefreshing] = useState(false);
   const {user, logout} = useContext(AuthContext);
   const [requsetData, setRequsetData] = useState(null);
+  const [deleted, setDeleted] = useState(false);
+
+  const navigation = useNavigation();
+
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
 
   const getRequset = async() => {
     const querySanp = await firestore()
@@ -19,25 +31,85 @@ const Request = () => {
     const allrequests = querySanp.docs.map(docSnap=>docSnap.data())
     setRequsetData(allrequests)
   }
+  const FriendRequestCheck = (item) => {
+    Alert.alert(
+      '친구 요청을 수락합니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => RequsetCheck(item),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  const RequsetCheck = (item) => {
+    
+
+    firestore()
+      .collection('friends')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('friendsinfo')
+      .doc(item.uid)
+      .set({
+  
+        uid: item.uid,
+        name: item.name,
+        sname: '별명',
+        birthday: item.birthday,
+        userimg: item.userimg,
+      })
+      .then(() => {
+        firestore()
+      .collection('Request')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('RequestInfo')
+      .doc(item.uid)
+      .delete()
+        console.log('requset Added!');
+        Alert.alert(
+          '친구 추가 완료!',
+          );
+        setDeleted(true);
+
+    
+        
+  
+        
+      })
+      .catch((error) => {
+        console.log('error.', error);
+      });
+    
+  };
   useEffect(() => {
     getRequset();
-  }, []);
+    setDeleted(false);
+  }, [deleted,refreshing]);
 
   const RenderCard = ({item})=>{
     return (
-        <View style={{flexDirection:'row',flex:1,width:370}}>
+        <View style={{flexDirection:'row',flex:1,width:370,marginBottom: 10}}>
           
           <View style={{width:40,height:40,marginRight:20}}>
-          <TouchableOpacity onPress={() => {}} style={styles.imageContainer}>
+                 <TouchableOpacity style={styles.imageContainer} onPress={() => navigation.navigate('ProfileScreen', {uid: item.uid})}>
             <Image style={styles.image} source={{uri: item.userimg}}/>
           </TouchableOpacity>
           </View>
           
           <View style={{flexDirection:'row',flex: 1, justifyContent: "space-between", alignItems: "center"}}>
-          <Text style={{marginRight:50}}>{item.name}</Text>
-          <Text style={{marginRight:30}}>{item.sname}</Text>
-          <Text style={{}}>{item.birthday}</Text>
-          <Button title='hi'></Button>
+          <Text style={{marginRight:10,flex: 1}}>{item.name}</Text>
+          <Text style={{marginRight:10,flex: 1}}>{item.sname}</Text>
+          <Text style={{marginRight:10,flex: 1}}>{item.birthday}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => FriendRequestCheck(item)}>
+              <Text style={styles.userBtnTxt}>확인</Text>
+          </TouchableOpacity>
           </View>
         
         </View>
@@ -55,7 +127,14 @@ const Request = () => {
         </View>
         <FlatList 
           data={requsetData}
-          renderItem={({item})=> {return <RenderCard item={item} /> }}
+          renderItem={({item})=> {return <RenderCard item={item} />
+         }}
+         refreshControl={
+         <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         />
     </View>
         
@@ -98,6 +177,31 @@ const styles = StyleSheet.create({
     image: {
       height: 40,
       width: 40
-    }
+    },
+    userBtnTxt: {
+      fontFamily: "DungGeunMo",
+      color: '#fff',
+      textAlign:'center',  
+      fontSize:15,
+    },
+    button: {
+      width: 50,
+      height: 30,
+      backgroundColor: "orange",
+      borderColor: 'orange',
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+      borderBottomColor:'#fff',
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    userBtnTxt: {
+      fontFamily: "DungGeunMo",
+      color: '#fff',
+      textAlign:'center',  
+      fontSize:15,
+    },
   
   });

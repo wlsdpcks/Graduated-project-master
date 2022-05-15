@@ -10,18 +10,41 @@ import Miniroom from './Miniroom/Miniroom';
 import ProfileScreen from './ProfileScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Requset from './Friend/Requset';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import SNSProfileScreen from './SNSprofileScreen';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
 const Stack = createNativeStackNavigator();
 const ProfileStackScreen = () => {
   return (
     <Stack.Navigator screenOptions={{headerShown: true}}>
                 <Stack.Screen
-                    name="ProfileScreen"
+                    name="HomeProfileScreen"
                     component={ProfileScreen}
                     options={{
                     headerShown: false,
                     }}
                     />
+                    
+
+                <Stack.Screen
+                    name="ProfileScreen"
+                    component={ProfileScreen}
+                    options={{
+                      headerShown: false,
+                      
+                 
+                    
+               
+                    
+          
+             
+                
+                    
+                 
+                    }}
+                  />
+             
              
                 <Stack.Screen
                     name="SNSProfile"
