@@ -30,9 +30,6 @@ const ProfileScreen = ({navigation,route}) => {
   const [songIndex, setSongIndex]=useState(0);
   const [LoginuserData, setLoginUserData] = useState(null);
 
-
-  
-  
   const getUser = async() => {
     await firestore()
     .collection('users')

@@ -1,6 +1,6 @@
 import { View, Text,TouchableOpacity,StyleSheet,Image,SafeAreaView,Button,Dimensions,ScrollView} from 'react-native';
 import storage from '@react-native-firebase/storage';
-import firestore from '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore'; 
 import firebase  from '@react-native-firebase/app';
 import React,{useState,useEffect} from 'react'
 import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
@@ -14,7 +14,7 @@ import { renderNode } from 'react-native-elements/dist/helpers';
 const gestureRootViewStyle = { flex: 1 };
 const ToolInven = () => {
 
-  const {isaddress,setIsaddress} = useStore();
+  const {tooladdress,settooladdress} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const [tool, setTool] = useState();
   const getShopData = async () => {
@@ -36,7 +36,7 @@ const ToolInven = () => {
       {
         tool?.map((row, idx) => {
          {
-            return  <TouchableOpacity onPress={()=>{setIsaddress(row.address)}} style={{borderWidth:1}}>
+            return  <TouchableOpacity onPress={()=>{settooladdress(row.address)}} style={{borderWidth:1}}>
             <Image source ={{uri:row.address}} style={{width:70,height:70,}} resizeMode="contain" ></Image>
             </TouchableOpacity>;} 
       })

@@ -6,7 +6,7 @@ import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
 
 const MiniroomBox =() => {
-  const {isaddress,setIsaddress} = useStore();
+  const {tooladdress,settooladdress} = useStore();
   const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
   const addItem = (x,y,address) => {
     addminiroom.collection('tool').add({
@@ -39,15 +39,15 @@ const MiniroomBox =() => {
       },
       onPanResponderEnd: (evt , gesture) => {
         console.log('주소는~');
-        console.log(`${isaddress}`)
-        addItem(gesture.moveX,gesture.moveY,isaddress);
+        console.log(`${tooladdress}`)
+        addItem(gesture.moveX,gesture.moveY,tooladdress);
       },
     })
   ).current;
     return(
         <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers}>
             <View style={styles.box}>
-                <Image source={{uri:`${isaddress}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
+                <Image source={{uri:`${tooladdress}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
             </View>
       </Animated.View>
         )
