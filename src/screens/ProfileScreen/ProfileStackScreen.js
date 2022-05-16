@@ -5,7 +5,7 @@ import Music from './Music/Music';
 import Friend from './Friend/Friend';
 import Diary from './Diary/Diary';
 import Album from './Album';
-import Weblog from './Weblog';
+import Weblog from './GuestBook/Weblog';
 import Miniroom from './Miniroom/Miniroom';
 import ProfileScreen from './ProfileScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
