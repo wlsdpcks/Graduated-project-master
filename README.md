@@ -12,6 +12,6 @@ Version 31.0.3-7562133<br>
 #사용방법<br/> 
  npm install => npm run android 
 
-![Screenshot_1652794999](https://user-images.githubusercontent.com/80084425/168825979-4e9bbbd2-429b-426d-9308-a214ff23e78f.png) 기본화면
+<img src="https://user-images.githubusercontent.com/80084425/168825979-4e9bbbd2-429b-426d-9308-a214ff23e78f.png"  width="200" height="400"/> 기본화면
 
 
