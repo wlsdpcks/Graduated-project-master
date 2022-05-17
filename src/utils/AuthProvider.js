@@ -3,6 +3,7 @@ import {Image} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-community/google-signin';
+import firebase from '@react-native-firebase/app'
 
 export const AuthContext = createContext();
 
@@ -121,19 +122,33 @@ export const AuthProvider = ({children}) => {
                   about: null,
                   birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),
-                  userImg: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AppImage%2Fprofile.jpg?alt=media&token=719929c2-defb-4cbf-99ca-fddd21bfeaa4',
-
-                  
-              })
-              firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').set({
-                background: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
-              })
-              
-              //ensure we catch any errors at this stage to advise us if something does go wrong
-              .catch(error => {
+                  userImg: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AppImage%2Fprofile.jpg?alt=media&token=719929c2-defb-4cbf-99ca-fddd21bfeaa4'
+                }).then(() => {
+                  firestore()
+                .collection('Albums')
+                .doc(auth().currentUser.uid)
+                .collection('groups').doc('전체사진')
+                .set({
+                  name : '전체사진',
+                  postTime: firestore.Timestamp.fromDate(new Date()),
+                }).then(() => {
+                  firestore()
+                .collection('Albums')
+                .doc(auth().currentUser.uid)
+                .collection('groups').doc('기본 사진첩')
+                .set({
+                  name : '기본 사진첩',
+                  postTime: firestore.Timestamp.fromDate(new Date()),
+                }).then(() => {
+                  firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('background').add({
+                    background: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
+                  }).catch(error => {
                   console.log('Something went wrong with added user to firestore: ', error);
               })
             })
+          })
+          })
+        })
             //we need to catch the whole sign up process if it fails too.
             .catch(error => {
                 console.log('Something went wrong with sign up: ', error);
@@ -142,6 +157,7 @@ export const AuthProvider = ({children}) => {
             console.log(e);
           }
         },
+        
         logout: async () => {
           try {
             await auth().signOut();

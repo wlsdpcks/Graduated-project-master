@@ -76,7 +76,7 @@ const SnsScreen = ({navigation,route}) => {
         });
 
       setPosts(list);
-
+      
       if (loading) {
         setLoading(false);
       }

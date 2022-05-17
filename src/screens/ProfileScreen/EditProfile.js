@@ -69,7 +69,7 @@ const EditProfile = () => {
     })
     .then(() => {
       console.log('업데이트');
-      navigation.navigate('ProfileScreen');
+      navigation.navigate('HomeProfileScreen');
       Alert.alert(
         '프로필이 업데이트 됬습니다!',
         '당신의 프로필이 성공적으로 바뀌었습니다!',
