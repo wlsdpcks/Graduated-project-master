@@ -11,7 +11,7 @@ const SearchScreen = (props) => {
   const [searchText, setSearchText] = useState('');
 
   const getPosts = async ()=>{
-    const querySanp = await firestore().collection('posts').get()
+    const querySanp = await firestore().collection('posts').orderBy('postTime', 'desc').get()
     const allposts = querySanp.docs.map(docSnap=>docSnap.data())
    //  console.log(allusers)
    setPosts(allposts)

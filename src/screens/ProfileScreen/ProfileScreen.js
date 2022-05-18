@@ -171,7 +171,7 @@ const onDiarypress = () => {
   navigation.navigate('Diary');
 };
 const onalbumpress = () => {
-  navigation.navigate('Album');
+  navigation.navigate('Album', {name : userData.name ,uid : route.params ? route.params.uid : user.uid});
 };
  
 const onMiniroompress = () => {

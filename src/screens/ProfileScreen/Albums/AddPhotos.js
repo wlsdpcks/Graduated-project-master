@@ -24,11 +24,11 @@ import {
   SubmitBtn,
   SubmitBtnText,
   StatusWrapper,
-} from '../../../styles/AddPost';
+} from '../../../../styles/AddPost';
 
-import { AuthContext } from '../../utils/AuthProvider';
+import { AuthContext } from '../../../utils/AuthProvider';
 
-const AddPostScreen = () => {
+const AddPhotos = ({route}) => {
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
@@ -40,7 +40,7 @@ const AddPostScreen = () => {
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [post, setPost] = useState([null]);
-  const [tag, setTag] = useState(null);
+  const [body, setBody] = useState(null);
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -79,18 +79,32 @@ const AddPostScreen = () => {
     console.log('Post: ', post);
 
     firestore()
-    .collection('posts')
+    .collection('Albums')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('groups').doc(route.params.foldername).collection('photos')
     .add({
   
-      uid: user.uid,
+      
       post: post,
-      tag: tag,
-      postImg: imageUrl,
+      body: body,
+      img: imageUrl,
       postTime: firestore.Timestamp.fromDate(new Date()),
-      likes: 0,
-      comments: 0,
+      
     })
     .then(() => {
+        firestore()
+        .collection('Albums')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('groups').doc('전체사진').collection('photos')
+        .add({
+      
+          
+          post: post,
+          body: body,
+          img: imageUrl,
+          postTime: firestore.Timestamp.fromDate(new Date()),
+          
+        })
       console.log('Post Added!');
       Alert.alert(
         '게시물 업데이트 완료!',
@@ -169,7 +183,7 @@ const AddPostScreen = () => {
         {image != null ? <AddImage source={{uri: image}} /> : null}
         <View style={styles.row}>
         <InputField
-          placeholder="게시물 내용을 작성하세요!"
+          placeholder="게시물 제목을 작성하세요!"
           multiline
           numberOfLines={3}
           value={post}
@@ -177,11 +191,11 @@ const AddPostScreen = () => {
         />
         </View>
         <InputField
-          placeholder="게시물 주제를 작성하세요!"
+          placeholder="게시물 내용을 작성하세요!"
           multiline
           numberOfLines={2}
-          value={tag}
-          onChangeText={(content) => setTag(content)}
+          value={body}
+          onChangeText={(content) => setBody(content)}
         />
         {uploading ? (
           <StatusWrapper>
@@ -216,7 +230,7 @@ const AddPostScreen = () => {
   );
 };
 
-export default AddPostScreen;
+export default AddPhotos;
 
 const styles = StyleSheet.create({
   container: {
