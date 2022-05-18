@@ -16,25 +16,29 @@ import firebase  from '@react-native-firebase/app';
 const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
 const Miniroom = () => {  
-  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background'); 
+  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background');  
   const {tooladdress,settooladdress,Backaddress} = useStore();
   const [Back, setBack] = useState();
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
       setBack(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+      console.log(Back[Back.length-1].address);
     } catch (error) {
       console.log(error.message);
     }
   };
   useEffect(() => {
     getBackgroundData();
+    
   }, []);
+  
   const getBack = a => {
     if(!a){
     return <Text>없어용</Text>
   } return <View>
-                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Backaddress}`}}/> 
+                
+                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back.address}`}}/> 
 </View>
   }
   return (
@@ -42,6 +46,8 @@ const Miniroom = () => {
           <DraxProvider> 
             {getBack(Back)}
             <MiniroomBox test={tooladdress}/>
+            <MiniroomBox test={tooladdress}/>
+
     </DraxProvider>
         <View style={styles.miniroom}>
         <Tab.Navigator>

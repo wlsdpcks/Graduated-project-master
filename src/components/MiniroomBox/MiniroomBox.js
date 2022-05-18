@@ -12,7 +12,7 @@ const MiniroomBox =() => {
     addminiroom.collection('tool').add({
         getx:x,
         gety:y,
-        image:address
+        image:address,
       })
       console.log('x좌표: ',x);
       console.log('y좌표: ',y);

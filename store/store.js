@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 
 const store = (set => ({
     tooladdress: '', //상점 아이템 url주소값용
-    settooladdress: (input) => set({ istooladdress: input }),//상점 아이템 url주소값용
+    settooladdress: (input) => set({ tooladdress: input }),//상점 아이템 url주소값용
     Backaddress: '', //상점 아이템 url주소값용
     setBacksaddress: (input) => set({ Backaddress: input }),//상점 아이템 url주소값용
     placeX: '', //미니룸 아이템 배치 좌표저장용

@@ -11,11 +11,14 @@ const Tab = createMaterialTopTabNavigator();
 
 const Store = () => { 
   return (
+    <View style={{flex:1}}>
+    <Text>hi</Text>
     <Tab.Navigator>
       <Tab.Screen name="가구" component={toolStore} />
       <Tab.Screen name="미니미" component={minimeStore} />
       <Tab.Screen name="배경" component={musicStore} />
     </Tab.Navigator>
+    </View>
   );
 };
 
