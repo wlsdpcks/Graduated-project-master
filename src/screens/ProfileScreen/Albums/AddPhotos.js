@@ -71,8 +71,8 @@ const AddPhotos = ({route}) => {
       setImage(imageUri);
     });
   };
-
   const submitPost = async () => {
+    const currentPhotoId = Math.floor(100000 + Math.random() * 9000).toString();
     const currentuserId = firebase.auth().currentUser.uid
     const imageUrl = await uploadImage();
     console.log('Image Url: ', imageUrl);
@@ -81,10 +81,10 @@ const AddPhotos = ({route}) => {
     firestore()
     .collection('Albums')
     .doc(firebase.auth().currentUser.uid)
-    .collection('groups').doc(route.params.foldername).collection('photos')
-    .add({
+    .collection('groups').doc(route.params.foldername).collection('photos').doc(currentPhotoId)
+    .set({
   
-      
+      postid : currentPhotoId,
       post: post,
       body: body,
       img: imageUrl,
@@ -95,10 +95,10 @@ const AddPhotos = ({route}) => {
         firestore()
         .collection('Albums')
         .doc(firebase.auth().currentUser.uid)
-        .collection('groups').doc('전체사진').collection('photos')
-        .add({
+        .collection('groups').doc('전체사진').collection('photos').doc(currentPhotoId)
+        .set({
       
-          
+          postid : currentPhotoId,
           post: post,
           body: body,
           img: imageUrl,

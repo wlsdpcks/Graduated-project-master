@@ -107,7 +107,9 @@ export const AuthProvider = ({children}) => {
             console.log({error});
           }
         },*/
+        
         register: async (email, password,phone,name,age,birthday,about,uid) => { 
+          const currentMiniroomId = Math.floor(100000 + Math.random() * 9000).toString();
           try {
             await auth().createUserWithEmailAndPassword(email, password)
             .then(() => {
@@ -140,7 +142,7 @@ export const AuthProvider = ({children}) => {
                   name : '기본 사진첩',
                   postTime: firestore.Timestamp.fromDate(new Date()),
                 }).then(() => {
-                  firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('background').add({
+                  firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('background').doc(auth().currentUser.uid+ 'mid').set({
                     background: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
                   }).catch(error => {
                   console.log('Something went wrong with added user to firestore: ', error);

@@ -1,5 +1,5 @@
-import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions} from 'react-native'
-import React,{useState,useEffect,useContext} from 'react'
+import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,RefreshControl,Alert} from 'react-native'
+import React, {useState, useEffect, useContext,useCallback} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
 import firestore from '@react-native-firebase/firestore'
@@ -11,11 +11,17 @@ import moment from 'moment';
 var { height, width } = Dimensions.get('window');
 
 const PhotoDeatil = ({route,navigation}) => {
-
+  const [refreshing, setRefreshing] = useState(false);
   const [posts,setPosts] = useState([])
-  const [loading, setLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
-  
+  const [deleted, setDeleted] = useState(false);
+
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('Albums')
     .doc(firebase.auth().currentUser.uid)
@@ -30,17 +36,83 @@ const PhotoDeatil = ({route,navigation}) => {
    setPosts(allposts)
    
 }
+const DeletePhotoCheck = (item) => {
+    Alert.alert(
+      '사진을 삭제합니다',
+      '확실합니까? 삭제할시 소중한 추억들이 삭제 됩니다. 다시한번 확인 해주세요.' ,
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => DeletePhoto(item),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  const addCollection =  firestore()
+  .collection('Albums')
+  .doc(firebase.auth().currentUser.uid)
+  .collection('groups')
+  .doc(route.params.foldername)
+  .collection('photos');
 
+  const addAllCollection =  firestore()
+  .collection('Albums')
+  .doc(firebase.auth().currentUser.uid)
+  .collection('groups')
+  .doc('전체사진')
+  .collection('photos');
+
+  const DeletePhoto =  async (item) => {
+    
+    try {
+      const rows = await addCollection.where('post', '==', item.post);
+      const Allrows = await addAllCollection .where('post', '==', item.post);
+
+      rows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.delete()
+
+      
+      
+        });
+      });
+
+      Allrows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.delete()
+
+      
+      
+        });
+      });
+      
+      Alert.alert(
+        '사진 삭제 완료!',
+        );
+
+      setDeleted(true);
+      console.log('Delete Complete!', rows);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 useEffect(()=>{
     getPosts()
-},[])
+    setDeleted(false);
+}, [deleted,refreshing]);
 
 const RenderCard = ({item})=>{
     return (
         <View style={styles.container}>
         <View style={styles.title2}>
         <Text style={{fontSize : 20, fontFamily: 'DungGeunMo', padding : 5}}> {item.post}</Text>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => DeletePhotoCheck(item)}>
          
         <View style={{marginRight :15}}>
          <Ionicons name="ellipsis-horizontal" size={25} color="black" />
@@ -65,14 +137,16 @@ const RenderCard = ({item})=>{
          <View style={{marginTop : 23, marginBottom : 15}}>
         <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>추천</Text>
         </View>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{ postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
          
          <View style={{padding : 10  ,marginTop : 10, marginBottom : 15}}>
           <Ionicons name="chatbubble-ellipses" size={25} color="gray" />
          </View>
          </TouchableOpacity>
          <View style={{marginTop : 23, marginBottom : 15}}>
+         <TouchableOpacity style={{}} onPress={() => navigation.navigate('Comment',{postid: item.postid, name : item.post, foldername : route.params.foldername} )}>  
         <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>댓글</Text>
+        </TouchableOpacity>
         </View>
         
         </View>
@@ -111,6 +185,12 @@ const RenderCard = ({item})=>{
           renderItem={({item})=> {return <RenderCard item={item} />
         
         }}
+        refreshControl={
+            <RefreshControl
+               refreshing={refreshing}
+               onRefresh={onRefresh}
+             />
+           }
         />    
         
        
