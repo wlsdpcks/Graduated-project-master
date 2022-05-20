@@ -12,7 +12,7 @@ const Album = ({navigation,route}) => {
   const getFolder = async() => {
     const querySanp = await firestore()
     .collection('Albums')
-    .doc(firebase.auth().currentUser.uid)
+    .doc(route.params ? route.params.uid : user.uid)
     .collection('groups').orderBy('postTime')
     .get()
 
@@ -61,10 +61,10 @@ const Album = ({navigation,route}) => {
       
         
         
-        
-      
-        <Icon style={styles.fab} name="settings"  size={23} color="black" onPress={() => navigation.navigate('AlbumSetting',{uid : uid,name :route.params.name }  )}/>
-        
+      {(() => { 
+      if (route.params.uid === firebase.auth().currentUser.uid)    
+      return  <Icon style={styles.fab} name="settings"  size={23} color="black" onPress={() => navigation.navigate('AlbumSetting',{uid : uid,name :route.params.name }  )}/>
+      })()} 
   
         </View>
         

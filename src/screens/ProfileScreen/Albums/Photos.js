@@ -14,9 +14,9 @@ const Photos = ({route,navigation}) => {
   const [serachposts, searchsetPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
-  
+  const {uid} = route.params
   const getPosts = async ()=>{
-    const querySanp = await firestore().collection('Albums').doc(firebase.auth().currentUser.uid).collection('groups').doc(route.params.fname).collection('photos').orderBy('postTime', 'desc').get()
+    const querySanp = await firestore().collection('Albums').doc(route.params ? route.params.uid : user.uid).collection('groups').doc(route.params.fname).collection('photos').orderBy('postTime', 'desc').get()
     const allposts = querySanp.docs.map(docSnap=>docSnap.data())
    //  console.log(allusers)
    console.log('Posts: ', posts );
@@ -31,7 +31,7 @@ useEffect(()=>{
 const RenderCard = ({item})=>{
     return (
       <TouchableOpacity 
-      onPress={() => navigation.navigate('PhotoDetail',{ foldername : route.params.fname} )}>
+      onPress={() => navigation.navigate('PhotoDetail',{uid : uid, foldername : route.params.fname} )}>
       <View  style={[{ width: (width) / 3 }, { height: (width) / 3 }, { marginBottom: 2 }]}>
       <Image 
       style={{
@@ -82,9 +82,9 @@ const RenderCard = ({item})=>{
          
         />
         {(() => {
-        if (route.params.fname !== "전체사진")    
-        return <ActionButton buttonColor="#FF6347" onPress={() => navigation.navigate('AddPhotos',{ foldername : route.params.fname} )}/>
-        
+        if (route.params.fname !== "전체사진" && route.params.uid === firebase.auth().currentUser.uid)    
+        return <ActionButton buttonColor="#FF6347" onPress={() => navigation.navigate('AddPhotos',{uid : uid, foldername : route.params.fname} )}/>
+      
       })()}
         
         </View>

@@ -1,4 +1,4 @@
-import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,TextInput} from 'react-native';
+import { View, Text,TouchableOpacity,StyleSheet,FlatList,Image,TextInput,RefreshControl,Alert} from 'react-native';
 import React, {useState, useEffect, useContext,useCallback} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
@@ -9,16 +9,26 @@ import { theme } from '../../../Chat/ChatTheme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import { AuthContext } from '../../../utils/AuthProvider';
+
 const Comment = ({navigation,route}) => {
+  const [number, setNumber] = useState(0);
   const [CommentData, setCommentData] = useState([]);
-  const {user, logout} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [comment, setComment] = useState(null);
-
+  const {uid} = route.params
+  const [deleted, setDeleted] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const getComment = async() => {
     const querySanp = await firestore()
     .collection('Albums')
-    .doc(firebase.auth().currentUser.uid)
+    .doc(route.params ? route.params.uid : user.uid)
     .collection('groups')
     .doc(route.params.foldername)
     .collection('photos')
@@ -33,11 +43,10 @@ const Comment = ({navigation,route}) => {
   }
   const SubmitComment = async () => {
     
-    
 
     const querySanp = await firestore()
     .collection('Albums')
-    .doc(firebase.auth().currentUser.uid)
+    .doc(route.params ? route.params.uid : user.uid)
     .collection('groups')
     .doc(route.params.foldername)
     .collection('photos')
@@ -49,10 +58,31 @@ const Comment = ({navigation,route}) => {
       userimg : userData.userImg,
       comment : comment,
       commentTime: firestore.Timestamp.fromDate(new Date()),
+      uid : firebase.auth().currentUser.uid,
+      commentCount : 1
     })
     .then(() => {
-      console.log('Groups Added!');
+    firestore()
+    .collection('Albums')
+    .doc(route.params ? route.params.uid : user.uid)
+    .collection('groups')
+    .doc('전체사진')
+    .collection('photos')
+    .doc(route.params.postid)
+    .collection('comment')
+    .add({
+  
+      username : userData.name,
+      userimg : userData.userImg,
+      comment : comment,
+      commentTime: firestore.Timestamp.fromDate(new Date()),
+      uid : firebase.auth().currentUser.uid,
       
+    })
+      console.log('Groups Added!');
+      setDeleted(true);
+      Alert.alert('댓글 작성 완료!')
+
      
         
    
@@ -63,6 +93,78 @@ const Comment = ({navigation,route}) => {
       console.log('Something went wrong with added post to firestore.', error);
     });
   }
+  const DeleteCommentCheck = (item) => {
+    Alert.alert(
+      '댓글을 삭제합니다',
+      '확실합니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: '취소',
+        },
+        {
+          text: '확인',
+          onPress: () => DeleteComment(item),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  const addCollection =  firestore()
+  .collection('Albums')
+  .doc(route.params ? route.params.uid : user.uid)
+  .collection('groups')
+  .doc(route.params.foldername)
+  .collection('photos')
+  .doc(route.params.postid)
+  .collection('comment');
+
+  const addAllCollection =  firestore()
+  .collection('Albums')
+  .doc(route.params ? route.params.uid : user.uid)
+  .collection('groups')
+  .doc('전체사진')
+  .collection('photos')
+  .doc(route.params.postid)
+  .collection('comment');
+
+  const DeleteComment =  async (item) => {
+    
+ 
+    try {
+      const rows = await addCollection.where('comment', '==', item.comment);
+      const Allrows = await addAllCollection.where('comment', '==', item.comment);
+
+      rows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.delete()
+
+      
+      
+        });
+      });
+
+      Allrows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.delete()
+
+      
+      
+        });
+      }) .then(() => {
+      setDeleted(true);
+
+      Alert.alert(
+        '댓글 삭제 완료!',
+        );
+
+      console.log('Delete Complete!', rows);
+    })
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const getUser = async() => {
     await firestore()
@@ -79,7 +181,8 @@ const Comment = ({navigation,route}) => {
   useEffect(() => {
     getComment();
     getUser();
-  }, []);
+    setDeleted(false);
+  }, [deleted,refreshing]);
   
 
 
@@ -100,10 +203,16 @@ const Comment = ({navigation,route}) => {
             }}>
             <View style={{
               flexDirection: 'row',
-              
+
             }}>
               <Text numerOfLine={1} style={styles.username}>{item.username}</Text>
-             
+              {(() => {
+          if (item.uid === firebase.auth().currentUser.uid)    
+           return <TouchableOpacity onPress={() => DeleteCommentCheck(item)}>
+                    <Ionicons style={styles.delete}name="close-circle" size={25} color="gray" /> 
+                  </TouchableOpacity>
+                })()}
+              
             </View>
             <View style={{
               flexDirection: 'row',
@@ -147,21 +256,28 @@ const Comment = ({navigation,route}) => {
           renderItem={({item})=> {return <RenderCard item={item} />
         
         }}
+        refreshControl={
+          <RefreshControl
+             refreshing={refreshing}
+             onRefresh={onRefresh}
+           />
+         }
         />
       
         
-        
+        <View style={{flexDirection : 'row'}}>
       <TextInput
             style={styles.textInput}
             value={comment}
             onChangeText={(text) => {setComment(text)}}
-            placeholder="폴더 이름을 입력해주세요."
+            placeholder="댓글을 남겨보세요."
           />
+          
           <TouchableOpacity onPress={() => SubmitComment()}>
-          <Text style ={{color : 'black',marginLeft : 350, fontFamily : 'DungGeunMo'}}>추가</Text>
+          <Text style ={{color : 'black',fontFamily : 'DungGeunMo', paddingHorizontal: 10, marginTop : 10, fontSize : 18}}>작성</Text>
           </TouchableOpacity>
       
-        
+        </View>
   
         </View>
         
@@ -222,6 +338,13 @@ const styles = StyleSheet.create({
       color: theme.colors.title,
       width: 210
     },
+    delete: {
+      fontSize: theme.fontSize.title,
+      color: theme.colors.title,
+      width: 210,
+      marginLeft : 70,
+      fontSize : 30
+    },
     message: {
       fontSize: theme.fontSize.message,
       width: 240,
@@ -237,5 +360,22 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       alignSelf: 'center' 
+    },
+    textInput: {
+      marginBottom: 10,
+      paddingHorizontal: 10,
+      height: 40,
+      width : 340,
+      borderRadius: 10,
+      borderColor: 'gray',
+      borderWidth: 1
+    },
+    showText: {
+      marginTop: 10,
+      fontSize: 25,
+    },
+    time: {
+      fontSize:15,
+      color: 'black'
     },
   });
