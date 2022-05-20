@@ -1,251 +1,216 @@
-import * as React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DraxProvider, DraxView, DraxList } from 'react-native-drax';
+import React,{ useState,useEffect} from 'react';
+import {
+  View,
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  Dimensions
+  ,TouchableOpacity,
+} from 'react-native';
+import {TextInput} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import COLORS from '../StoreScreen/colors';
+import firestore from '@react-native-firebase/firestore';
 
-const gestureRootViewStyle = { flex: 1 };
+const width = Dimensions.get('window').width / 2 - 30;
 
-export default function test() {
-  const draggableItemList = [
-    {
-      "id": 1,
-      "name": "A",
-      "background_color": "red"
-    },
-    {
-      "id": 2,
-      "name": "B",
-      "background_color": "pink"
-    },
-    {
-      "id": 3,
-      "name": "C",
-      "background_color": "orange"
-
-    },
-    {
-      "id": 4,
-      "name": "D",
-      "background_color": "#aaaaff"
-    },
-    {
-      "id": 5,
-      "name": "E",
-      "background_color": "blue"
-    },
-    {
-      "id": 6,
-      "name": "F",
-      "background_color": "green"
-    },
-    {
-      "id": 7,
-      "name": "G",
-      "background_color": "brown"
-
-    },
-    {
-      "id": 8,
-      "name": "H",
-      "background_color": "#aaaaff"
-    },
-    {
-      "id": 9,
-      "name": "I",
-      "background_color": "red"
-    },
-    {
-      "id": 10,
-      "name": "J",
-      "background_color": "pink"
-    },
-    {
-      "id": 11,
-      "name": "K",
-      "background_color": "orange"
-
-    },
-    {
-      "id": 12,
-      "name": "L",
-      "background_color": "#aaaaff"
+const test = ({navigation}) => {
+  const usersCollection = firestore().collection('shops').doc('shopitems').collection('tool');  
+  const categories = ['TOOL', 'MINIME', 'BACKGROUND'];
+  const [catergoryIndex, setCategoryIndex] = useState(0);
+  const [tool, setTool] = useState();
+  
+  const getShopData = async () => {
+    try {
+      const data = await usersCollection.get();
+      setTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    } catch (error) {
+      console.log(error.message);
     }
-
-  ];
-  const FirstReceivingItemList = [
-    {
-      "id": 13,
-      "name": "M",
-      "background_color": '#ffaaff'
-    },
-    {
-      "id": 14,
-      "name": "N",
-      "background_color": '#ffaaff'
-    },
-    {
-      "id": 15,
-      "name": "O",
-      "background_color": '#ffaaff'
-    },
-    {
-      "id": 16,
-      "name": "P",
-      "background_color": '#ffaaff'
-    }
-  ];
-
-  const [receivingItemList, setReceivedItemList] = React.useState(FirstReceivingItemList);
-  const [dragItemMiddleList, setDragItemListMiddle] = React.useState(draggableItemList);
-
-  const DragUIComponent = ({ item, index }) => {
+  };
+  useEffect(() => {
+    getShopData();
+  }, []);
+  const CategoryList = () => {
     return (
-      <DraxView
-        style={[styles.centeredContent, styles.draggableBox, { backgroundColor: item.background_color }]}
-        draggingStyle={styles.dragging}
-        dragReleasedStyle={styles.dragging}
-        hoverDraggingStyle={styles.hoverDragging}
-        dragPayload={index}
-        longPressDelay={150}
-        key={index}
-      >
-        <Text style={styles.textStyle}>{item.name}</Text>
-      </DraxView>
-    );
-  } 
-
-  const ReceivingZoneUIComponent = ({ item, index }) => {
-    return (
-      <DraxView
-        style={[styles.centeredContent, styles.receivingZone, { backgroundColor: item.background_color }]}
-        receivingStyle={styles.receiving}
-        renderContent={({ viewState }) => {
-          const receivingDrag = viewState && viewState.receivingDrag;
-          const payload = receivingDrag && receivingDrag.payload;
-          return (
-            <View>
-              <Text style={styles.textStyle}>{item.name}</Text>
-            </View>
-          );
-        }}
-        key={index}
-        onReceiveDragDrop={(event) => {
-          let selected_item = dragItemMiddleList[event.dragged.payload];
-          console.log('onReceiveDragDrop::index', selected_item, index);
-          console.log('onReceiveDragDrop :: payload', event.dragged.payload);
-          let newReceivingItemList = [...receivingItemList];
-          console.log('onReceiveDragDrop :: newReceivingItemList', newReceivingItemList);
-          newReceivingItemList[index] = selected_item;
-          setReceivedItemList(newReceivingItemList);
-
-          let newDragItemMiddleList = [...dragItemMiddleList];
-          console.log('onReceiveDragDrop :: newDragItemMiddleList 1', newDragItemMiddleList);
-          newDragItemMiddleList[event.dragged.payload] = receivingItemList[index];
-          console.log('onReceiveDragDrop :: newDragItemMiddleList 2', newDragItemMiddleList);
-          setDragItemListMiddle(newDragItemMiddleList);
-        }}
-      />
-    );
-  }
-
-  const FlatListItemSeparator = () => {
-    return (<View style={styles.itemSeparator} />);
-  }
-  return (
-    <GestureHandlerRootView
-      style={gestureRootViewStyle}>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>{'미니룸'}</Text>
-        <Text>{receivingItemList.length}</Text>
+      <View style={style.categoryContainer}>
+        {categories.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.8}
+            onPress={() => setCategoryIndex(index)}>
+            <Text
+              style={[
+                style.categoryText,
+                catergoryIndex === index && style.categoryTextSelected,
+              ]}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
-      <DraxProvider>
-        <View style={styles.container}>
-          <View style={styles.receivingContainer}>
-            {receivingItemList.map((item, index) => ReceivingZoneUIComponent({ item, index }))}
+    );
+  };
+
+  const Card = ({plant}) => {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate('Details', plant)}>
+        <View style={style.card}>
+          <View style={{alignItems: 'flex-end'}}>
+            <View
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: //plant.like
+                  //? 'rgba(245, 42, 42,0.2)': 
+                  'rgba(0,0,0,0.2) ',
+              }}>
+              <Icon
+                name="favorite"
+                size={18}
+                //color={plant.like ? COLORS.red : COLORS.black}
+              />
+            </View>
           </View>
-          <View style={styles.draxListContainer}>
-            <DraxList
-              data={dragItemMiddleList}
-              renderItemContent={DragUIComponent}
-              keyExtractor={(item, index) => index.toString()}
-              numColumns={4}
-              ItemSeparatorComponent={FlatListItemSeparator}
-              scrollEnabled={true}
+
+          <View
+            style={{
+              height: 90,
+              alignItems: 'center',
+            }}>
+            <Image
+              source={{uri:plant.address}}
+              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}}
             />
           </View>
+
+          <Text style={{fontWeight: 'bold', fontSize: 17, marginTop: 10}}>
+            {plant.name}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 5,
+            }}>
+            <Text style={{fontSize: 19, fontWeight: 'bold'}}>
+            ₩{plant.price}
+            </Text>
+            <View
+              style={{
+                height: 25,
+                width: 25,
+                backgroundColor: COLORS.green,
+                borderRadius: 5,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{fontSize: 22, color: COLORS.white, fontWeight: 'bold'}}>
+                +
+              </Text>
+            </View>
+          </View>
         </View>
-      </DraxProvider>
-    </GestureHandlerRootView>
+      </TouchableOpacity>
+    );
+  };
+  return (
+    <SafeAreaView
+      style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
+      <View style={style.header}>
+        <View>
+          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Welcome to</Text>
+          <Text style={{fontSize: 38, color: COLORS.green, fontWeight: 'bold'}}>
+            MiniRoom Shop
+          </Text>
+        </View>
+      </View>
+      <View style={{marginTop: 30, flexDirection: 'row'}}>
+        <View style={style.searchContainer}>
+          <Icon name="search" size={25} style={{marginLeft: 20}} />
+          <TextInput placeholder="Search" style={style.input} />
+        </View>
+        <View style={style.sortBtn}>
+          <Icon name="sort" size={30} color={COLORS.white} />
+        </View>
+      </View>
+      <CategoryList />
+      
+      <FlatList
+        columnWrapperStyle={{justifyContent: 'space-between'}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          marginTop: 10,
+          paddingBottom: 50,
+        }}
+        numColumns={2}
+        data={tool}
+        renderItem={({item}) => {
+          return <Card plant={item} />;
+        }}
+      />
+    </SafeAreaView>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
+const style = StyleSheet.create({
+  categoryContainer: {
+    flexDirection: 'row',
+    marginTop: 30,
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  categoryText: {fontSize: 16, color: 'grey', fontWeight: 'bold'},
+  categoryTextSelected: {
+    color: COLORS.green,
+    paddingBottom: 5,
+    borderBottomWidth: 2,
+    borderColor: COLORS.green,
+  },
+  card: {
+    height: 225,
+    backgroundColor: COLORS.light,
+    width,
+    marginHorizontal: 2,
+    borderRadius: 10,
+    marginBottom: 20,
+    padding: 15,
+  },
+  header: {
+    marginTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  searchContainer: {
+    height: 50,
+    backgroundColor: COLORS.light,
+    borderRadius: 10,
     flex: 1,
-
-    justifyContent: 'space-evenly',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  centeredContent: {
-    borderRadius: 10,
+  input: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    flex: 1,
+    color: COLORS.dark,
   },
-  receivingZone: {
-    height: (Dimensions.get('window').width / 4) - 12,
+  sortBtn: {
+    marginLeft: 10,
+    height: 50,
+    width: 50,
     borderRadius: 10,
-    width: (Dimensions.get('window').width / 4) - 12,
+    backgroundColor: COLORS.green,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 5
   },
-  receiving: {
-    borderColor: 'red',
-    borderWidth: 2,
-  },
-  draggableBox: {
-    width: (Dimensions.get('window').width / 4) - 12,
-    height: (Dimensions.get('window').width / 4) - 12,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 5
-  },
-  dragging: {
-    opacity: 0.2,
-  },
-  hoverDragging: {
-    borderColor: 'magenta',
-    borderWidth: 2,
-  },
-  receivingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly'
-  },
-  itemSeparator: {//아래 리스트 안 사각형 간격
-    height: 12
-  },
-  draxListContainer: {
-    padding: 5,
-    height: 250
-  },
-  receivingZoneContainer: {
-    padding: 5,
-    height: 300,
-
-  },
-  textStyle: {
-    fontSize: 18
-  },
-  title:{ 
-    height:50,
-    backgroundColor: 'orange',
-    justifyContent: "center",
-    flexDirection: 'row',
-    alignItems: "center",
-  },
-  titleText:{
-    color:'white',
-    marginTop:10,
-    height:40,
-    fontSize:20,
-    textAlign:'center'
-    },
 });
+export default test;
