@@ -16,6 +16,7 @@ import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
+import useStore from '../../../../store/store'
 
 import {
   InputField,
@@ -27,12 +28,14 @@ import {
 } from '../../../../styles/AddPost';
 
 import { AuthContext } from '../../../utils/AuthProvider';
+import { configureStore } from '@reduxjs/toolkit';
 
 const AddPhotos = ({route}) => {
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const {setPhotoName,SetBody,SetPost} = useStore();
 
   const {user, logout} = useContext(AuthContext);
 
@@ -109,12 +112,13 @@ const AddPhotos = ({route}) => {
       Alert.alert(
         '게시물 업데이트 완료!',
       );
-
+      setPhotoName(imageUrl);
+      SetBody(body);
+      SetPost(post);
       setDeleted(true);
-
-
       setPost(null);
-      navigation.goBack()
+      
+      navigation.goBack();
     })
     .catch((error) => {
       console.log('Something went wrong with added post to firestore.', error);
