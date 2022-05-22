@@ -5,9 +5,11 @@ import firebase  from '@react-native-firebase/app';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
 import {FAB} from 'react-native-paper'
-
+import useStore from '../../../../store/store'
 const Album = ({navigation,route}) => {
   const [FolderData, setFolderdData] = useState(null);
+  const [Name, setName] = useState('');
+  const {FolderName} = useStore();
   const name = route.params.name
   const getFolder = async() => {
     const querySanp = await firestore()
@@ -24,8 +26,7 @@ const Album = ({navigation,route}) => {
 
   useEffect(() => {
     getFolder();
-    
-  }, []);
+  }, [FolderName]);
   const {uid} = route.params
 
   const RenderCard = ({item})=>{

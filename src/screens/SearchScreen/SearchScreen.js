@@ -1,24 +1,34 @@
-import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions} from 'react-native'
+import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,ScrollView} from 'react-native'
 import React,{useState,useEffect,useContext} from 'react'
 import SearchBar from "react-native-dynamic-search-bar";
 import firestore from '@react-native-firebase/firestore'
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import firebase  from '@react-native-firebase/app';
+import useStore from '../../../store/store';
+
 var { height, width } = Dimensions.get('window');
 
 const SearchScreen = (props) => {
+  const {Post} = useStore(); // 0522새로고침용
   const [posts,setPosts] = useState(null)
-  const [serachposts, searchsetPosts] = useState([]);
+  const [serachposts, searchsetPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
+  const [count, setcount] = useState(null);
 
+
+  const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
+  const [changepost,setchangePosts] = useState(null)
+  
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('posts').orderBy('postTime', 'desc').get()
     const allposts = querySanp.docs.map(docSnap=>docSnap.data())
    //  console.log(allusers)
-   setPosts(allposts)
+   setchangePosts(allposts)
 }
 
 const handleSearchTextChange =  async (text) => {
-  setSearchText(text);
+  
   try {
     const list = [];
 
@@ -55,9 +65,70 @@ const handleSearchTextChange =  async (text) => {
             comments,
           });
         });
-      });
+       
+      })
+      setchangePosts(list);
+      
+    if (loading) {
+      setLoading(false);
+    }
+  
+    console.log('Posts: ', posts);
+  } catch (e) {
+    console.log(e);
+  }
+  
+};
 
-    searchsetPosts(list);
+const TagList =  async (tags) => {
+  try {
+    const list = [];
+    
+    await firestore()
+      .collection('posts')
+      .where('tag', '==' , tags)
+      .orderBy('postTime', 'desc')
+      .get()
+      .then((querySnapshot) => {
+        // console.log('Total Posts: ', querySnapshot.size);
+        querySnapshot.forEach((doc) => {
+          const {
+            uid,
+            post,
+            postImg,
+            postTime,
+            tag,
+            likes,
+            comments,
+          } = doc.data();
+          list.push({
+            id: doc.id,
+            uid,
+            userName: 'Test Name',
+            userImg:
+              'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+            postTime: postTime,
+            tag,
+            post,
+            postImg,
+            liked: false,
+            likes,
+            comments,
+          });
+        });
+      }).then(() => {
+        
+        firestore()
+        .collection('tagcounts')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('counts')
+        .doc(tags)
+        .update({
+         count : 0
+        })
+      })
+     
+    setchangePosts(list);
 
     if (loading) {
       setLoading(false);
@@ -69,15 +140,15 @@ const handleSearchTextChange =  async (text) => {
   }
 };
 
-  
 useEffect(()=>{
     getPosts()
-},[])
+  },[Post])
 
   const RenderCard = ({item})=>{
     return (
+      
       <TouchableOpacity 
-        onPress={() => props.navigation.navigate('SNS', { postId: item.postId, fromUserProfile: true })}
+      onPress={() => props.navigation.navigate('SearchSnsScreen', { tag: item.tag, uid : item.uid, postimg : item.postImg, post: item.post, postTime : item.postTime })}
       >
       <View  style={[{ width: (width) / 3 }, { height: (width) / 3 }, { marginBottom: 2 }]}>
       <Image 
@@ -96,26 +167,66 @@ useEffect(()=>{
     )
 }
 
+
+
+
   return (
+    
     <View style={{ backgroundColor: 'white', flex: 1 }}>
     <View style={styles.serach}>
-      <SearchBar
-      value = {searchText}
-      placeholder="Search here"
-      onPress={() => alert("onPress")}
-      onChangeText={(text) => handleSearchTextChange(text)}
-    />
+    <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => getPosts()}>
+         
+         <Ionicons name="arrow-back" size={25} color="black" />
 
-       
+        </TouchableOpacity>
+      <SearchBar
+     
+      placeholder="Search here"      
+      onChangeText={(text) => handleSearchTextChange(text)}
+     
+    />
     </View>
+   
+    <View style={{flexDirection : 'row'}}>
+    <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator = {false}>
+    <TouchableOpacity style={styles.button} onPress={() => TagList()}>
+              <Text style={styles.userBtnTxt}>인기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[0])}>
+              <Text style={styles.userBtnTxt}>인물</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[1])}>
+              <Text style={styles.userBtnTxt}>배경</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[2])}>
+              <Text style={styles.userBtnTxt}>음식</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[3])}>
+              <Text style={styles.userBtnTxt}>동물</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[4])}>
+              <Text style={styles.userBtnTxt}>물건</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => TagList(tags[5])}>
+              <Text style={styles.userBtnTxt}>문화</Text>
+          </TouchableOpacity>
+          </ScrollView>
+    </View>
+  
+       
+    <View style={{marginTop : 10}}>
+      
     <FlatList 
-          data={posts}
+          data={changepost}
           horizontal={false}
           numColumns={3}
           renderItem={({item})=> {return <RenderCard item={item} />
         }}
          
         />
+        </View>
     </View>
   );
 };
@@ -124,7 +235,29 @@ export default SearchScreen;
 
 const styles = StyleSheet.create({
   serach: {
+    flexDirection : 'row',
     marginTop: 10,
     marginBottom: 10,
+  },
+  button: {
+    marginLeft : 10,
+    marginRight : 8,
+    width: 50,
+    height: 30,
+    backgroundColor: "#e1d4d2",
+    borderColor: 'orange',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderBottomColor:'#fff',
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  userBtnTxt: {
+    fontFamily: "DungGeunMo",
+    color: '#3e3e3e',
+    textAlign:'center',  
+    fontSize:15,
   },
 });

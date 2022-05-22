@@ -19,6 +19,7 @@ import ChatScreen from '../screens/ChatScreen/ChatScreen';
 import Header from '../Chat/Components/common/Header';
 import ChatNavigator from '../Chat/ChatNavigator'
 import SNSProfileScreen from '../screens/ProfileScreen/SNSprofileScreen'; 
+import SearchSnsScreen from '../screens/SearchScreen/SearchSnsScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -150,6 +151,42 @@ const ProfileStack = ({navigation}) => (
   
   
 );
+
+const SearchStack = ({navigation}) => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="SearchScreen"
+      component={SearchScreen}
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      name="SearchSnsScreen"
+      component={SearchSnsScreen}
+      options={{
+        title: '탐색',
+        headerTitleAlign: 'center',
+        headerStyle: {
+        backgroundColor: '#fff',
+        shadowColor: '#fff',
+        elevation: 0,
+                      
+            
+        },
+         headerBackTitleVisible: false,
+         headerBackImage: () => (
+         <View style={{marginLeft: 15}}>
+         <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+         </View>
+         ),
+         }}
+         />
+
+  </Stack.Navigator>
+  
+  
+);
 const AppStack = () => {
   const getTabBarVisibility = (route) => {
     const routeName = route.state
@@ -183,7 +220,7 @@ const AppStack = () => {
       
       <Tab.Screen
       name="Search"
-      component={SearchScreen}
+      component={SearchStack}
       options={{
         
         tabBarIcon: ({color,size}) => (

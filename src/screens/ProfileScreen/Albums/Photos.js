@@ -5,11 +5,11 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import firestore from '@react-native-firebase/firestore'
 import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
-
+import useStore from '../../../../store/store'
 var { height, width } = Dimensions.get('window');
 
 const Photos = ({route,navigation}) => {
-
+  const {PhotoName,Body,Post} = useStore();
   const [posts,setPosts] = useState([])
   const [serachposts, searchsetPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ const Photos = ({route,navigation}) => {
 
 useEffect(()=>{
     getPosts()
-},[])
+},[PhotoName,Post,Body])
 
 const RenderCard = ({item})=>{
     return (
