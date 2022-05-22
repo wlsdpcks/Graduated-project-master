@@ -11,9 +11,6 @@ const store = (set => ({
     placeY: '', //미니룸 아이템 배치 좌표저장용
     setplaceY: (input) => set({placeY:input}), //미니룸 아이템 배치 좌표저장용
 
-    isPoint: '', //미니룸 아이템 배치 좌표저장용
-    setPoint: (input) => set({isPoint:input}), //미니룸 아이템 배치 좌표저장용
-
     name:'',// 에딧프로필 수정용
     age:'',// 에딧프로필 수정용
     about:'',// 에딧프로필 수정용
