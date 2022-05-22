@@ -10,6 +10,8 @@ const AddFolder = ({navigation,route}) => {
     const rname = route.params.name
 const [name, setName] = useState(null);
 const {FolderName,setFolderName} = useStore();
+const {uid} = route.params
+
 const SubmitFolder = async () => {
     
     
@@ -24,7 +26,7 @@ const SubmitFolder = async () => {
     .then(() => {
       console.log('Groups Added!');
       setFolderName(name);
-      navigation.navigate('Album', {name : rname});
+      navigation.navigate('Album', {uid : uid, name : rname});
      
         
    

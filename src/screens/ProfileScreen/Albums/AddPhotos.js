@@ -86,12 +86,14 @@ const AddPhotos = ({route}) => {
     .doc(firebase.auth().currentUser.uid)
     .collection('groups').doc(route.params.foldername).collection('photos').doc(currentPhotoId)
     .set({
-  
+      uid : user.uid,
       postid : currentPhotoId,
       post: post,
       body: body,
       img: imageUrl,
       postTime: firestore.Timestamp.fromDate(new Date()),
+      likescount : 0,
+      commentcount : 0,
       
     })
     .then(() => {
@@ -100,11 +102,13 @@ const AddPhotos = ({route}) => {
         .doc(firebase.auth().currentUser.uid)
         .collection('groups').doc('전체사진').collection('photos').doc(currentPhotoId)
         .set({
-      
+          uid : user.uid,
           postid : currentPhotoId,
           post: post,
           body: body,
           img: imageUrl,
+          likescount : 0,
+          commentcount : 0,
           postTime: firestore.Timestamp.fromDate(new Date()),
           
         })
@@ -144,7 +148,7 @@ const AddPhotos = ({route}) => {
     setUploading(true);
     setTransferred(0);
 
-    const storageRef = storage().ref(`posts/${filename}`);
+    const storageRef = storage().ref(`AlbumPhotos/${filename}`);
     const task = storageRef.putFile(uploadUri);
 
     // Set transferred state

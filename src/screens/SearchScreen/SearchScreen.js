@@ -12,10 +12,12 @@ const SearchScreen = (props) => {
   const [serachposts, searchsetPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
-  
+  const [count, setcount] = useState(null);
+
+
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
   const [changepost,setchangePosts] = useState(null)
-
+  
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('posts').orderBy('postTime', 'desc').get()
     const allposts = querySanp.docs.map(docSnap=>docSnap.data())
@@ -24,6 +26,7 @@ const SearchScreen = (props) => {
 }
 
 const handleSearchTextChange =  async (text) => {
+  
   try {
     const list = [];
 
@@ -60,24 +63,25 @@ const handleSearchTextChange =  async (text) => {
             comments,
           });
         });
-      });
-
+       
+      })
       setchangePosts(list);
-
+      
     if (loading) {
       setLoading(false);
     }
-
+  
     console.log('Posts: ', posts);
   } catch (e) {
     console.log(e);
   }
+  
 };
 
 const TagList =  async (tags) => {
   try {
     const list = [];
-
+    
     await firestore()
       .collection('posts')
       .where('tag', '==' , tags)
@@ -110,7 +114,18 @@ const TagList =  async (tags) => {
             comments,
           });
         });
-      });
+      }).then(() => {
+        
+        firestore()
+        .collection('tagcounts')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('counts')
+        .doc(tags)
+        .update({
+         count : 0
+        })
+      })
+     
     setchangePosts(list);
 
     if (loading) {
@@ -125,10 +140,11 @@ const TagList =  async (tags) => {
 
 useEffect(()=>{
     getPosts()
-},[Post])
+  },[Post])
 
   const RenderCard = ({item})=>{
     return (
+      
       <TouchableOpacity 
         
       >
@@ -153,6 +169,7 @@ useEffect(()=>{
 
 
   return (
+    
     <View style={{ backgroundColor: 'white', flex: 1 }}>
     <View style={styles.serach}>
     <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => getPosts()}>
@@ -161,6 +178,7 @@ useEffect(()=>{
 
         </TouchableOpacity>
       <SearchBar
+     
       placeholder="Search here"      
       onChangeText={(text) => handleSearchTextChange(text)}
      

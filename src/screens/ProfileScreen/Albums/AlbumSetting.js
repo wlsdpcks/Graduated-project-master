@@ -11,7 +11,8 @@ import ActionButton from 'react-native-action-button';
 
 
 const Album = ({navigation,route}) => {
-    
+        const {uid} = route.params
+
         const name = route.params.name
         const [FolderData, setFolderdData] = useState(null);
        
@@ -58,7 +59,7 @@ const Album = ({navigation,route}) => {
             <Text style={styles.panelButtonTitle}>그룹 만들기</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.panelButton} onPress={() => navigation.navigate('AddFolder', {name : name} )}>
+            style={styles.panelButton} onPress={() => navigation.navigate('AddFolder', {uid : uid, name : name} )}>
             <Text style={styles.panelButtonTitle}>폴더 만들기</Text>
           </TouchableOpacity>
           <TouchableOpacity

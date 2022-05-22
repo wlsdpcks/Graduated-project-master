@@ -7,10 +7,13 @@ import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
+import useStore from '../../../../store/store'
 
 var { height, width } = Dimensions.get('window');
 
 const PhotoDeatil = ({route,navigation}) => {
+  const {PhotoName,Body,Post} = useStore();
+
   const [refreshing, setRefreshing] = useState(false);
   const [posts,setPosts] = useState([])
   const [deleted, setDeleted] = useState(false);
