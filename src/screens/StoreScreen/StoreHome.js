@@ -7,7 +7,7 @@ import {
   FlatList,
   Image,
   Dimensions
-  ,TouchableOpacity,
+  ,TouchableOpacity
 } from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -15,7 +15,7 @@ import COLORS from '../StoreScreen/colors';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
-
+import Toast, {DURATION} from 'react-native-easy-toast'
 
 const width = Dimensions.get('window').width / 2 - 30;
 
@@ -172,7 +172,7 @@ const StoreHome = ({navigation}) => {
     <SafeAreaView
       style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
       <View style={style.header}>
-        <View>
+        <View>        
           <Text style={{fontSize: 25, fontWeight: 'bold'}}>Welcome to</Text>
           <Text style={{fontSize: 38, color: COLORS.green, fontWeight: 'bold'}}>
             MiniRoom Shop

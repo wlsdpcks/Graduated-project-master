@@ -38,6 +38,7 @@
     "react-native-config": "^1.4.5",
     "react-native-drax": "^0.9.3",
     "react-native-dynamic-search-bar": "^2.0.2",
+    "react-native-easy-toast": "^2.0.0",
     "react-native-elements": "^3.4.2",
     "react-native-encrypted-storage": "^4.0.2",
     "react-native-flipper": "^0.145.0",
