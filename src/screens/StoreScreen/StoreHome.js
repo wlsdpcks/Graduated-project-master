@@ -1,4 +1,4 @@
-import React,{ useState,useEffect} from 'react';
+import React,{ useState,useEffect,useContext} from 'react';
 import {
   View,
   SafeAreaView,
@@ -13,28 +13,74 @@ import {TextInput} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import COLORS from '../StoreScreen/colors';
 import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../../utils/AuthProvider';
+import useStore from '../../../store/store';
+
 
 const width = Dimensions.get('window').width / 2 - 30;
 
-const test = ({navigation}) => {
-  const usersCollection = firestore().collection('shops').doc('shopitems').collection('tool');  
+const StoreHome = ({navigation}) => {
+  const usersCollection = firestore().collection('shops').doc('shopitems').collection('tool');
+  const usersCollectionM = firestore().collection('shops').doc('shopitems').collection('minime');
+  const usersCollectionB = firestore().collection('shops').doc('shopitems').collection('background');
   const categories = ['TOOL', 'MINIME', 'BACKGROUND'];
+  
+  const {user, logout} = useContext(AuthContext);
+  const {isPoint,setPoint} = useStore();
   const [catergoryIndex, setCategoryIndex] = useState(0);
   const [tool, setTool] = useState();
+  const [minime, setminime] = useState();
+  const [Background, setBackground] = useState();
+  const [userData, setUserData] = useState(null);
   
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
   const getShopData = async () => {
     try {
       const data = await usersCollection.get();
       setTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      console.log('T');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const getShopDataM = async () => {
+    try {
+      const data = await usersCollectionM.get();
+      setminime(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      console.log('M');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const getShopDataB = async () => {
+    try {
+      const data = await usersCollectionB.get();
+      setBackground(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      console.log('B');
     } catch (error) {
       console.log(error.message);
     }
   };
   useEffect(() => {
     getShopData();
-  }, []);
+    getShopDataM();
+    getShopDataB();
+    getUser();
+  }, [isPoint]);
   const CategoryList = () => {
     return (
+      
       <View style={style.categoryContainer}>
         {categories.map((item, index) => (
           <TouchableOpacity
@@ -132,6 +178,7 @@ const test = ({navigation}) => {
             MiniRoom Shop
           </Text>
         </View>
+        <Text>Point {userData ? userData.point : ''}</Text>
       </View>
       <View style={{marginTop: 30, flexDirection: 'row'}}>
         <View style={style.searchContainer}>
@@ -143,7 +190,6 @@ const test = ({navigation}) => {
         </View>
       </View>
       <CategoryList />
-      
       <FlatList
         columnWrapperStyle={{justifyContent: 'space-between'}}
         showsVerticalScrollIndicator={false}
@@ -152,7 +198,13 @@ const test = ({navigation}) => {
           paddingBottom: 50,
         }}
         numColumns={2}
-        data={tool}
+        data={
+          (function() {
+            if (catergoryIndex === 0) return tool;
+            if (catergoryIndex === 1) return minime;
+            if (catergoryIndex === 2) return Background;
+          })()
+        }
         renderItem={({item}) => {
           return <Card plant={item} />;
         }}
@@ -213,4 +265,4 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
 });
-export default test;
+export default StoreHome;

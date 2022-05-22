@@ -1,12 +1,42 @@
-import React from 'react';
+import React,{useState,useEffect,useContext} from 'react';
 import {View, SafeAreaView, Image, Text, StyleSheet,ScrollView,TouchableOpacity,Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import COLORS from '../StoreScreen/colors';
 import firebase from '@react-native-firebase/app'
 import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../../utils/AuthProvider';
+import useStore from '../../../store/store';
+
+
 const DetailsScreen = ({navigation, route}) => {  
+const {user, logout} = useContext(AuthContext);
+const {isPoint,setPoint} = useStore();
+const [userData, setUserData] = useState(null);
+
 const plant = route.params;
-const addTool = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool');
+const [Item, setItem] = useState('');
+const Checktype = () => {
+  if(plant.type=='tool') return setItem('tool');
+  if(plant.type=='minime') return setItem('minime');
+  if(plant.type=='background') return setItem('background');
+  }
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+useEffect(() => {
+  Checktype();
+  getUser();
+}, []);
+//const addTool = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool');
 
 const CheckBuy = () => {
     Alert.alert(
@@ -20,15 +50,27 @@ const CheckBuy = () => {
     {cancelable:false}
       );
 }
+const updatePoint = () => {
+  firestore()
+    .collection('users')
+    .doc(user.uid)
+    .update({
+      point:userData.point-plant.price,
+    })
+    setPoint(userData.point-plant.price);
+  }
 const addItem = async () => {
     try {
-        await addTool.add({
+      console.log(Item);
+        await firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection(`${Item}`).add({
         name: plant.name,
         price: plant.price,
         address: plant.address,
-        
-      });
+      })
+      updatePoint();
+      console.log(`update 완료`);
       console.log(`이름 : ${plant.name} 가격: ${plant.price} 주소 : ${plant.address} `);
+      navigation.navigate('StoreHome');
     
     } catch (error) {
       console.log(error.message);
@@ -45,8 +87,10 @@ const addItem = async () => {
     <View style={{flex:1}}>
       <View style={style.header}>
         <Icon name="arrow-back" size={28} onPress={() => navigation.goBack()} />
+        <Text>Point {userData ? userData.point : ''}</Text>
       </View>
       <View style={style.imageContainer}>
+        
         <Image source={{uri:plant.address}} style={{resizeMode: 'contain', flex: 1,aspectRatio:1}} />
       </View>
       <View style={style.detailsContainer}>
