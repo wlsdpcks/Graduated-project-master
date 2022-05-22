@@ -16,6 +16,7 @@ import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
+import useStore from '../../../store/store';
 
 import {
   InputField,
@@ -33,7 +34,7 @@ const AddPostScreen = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
-
+  const {Post,SetPost} = useStore(); //0522새로고침용 
   const {user, logout} = useContext(AuthContext);
 
   const [image, setImage] = useState(null);
@@ -77,7 +78,7 @@ const AddPostScreen = () => {
     const imageUrl = await uploadImage();
     console.log('Image Url: ', imageUrl);
     console.log('Post: ', post);
-
+    SetPost(post);
     firestore()
     .collection('posts')
     .add({

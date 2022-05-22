@@ -20,6 +20,7 @@ import firestore from '@react-native-firebase/firestore';
 import  firebase from '@react-native-firebase/app';
 import {Container} from '../../../styles/FeedStyles';
 import { AuthContext } from '../../utils/AuthProvider';
+import useStore from '../../../store/store';
 
 
 
@@ -29,7 +30,7 @@ const SnsScreen = ({navigation,route}) => {
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
-  
+  const {Post,SetPost} = useStore(); // 0522새로고침용
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -92,7 +93,7 @@ const SnsScreen = ({navigation,route}) => {
   useEffect(() => {
     fetchPosts();
     setDeleted(false);
-  }, [deleted,refreshing]);
+  }, [deleted,refreshing,Post]);
 
   const handleDelete = (postId) => {
     Alert.alert(
