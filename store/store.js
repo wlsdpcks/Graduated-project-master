@@ -3,13 +3,17 @@ import { devtools } from "zustand/middleware";
 
 const store = (set => ({
     tooladdress: '', //상점 아이템 url주소값용
-    settooladdress: (input) => set({ istooladdress: input }),//상점 아이템 url주소값용
+    settooladdress: (input) => set({ tooladdress: input }),//상점 아이템 url주소값용
     Backaddress: '', //상점 아이템 url주소값용
     setBacksaddress: (input) => set({ Backaddress: input }),//상점 아이템 url주소값용
     placeX: '', //미니룸 아이템 배치 좌표저장용
     setplaceX: (input) => set({placeX:input}), //미니룸 아이템 배치 좌표저장용
     placeY: '', //미니룸 아이템 배치 좌표저장용
     setplaceY: (input) => set({placeY:input}), //미니룸 아이템 배치 좌표저장용
+
+    isPoint: '', //미니룸 아이템 배치 좌표저장용
+    setPoint: (input) => set({isPoint:input}), //미니룸 아이템 배치 좌표저장용
+
     FolderName: '', //상점 아이템 url주소값용
     setFolderName: (input) => set({ FolderName: input }),//상점 아이템 url주소값용
     PhotoName: '', //상점 아이템 url주소값용

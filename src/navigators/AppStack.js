@@ -19,7 +19,9 @@ import ChatScreen from '../screens/ChatScreen/ChatScreen';
 import Header from '../Chat/Components/common/Header';
 import ChatNavigator from '../Chat/ChatNavigator'
 import SNSProfileScreen from '../screens/ProfileScreen/SNSprofileScreen'; 
+import Store from '../screens/StoreScreen/Store';
 import SearchSnsScreen from '../screens/SearchScreen/SearchSnsScreen';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -268,7 +270,7 @@ const AppStack = () => {
       />
           <Tab.Screen
       name="STORE"
-      component={StoreScreen}
+      component={Store}
       options={{
         
         tabBarIcon: ({size,color}) => (
