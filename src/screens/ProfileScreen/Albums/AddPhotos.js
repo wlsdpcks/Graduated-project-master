@@ -16,6 +16,7 @@ import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
+import useStore from '../../../../store/store'
 
 import {
   InputField,
@@ -27,12 +28,14 @@ import {
 } from '../../../../styles/AddPost';
 
 import { AuthContext } from '../../../utils/AuthProvider';
+import { configureStore } from '@reduxjs/toolkit';
 
 const AddPhotos = ({route}) => {
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const {setPhotoName,SetBody,SetPost} = useStore();
 
   const {user, logout} = useContext(AuthContext);
 
@@ -71,8 +74,8 @@ const AddPhotos = ({route}) => {
       setImage(imageUri);
     });
   };
-
   const submitPost = async () => {
+    const currentPhotoId = Math.floor(100000 + Math.random() * 9000).toString();
     const currentuserId = firebase.auth().currentUser.uid
     const imageUrl = await uploadImage();
     console.log('Image Url: ', imageUrl);
@@ -81,27 +84,31 @@ const AddPhotos = ({route}) => {
     firestore()
     .collection('Albums')
     .doc(firebase.auth().currentUser.uid)
-    .collection('groups').doc(route.params.foldername).collection('photos')
-    .add({
-  
-      
+    .collection('groups').doc(route.params.foldername).collection('photos').doc(currentPhotoId)
+    .set({
+      uid : user.uid,
+      postid : currentPhotoId,
       post: post,
       body: body,
       img: imageUrl,
       postTime: firestore.Timestamp.fromDate(new Date()),
+      likescount : 0,
+      commentcount : 0,
       
     })
     .then(() => {
         firestore()
         .collection('Albums')
         .doc(firebase.auth().currentUser.uid)
-        .collection('groups').doc('전체사진').collection('photos')
-        .add({
-      
-          
+        .collection('groups').doc('전체사진').collection('photos').doc(currentPhotoId)
+        .set({
+          uid : user.uid,
+          postid : currentPhotoId,
           post: post,
           body: body,
           img: imageUrl,
+          likescount : 0,
+          commentcount : 0,
           postTime: firestore.Timestamp.fromDate(new Date()),
           
         })
@@ -109,12 +116,13 @@ const AddPhotos = ({route}) => {
       Alert.alert(
         '게시물 업데이트 완료!',
       );
-
+      setPhotoName(imageUrl);
+      SetBody(body);
+      SetPost(post);
       setDeleted(true);
-
-
       setPost(null);
-      navigation.goBack()
+      
+      navigation.goBack();
     })
     .catch((error) => {
       console.log('Something went wrong with added post to firestore.', error);
@@ -140,7 +148,7 @@ const AddPhotos = ({route}) => {
     setUploading(true);
     setTransferred(0);
 
-    const storageRef = storage().ref(`posts/${filename}`);
+    const storageRef = storage().ref(`AlbumPhotos/${filename}`);
     const task = storageRef.putFile(uploadUri);
 
     // Set transferred state

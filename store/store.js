@@ -14,6 +14,16 @@ const store = (set => ({
     isPoint: '', //미니룸 아이템 배치 좌표저장용
     setPoint: (input) => set({isPoint:input}), //미니룸 아이템 배치 좌표저장용
 
+    FolderName: '', //상점 아이템 url주소값용
+    setFolderName: (input) => set({ FolderName: input }),//상점 아이템 url주소값용
+    PhotoName: '', //상점 아이템 url주소값용
+    setPhotoName: (input) => set({ Photo: input }),//상점 아이템 url주소값용
+    Post: '', //상점 아이템 url주소값용
+    SetPost: (input) => set({ Post: input }),//상점 아이템 url주소값용
+    Body: '', //상점 아이템 url주소값용
+    SetBody: (input) => set({ Body: input }),//상점 아이템 url주소값용
+    
+    
     name:'',// 에딧프로필 수정용
     age:'',// 에딧프로필 수정용
     about:'',// 에딧프로필 수정용

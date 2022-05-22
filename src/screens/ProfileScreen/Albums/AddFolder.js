@@ -3,11 +3,15 @@ import React,{useState,useEffect,useContext} from 'react'
 import SearchBar from "react-native-dynamic-search-bar";
 import firestore from '@react-native-firebase/firestore'
 import firebase  from '@react-native-firebase/app';
+import useStore from '../../../../store/store'
 
 
 const AddFolder = ({navigation,route}) => {
     const rname = route.params.name
 const [name, setName] = useState(null);
+const {FolderName,setFolderName} = useStore();
+const {uid} = route.params
+
 const SubmitFolder = async () => {
     
     
@@ -21,7 +25,8 @@ const SubmitFolder = async () => {
     })
     .then(() => {
       console.log('Groups Added!');
-      navigation.navigate('Album', {name : rname})
+      setFolderName(name);
+      navigation.navigate('Album', {uid : uid, name : rname});
      
         
    
