@@ -107,7 +107,9 @@ export const AuthProvider = ({children}) => {
             console.log({error});
           }
         },*/
+        
         register: async (email, password,phone,name,age,birthday,about,uid) => { 
+          const currentMiniroomId = Math.floor(100000 + Math.random() * 9000).toString();
           try {
             await auth().createUserWithEmailAndPassword(email, password)
             .then(() => {
