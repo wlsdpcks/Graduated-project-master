@@ -1,8 +1,9 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { View, Text,TouchableOpacity,FlatList,SafeAreaView} from 'react-native';
 import GuestBookInput from './GuestBookInput';
 import GuestPostCard from '../../../utils/GuestPostCard';
 import {Container} from '../../../../styles/FeedStyles';
+import firestore from '@react-native-firebase/firestore';
 
 
 const Posts=[
@@ -31,14 +32,49 @@ const Posts=[
 ];
 
 const Weblog = () => {
+  const[guestBook,setguestBook]=useState(null);
+  const[loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    const fetchGuestbook = async()=>{
+     try{
+       const list =[];
+       await firestore()
+       .collection('guestbook')
+       .get()
+       .then((querySnapshot)=>{
+         querySnapshot.forEach(doc=>{
+           const {post,userId,postTime} = doc.data();
+           list.push({
+            id:doc.id,
+            userId,
+            postTime:postTime,
+            post,
+         });
+        });
+      });
+
+      setguestBook(list);
+      if (loading){
+        setLoading(false);
+      }
+      console.log('guestbook:',guestBook);
+
+     } catch(e){
+       console.log(e);
+     }
+    }
+    fetchGuestbook();
+  },[]);
 
     return (
         <Container>
         <GuestBookInput/>
         <FlatList
-        data={Posts}
+        data={guestBook}
         renderItem={({item})=> <GuestPostCard item={item}/>}
         keyExtractor={item =>item.id}
+        showsVerticalScrollIndicator={false}
         />
         </Container>
   );
