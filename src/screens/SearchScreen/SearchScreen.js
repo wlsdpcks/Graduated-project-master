@@ -3,9 +3,7 @@ import React,{useState,useEffect,useContext} from 'react'
 import SearchBar from "react-native-dynamic-search-bar";
 import firestore from '@react-native-firebase/firestore'
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
-
 var { height, width } = Dimensions.get('window');
 
 const SearchScreen = (props) => {
@@ -148,7 +146,7 @@ useEffect(()=>{
     return (
       
       <TouchableOpacity 
-      onPress={() => props.navigation.navigate('SearchSnsScreen', { tag: item.tag, uid : item.uid, postimg : item.postImg, post: item.post, postTime : item.postTime })}
+        
       >
       <View  style={[{ width: (width) / 3 }, { height: (width) / 3 }, { marginBottom: 2 }]}>
       <Image 
@@ -217,7 +215,6 @@ useEffect(()=>{
   
        
     <View style={{marginTop : 10}}>
-      
     <FlatList 
           data={changepost}
           horizontal={false}

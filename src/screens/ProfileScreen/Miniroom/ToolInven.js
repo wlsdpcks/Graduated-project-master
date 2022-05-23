@@ -31,6 +31,7 @@ const ToolInven = () => {
   const pushTool =(address) => {
     firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').add({address:address,getx:'',gety:''});
     settooladdress(address);
+    console.log('추가완료');
   }
   return (
     <GestureHandlerRootView

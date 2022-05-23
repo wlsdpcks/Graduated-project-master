@@ -20,26 +20,32 @@ const Miniroom = () => {
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');  
   const {tooladdress,settooladdress,Backaddress} = useStore();
   const [tool, setTool] = useState();
-  const [Back, setBack] = useState();
+  const [Back, setBack] = useState(null);
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
       setBack(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const getTool = async () => {
+    try {
       const datatool = await usersToolCollection.get();
       setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
-      console.log(Back[Back.length-1].address);
     } catch (error) {
       console.log(error.message);
     }
   };
   useEffect(() => {
     getBackgroundData();
-  }, [tooladdress]);
+    getTool();
+  }, [tooladdress,Backaddress]);
   const getBack = a => {
     if(!a){
     return <Text>없어용</Text>
   } return <View>
-                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back[0].address}`}}/> 
+                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back[2].address}`}}/> 
 </View>
   }
   return (
