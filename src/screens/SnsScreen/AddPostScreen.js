@@ -81,7 +81,6 @@ const AddPostScreen = () => {
     console.log('Image Url: ', imageUrl);
     console.log('Post: ', post);
     SetPost(post);
-
     firestore()
     .collection('posts')
     .add({

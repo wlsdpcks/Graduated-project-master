@@ -15,7 +15,14 @@ export const Card = styled.View`
     
 `;
 
+
 export const UserInfo = styled.View`
+    flex-direction: row;
+
+    padding: 15px;
+`;
+
+export const UserInfoGuest = styled.View`
     flex-direction: row;
     justify-content: flex-start;
     padding: 15px;
@@ -27,10 +34,21 @@ export const UserImg = styled.Image`
     border-radius: 25px;
 `;
 
+export const UserContainerGuest= styled.View`
+    flex-direction: column;
+    justify-content: flex-start;
+`;
+
 export const UserInfoText = styled.View`
     flex-direction: column;
     justify-content: center;
     margin-left: 10px;
+`;
+export const UserInfoTextGuest = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 10px;
+    width:315px;
 `;
 
 export const UserName = styled.Text`
@@ -51,6 +69,15 @@ export const PostText = styled.Text`
     padding-left: 15px;
     padding-right: 15px;
     margin-bottom: 15px;
+`;
+
+export const PostTextGuest = styled.Text`
+    font-size: 14px;
+    font-family: 'Lato-Regular';
+    margin-left:15px;
+    margin-top:10px;
+
+
 `;
 
 export const PostImg = styled.Image`
