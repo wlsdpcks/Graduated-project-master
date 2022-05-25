@@ -29,11 +29,12 @@ const MusicInven = () => {
   useEffect(() => {
     getShopData();
   }, []);
-  const AddBackground = (address2) => {
-    addBackground.collection('background').add({address:address2});
+  const AddBackground = (newaddress) => {
+    addBackground.collection('background').doc('test').update({address:newaddress});
+    //addBackground.collection('background').add({address:newaddress});
     console.log('저장완료');  
-    console.log(address2);
-    setBacksaddress(address2);
+    console.log(newaddress);
+    setBacksaddress(newaddress);
   }
   return (
     <GestureHandlerRootView
