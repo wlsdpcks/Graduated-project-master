@@ -7,7 +7,7 @@ import firestore from '@react-native-firebase/firestore';
 
 
 const Posts=[
-  {
+  {    
     id:'1',
     userName:'yejin',
     userImg: require('../../../../assets/images/freestyleY.jpg'),
