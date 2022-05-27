@@ -16,7 +16,7 @@ import firebase from '@react-native-firebase/app'
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
-
+import SelectDropdown from 'react-native-select-dropdown'
 import {
   InputField,
   InputWrapper,
@@ -27,19 +27,22 @@ import {
 } from '../../../styles/AddPost';
 
 import { AuthContext } from '../../utils/AuthProvider';
+import useStore from '../../../store/store';
 
 const AddPostScreen = () => {
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
-
+  const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
   const {user, logout} = useContext(AuthContext);
+  const {Post,SetPost} = useStore(); //0522새로고침용 
 
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [post, setPost] = useState([null]);
+  
   const [tag, setTag] = useState(null);
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -77,7 +80,7 @@ const AddPostScreen = () => {
     const imageUrl = await uploadImage();
     console.log('Image Url: ', imageUrl);
     console.log('Post: ', post);
-
+    SetPost(post);
     firestore()
     .collection('posts')
     .add({
@@ -176,23 +179,35 @@ const AddPostScreen = () => {
           onChangeText={(content) => setPost(content)}
         />
         </View>
-        <InputField
-          placeholder="게시물 주제를 작성하세요!"
-          multiline
-          numberOfLines={2}
-          value={tag}
-          onChangeText={(content) => setTag(content)}
-        />
+        <Text style={{marginTop : 20,marginBottom : 20}}>게시물의 주제를 선택하세요</Text>
+        <SelectDropdown
+           data={tags}
+           onSelect={(selectedItem, index) => {
+            setTag(selectedItem)
+           }}
+           buttonTextAfterSelection={(selectedItem, index) => {
+      // text represented after item is selected
+      // if data array is an array of objects then return selectedItem.property to render after item is selected
+      return selectedItem
+   }}
+   rowTextForSelection={(item, index) => {
+      // text represented for each item in dropdown
+      // if data array is an array of objects then return item.property to represent item in dropdown
+      return item
+   }}
+/>
         {uploading ? (
           <StatusWrapper>
             <Text>{transferred} % Completed!</Text>
             <ActivityIndicator size="large" color="#0000ff" />
           </StatusWrapper>
         ) : (
+          <View style={{marginTop : 20}}>
           <SubmitBtn onPress={submitPost}    >
-            <SubmitBtnText>Post </SubmitBtnText>
+            <SubmitBtnText styles>Post </SubmitBtnText>
             
           </SubmitBtn>
+          </View>
         )}
       </InputWrapper>
       <ActionButton buttonColor="#FF6347">

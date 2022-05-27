@@ -10,6 +10,7 @@ const Request = () => {
   const {user, logout} = useContext(AuthContext);
   const [requsetData, setRequsetData] = useState(null);
   const [deleted, setDeleted] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const navigation = useNavigation();
 
@@ -30,6 +31,19 @@ const Request = () => {
 
     const allrequests = querySanp.docs.map(docSnap=>docSnap.data())
     setRequsetData(allrequests)
+  }
+
+  const getUser = async() => {
+    await firestore()
+    .collection('users')
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
   }
   const FriendRequestCheck = (item) => {
     Alert.alert(
@@ -67,6 +81,19 @@ const Request = () => {
       })
       .then(() => {
         firestore()
+      .collection('friends')
+      .doc(item.uid)
+      .collection('friendsinfo')
+      .doc(firebase.auth().currentUser.uid)
+      .set({
+  
+        uid: firebase.auth().currentUser.uid,
+        name: userData.name,
+        sname: '별명',
+        birthday: userData.birthday,
+        userimg: userData.userImg,
+      }).then(() => {
+        firestore()
       .collection('Request')
       .doc(firebase.auth().currentUser.uid)
       .collection('RequestInfo')
@@ -83,6 +110,7 @@ const Request = () => {
   
         
       })
+    })
       .catch((error) => {
         console.log('error.', error);
       });
@@ -90,6 +118,7 @@ const Request = () => {
   };
   useEffect(() => {
     getRequset();
+    getUser();
     setDeleted(false);
   }, [deleted,refreshing]);
 

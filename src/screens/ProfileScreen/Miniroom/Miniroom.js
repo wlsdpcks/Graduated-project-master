@@ -12,13 +12,15 @@ import useStore from '../../../../store/store';
 import firestore from '@react-native-firebase/firestore'; 
 import firebase  from '@react-native-firebase/app';
 
-
+const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AlbumPhotos%2F4a4adfa9-f256-4de1-bebc-e1e9bc5e51eb1653104498839.jpg?alt=media&token=e35641fa-899a-4313-86bd-2db462496327';
 const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
 const Miniroom = () => {  
-  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background'); 
+  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background');
+  const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');  
   const {tooladdress,settooladdress,Backaddress} = useStore();
-  const [Back, setBack] = useState();
+  const [tool, setTool] = useState();
+  const [Back, setBack] = useState(null);
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
@@ -27,22 +29,39 @@ const Miniroom = () => {
       console.log(error.message);
     }
   };
+  const getTool = async () => {
+    try {
+      const datatool = await usersToolCollection.get();
+      setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   useEffect(() => {
     getBackgroundData();
-  }, []);
+    getTool();
+  }, [tooladdress,Backaddress]);
   const getBack = a => {
     if(!a){
     return <Text>없어용</Text>
   } return <View>
-                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Backaddress}`}}/> 
+                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back[Back.length-1].address : '없어용'}`}}/> 
 </View>
   }
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
-          <DraxProvider> 
-            {getBack(Back)}
-            <MiniroomBox test={tooladdress}/>
-    </DraxProvider>
+          <View style={{flex:1,}}>
+          <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back[0].address : initial}`}}/> 
+          
+            <View style={{flexWrap:"wrap"}}>
+            {
+        tool?.map((row, idx) => {
+         {
+            return  <MiniroomBox test={row.address} x={row.getx} y={row.gety}></MiniroomBox>;} 
+      })
+      }
+      </View>
+    </View>
         <View style={styles.miniroom}>
         <Tab.Navigator>
       <Tab.Screen name="가구" component={ToolInven} />
