@@ -3,12 +3,9 @@ import React,{useState,useEffect,useContext} from 'react'
 import SearchBar from "react-native-dynamic-search-bar";
 import firestore from '@react-native-firebase/firestore'
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
-
-
+import { VirtualizedScrollView } from 'react-native-virtualized-view';
 var { height, width } = Dimensions.get('window');
 
 const SearchScreen = (props) => {
@@ -17,12 +14,8 @@ const SearchScreen = (props) => {
   const [serachposts, searchsetPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
-
-  
-  const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
-  const [changepost,setchangePosts] = useState(null)
-
   const [count, setcount] = useState(null);
+  const [Bestposts,setBestPosts] = useState(null)
 
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
@@ -34,9 +27,20 @@ const SearchScreen = (props) => {
    //  console.log(allusers)
    setchangePosts(allposts)
 }
+const getBestPosts = async ()=>{
+  const querySanp = await firestore()
+  .collection('posts')
+  .where('tag', '==' , '동물')
+  .orderBy('postTime', 'desc')
+  .get()
+  const allposts = querySanp.docs.map(docSnap=>docSnap.data())
+ //  console.log(allusers)
+ setBestPosts(allposts)
+}
+
 
 const handleSearchTextChange =  async (text) => {
-
+  
   try {
     const list = [];
 
@@ -88,29 +92,10 @@ const handleSearchTextChange =  async (text) => {
   
 };
 
-
-      setchangePosts(list);
-
-    if (loading) {
-      setLoading(false);
-    }
-
-    console.log('Posts: ', posts);
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-const TagList =  async (tags) => {
-  try {
-    const list = [];
-
-
 const TagList =  async (tags) => {
   try {
     const list = [];
     
-
     await firestore()
       .collection('posts')
       .where('tag', '==' , tags)
@@ -143,9 +128,6 @@ const TagList =  async (tags) => {
             comments,
           });
         });
-
-      });
-
       }).then(() => {
         
         firestore()
@@ -158,7 +140,6 @@ const TagList =  async (tags) => {
         })
       })
      
-
     setchangePosts(list);
 
     if (loading) {
@@ -173,17 +154,14 @@ const TagList =  async (tags) => {
 
 useEffect(()=>{
     getPosts()
+    getBestPosts()
   },[Post])
 
   const RenderCard = ({item})=>{
     return (
       
       <TouchableOpacity 
-
-        
-
       onPress={() => props.navigation.navigate('SearchSnsScreen', { tag: item.tag, uid : item.uid, postimg : item.postImg, post: item.post, postTime : item.postTime })}
-
       >
       <View  style={[{ width: (width) / 3 }, { height: (width) / 3 }, { marginBottom: 2 }]}>
       <Image 
@@ -215,13 +193,14 @@ useEffect(()=>{
 
         </TouchableOpacity>
       <SearchBar
+     
       placeholder="Search here"      
       onChangeText={(text) => handleSearchTextChange(text)}
      
     />
     </View>
    
-    <View style={{flexDirection : 'row'}}>
+    <View style={{flexDirection : 'row',marginBottom : 10}}>
     <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator = {false}>
@@ -248,10 +227,23 @@ useEffect(()=>{
           </TouchableOpacity>
           </ScrollView>
     </View>
-  
+    <Text style={{fontSize : 20, fontWeight : 'bold', marginLeft : 5}}>실시간 인기 게시물</Text>
+    <View style={{flexDirection : 'row'}}>
+    <ScrollView
+    horizontal={true}
+    showsHorizontalScrollIndicator = {false}>
+    {
+        Bestposts?.map((row, idx) => {
+         {
+            return  <Image source ={{uri:row.postImg}} style={{width:150,height:150,}} ></Image>
+         }
+      })
+      }
+      </ScrollView>
+    </View>
        
     <View style={{marginTop : 10}}>
-
+      
     <FlatList 
           data={changepost}
           horizontal={false}
@@ -260,8 +252,10 @@ useEffect(()=>{
         }}
          
         />
+        
         </View>
     </View>
+    
   );
 };
 
@@ -294,9 +288,4 @@ const styles = StyleSheet.create({
     textAlign:'center',  
     fontSize:15,
   },
-
 });
-
-});
-
-
