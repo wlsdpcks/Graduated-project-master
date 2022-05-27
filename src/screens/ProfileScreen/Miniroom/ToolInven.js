@@ -5,16 +5,12 @@ import firebase  from '@react-native-firebase/app';
 import React,{useState,useEffect} from 'react'
 import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useNavigation} from '@react-navigation/native';
 import useStore from '../../../../store/store';
-import MiniroomBox from '../../../components/MiniroomBox/MiniroomBox';
-import { renderNode } from 'react-native-elements/dist/helpers';
 
 const gestureRootViewStyle = { flex: 1 };
 const ToolInven = () => {
 
-  const {tooladdress,settooladdress} = useStore();
+  const {tooladdress,settooladdress,BuyItem} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const [tool, setTool] = useState();
   const getShopData = async () => {
@@ -27,11 +23,18 @@ const ToolInven = () => {
   };
   useEffect(() => {
     getShopData();
-  }, []);
-  const pushTool =(address) => {
-    firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').add({address:address,getx:'',gety:''});
-    settooladdress(address);
+  }, [BuyItem]);
+  const pushTool =(address,name) => {
+    
+    firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').doc(name).set({
+      name:name,
+      address:address,
+      getx:140,
+      gety:140});
+ 
     console.log('추가완료');
+    console.log(name);
+    settooladdress(address);
   }
   return (
     <GestureHandlerRootView
@@ -41,7 +44,7 @@ const ToolInven = () => {
       {
         tool?.map((row, idx) => {
          {
-            return  <TouchableOpacity onPress={()=>{pushTool(row.address)}} style={{borderWidth:1}}>
+            return  <TouchableOpacity onPress={()=>{pushTool(row.address,row.name)}} style={{borderWidth:1}}>
             <Image source ={{uri:row.address}} style={{width:70,height:70,}} resizeMode="contain" ></Image>
             </TouchableOpacity>;} 
       })

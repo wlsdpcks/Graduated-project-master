@@ -4,18 +4,34 @@ import useStore from '../../../store/store';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
 
-const MiniroomBox =({test,x,y}) => {
-  var testx, testy;
-  const {tooladdress,settooladdress} = useStore();
-  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
-  const addItem = (x,y,address) => {
-    addminiroom.collection('tool').add({
-        getx:x,
-        gety:y,
-        image:address,
-      })
+const MiniroomBox =({test,name,x=10,y=10}) => {
+  
+  const placex=x;
+  const placey=y;
+  console.log('위치확인'+placex,placey);
+  const tool = test;
+  const testname = name;
+  const {placeX,setplaceX} = useStore();
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
+  useEffect(() => {
+  }, [tool,placeX]);
+  const addItem = (x,y,address,name) => {
+      const rows = addminiroom.where('name', '==', name);
+      rows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.update({
+            getx:x,
+            gety:y,
+            address:address,
+            name:name,
+          })
+        });
+      });
+      console.log('----------------------');
+      console.log(testname);
       console.log('x좌표: ',x);
       console.log('y좌표: ',y);
+      console.log('address: ',address);
       console.log('save complete');
   };
     const pan = useRef(new Animated.ValueXY()).current;
@@ -38,24 +54,24 @@ const MiniroomBox =({test,x,y}) => {
         pan.flattenOffset();
       },
       onPanResponderEnd: (evt , gesture) => {
-        firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).onSnapshot(doc =>{    
-          console.log(doc.data())
-        })
-        //console.log('주소는~');
-        //console.log(`${tooladdress}`)
-        //testx=gesture.moveX;
-        //testy=gesture.moveY;
-        //console.log(testx,testy);
-        //addItem(gesture.moveX,gesture.moveY,test);
+        // firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).onSnapshot(doc =>{    
+        //   console.log(doc.data())
+        // })
+        testx=gesture.moveX;
+        testy=gesture.moveY;
+        setplaceX(gesture.moveX);
+        addItem(gesture.moveX,gesture.moveY,tool,name);
       },
     })
   ).current;
     return(
-        <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers}>
+      <View style={{transform: [{ translateX: 10 }, { translateY: 10 }]}}>
+        <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers} >
             <View style={styles.box}>
                 <Image source={{uri:`${test}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
             </View>
       </Animated.View>
+      </View>
         )
     }
 

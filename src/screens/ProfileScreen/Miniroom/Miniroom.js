@@ -12,13 +12,13 @@ import useStore from '../../../../store/store';
 import firestore from '@react-native-firebase/firestore'; 
 import firebase  from '@react-native-firebase/app';
 
-const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AlbumPhotos%2F4a4adfa9-f256-4de1-bebc-e1e9bc5e51eb1653104498839.jpg?alt=media&token=e35641fa-899a-4313-86bd-2db462496327';
+const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45';
 const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
 const Miniroom = () => {  
-  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background');
+  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');  
-  const {tooladdress,settooladdress,Backaddress} = useStore();
+  const {tooladdress,Backaddress,BuyItem,placeX} = useStore();
   const [tool, setTool] = useState();
   const [Back, setBack] = useState(null);
   const getBackgroundData = async () => {
@@ -40,14 +40,7 @@ const Miniroom = () => {
   useEffect(() => {
     getBackgroundData();
     getTool();
-  }, [tooladdress,Backaddress]);
-  const getBack = a => {
-    if(!a){
-    return <Text>없어용</Text>
-  } return <View>
-                <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back[Back.length-1].address : '없어용'}`}}/> 
-</View>
-  }
+  }, [tooladdress,Backaddress,BuyItem,placeX]);
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
           <View style={{flex:1,}}>
@@ -57,7 +50,7 @@ const Miniroom = () => {
             {
         tool?.map((row, idx) => {
          {
-            return  <MiniroomBox test={row.address} x={row.getx} y={row.gety}></MiniroomBox>;} 
+            return  <MiniroomBox test={row.address} name={row.name} x={row.getx} y={row.gety}></MiniroomBox>;} 
       })
       }
       </View>
@@ -68,7 +61,6 @@ const Miniroom = () => {
       <Tab.Screen name="미니미" component={MinimiInven} />
       <Tab.Screen name="배경" component={MusicInven} />
     </Tab.Navigator>
-    
         </View>
     </GestureHandlerRootView>
   ); 
@@ -77,7 +69,6 @@ const Miniroom = () => {
 export default Miniroom;
 const styles = StyleSheet.create({
     miniroom: {
-      width:'100%', 
       height:250,
     },
     receivingZone: {
