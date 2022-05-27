@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
-import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
 import songs from '../../data/songdata';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -29,6 +28,7 @@ const ProfileScreen = ({navigation,route}) => {
   const [friendData, setFriendData] = useState([]);
   const [songIndex, setSongIndex]=useState(0);
   const [LoginuserData, setLoginUserData] = useState(null);
+  const [RequestData, setRequestData] = useState([]);
 
   const getUser = async() => {
     await firestore()
@@ -54,6 +54,16 @@ const ProfileScreen = ({navigation,route}) => {
       }
     })
   }
+ 
+  const getRequest = async ()=>{
+    const querySanp = await firestore().collection('Request').doc(firebase.auth().currentUser.uid).collection('RequestInfo').get()
+    const allRequests = querySanp.docs.map(docSnap=>docSnap.data())
+   //  console.log(allusers)
+   console.log('Requests: ', RequestData );
+   setRequestData(allRequests)
+   
+}
+  
 
   const fetchFriends = async () => {
     try {
@@ -97,6 +107,7 @@ const ProfileScreen = ({navigation,route}) => {
     getUser();
     fetchFriends();
     getLoginUser();
+    getRequest();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
@@ -280,7 +291,7 @@ const handleDelete = () => {};
 
           <TouchableOpacity onPress={() => onRequsetPressed()}>
           <View style={styles.userInfoItem}>
-          <Text style={styles.userInfoTitle2}>요청 목록</Text>
+          <Text style={styles.userInfoTitle2}>요청 목록 <Text style={styles.userInfoTitle}>{RequestData.length}</Text></Text>
             
             
           </View>

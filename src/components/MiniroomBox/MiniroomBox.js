@@ -4,18 +4,33 @@ import useStore from '../../../store/store';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
 
-const MiniroomBox =({test,x,y}) => {
+const MiniroomBox =({test,x,y,name}) => {
   var testx, testy;
-  const {tooladdress,settooladdress} = useStore();
-  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
-  const addItem = (x,y,address) => {
-    addminiroom.collection('tool').add({
-        getx:x,
-        gety:y,
-        image:address,
-      })
+  const tool = test;
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
+  const addItem = (x,y,address,name) => {
+   
+      const rows = addminiroom.where('name', '==', name);
+
+      rows.get().then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          doc.ref.update({
+            getx:x,
+            gety:y,
+            address:address,
+            name:name,
+          })
+
+      
+      
+        });
+      });
+
+      console.log(name);
       console.log('x좌표: ',x);
       console.log('y좌표: ',y);
+      console.log('address: ',address);
+   
       console.log('save complete');
   };
     const pan = useRef(new Animated.ValueXY()).current;
@@ -43,10 +58,10 @@ const MiniroomBox =({test,x,y}) => {
         })
         //console.log('주소는~');
         //console.log(`${tooladdress}`)
-        //testx=gesture.moveX;
-        //testy=gesture.moveY;
-        //console.log(testx,testy);
-        //addItem(gesture.moveX,gesture.moveY,test);
+        testx=gesture.moveX;
+        testy=gesture.moveY;
+        console.log(testx,testy);
+        addItem(gesture.moveX,gesture.moveY,tool,name);
       },
     })
   ).current;

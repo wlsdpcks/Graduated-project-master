@@ -99,7 +99,17 @@ const FeedStack = ({navigation}) => (
         headerShown: false,
         }}
         />
+      <Stack.Screen
+      name="CHAT"
       
+      options={({route}) => ({
+        
+        headerShown: false,
+        tabBarStyle: { display: 'none' }
+      })}
+    >
+      {props => <ChatScreen {...props}  /> }
+    </Stack.Screen>
     
   </Stack.Navigator>
 );

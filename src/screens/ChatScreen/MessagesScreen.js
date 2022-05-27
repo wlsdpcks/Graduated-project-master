@@ -7,20 +7,67 @@ import {FAB} from 'react-native-paper'
 
 import { theme } from '../../Chat/ChatTheme';
 import SearchInput from '../../Chat/Components/common/SearchInput'
-  
+import firebase  from '@react-native-firebase/app'; 
 const MessagesScreen = ({navigation}) => {
      console.log(user)
     const [users,setUsers] = useState(null)
     const {user, logout} = useContext(AuthContext);
+    const [friendData, setFriendData] = useState(null);
+    const friend = friendData
+
     const getUsers = async ()=>{
              const querySanp = await firestore().collection('users').where('uid','!=', user.uid).get()
              const allusers = querySanp.docs.map(docSnap=>docSnap.data())
             //  console.log(allusers)
+           
             setUsers(allusers)
     }
 
+
+
+
+const fetchFriends = async () => {
+  try {
+    const list = [];
+
+    await firestore()
+      .collection('friends')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('friendsinfo')
+      .where('uid','!=', firebase.auth().currentUser.uid)
+      .get()
+      .then((querySnapshot) => {
+         console.log('Total Friends: ', querySnapshot.size);
+        
+        querySnapshot.forEach((doc) => {
+          const {
+            name,
+            sname,
+            birthday,
+            
+          } = doc.data();
+          list.push({
+            name,
+            sname,
+            birthday,
+            
+          });
+        });
+      });
+
+      setFriendData(list);
+
+   
+    console.log('Friends: ', friendData );
+    console.log('Friends: ', friendData[1].name );
+
+  } catch (e) {
+    console.log(e);
+  }
+};  
     useEffect(()=>{
-        getUsers()
+        getUsers();
+        fetchFriends();
     },[])
     /*
     const showStoryCircle = () => {
@@ -48,9 +95,10 @@ const MessagesScreen = ({navigation}) => {
     
     const RenderCard = ({item})=>{
       return (
+        
         <View style={styles.container}>
         <TouchableOpacity style={styles.conversation}
-        onPress={() => navigation.navigate('CHAT', {name:item.name,uid:item.uid,img:item.userImg,
+        onPress={() => navigation.navigate('CHAT', {name:item.name,uid:item.uid,img:item.userImg, about:item.about
         
       })}>
 
@@ -68,7 +116,9 @@ const MessagesScreen = ({navigation}) => {
               justifyContent: 'space-between'
             }}>
               <Text numerOfLine={1} style={styles.username}>{item.name}</Text>
-              <Text style={styles.time}>time</Text>
+             
+              
+             
             </View>
             <View style={{
               flexDirection: 'row',
@@ -87,15 +137,11 @@ return (
         <SearchInput />
         <FlatList 
           data={users}
-          renderItem={({item})=> {return <RenderCard item={item} /> }}
+          renderItem={({item})=> {return <RenderCard item={item} 
+          /> }}
           keyExtractor={(item)=>item.uid}
         />
-         <FAB
-            style={styles.fab}
-            icon="face-profile"
-            color="black"
-            onPress={() => navigation.navigate("account")}
-        />
+     
         
     </View>
 )

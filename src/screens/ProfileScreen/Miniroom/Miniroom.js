@@ -12,23 +12,23 @@ import useStore from '../../../../store/store';
 import firestore from '@react-native-firebase/firestore'; 
 import firebase  from '@react-native-firebase/app';
 
-const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/AlbumPhotos%2F4a4adfa9-f256-4de1-bebc-e1e9bc5e51eb1653104498839.jpg?alt=media&token=e35641fa-899a-4313-86bd-2db462496327';
 const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
 const Miniroom = () => {  
-  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background');
+  const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');  
   const {tooladdress,settooladdress,Backaddress} = useStore();
   const [tool, setTool] = useState();
   const [Back, setBack] = useState(null);
-  const getBackgroundData = async () => {
-    try {
-      const data = await usersBackgroundCollection.get();
-      setBack(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  
+  const getBackground = async ()=>{ 
+    const querySanp = await firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid + 'mid').get()
+    const allposts = querySanp.docs.map(docSnap=>docSnap.data())
+   //  console.log(allusers)
+   console.log('Posts: ', Back );
+   setBack(allposts)
+   
+}
   const getTool = async () => {
     try {
       const datatool = await usersToolCollection.get();
@@ -37,8 +37,10 @@ const Miniroom = () => {
       console.log(error.message);
     }
   };
+
+
   useEffect(() => {
-    getBackgroundData();
+    getBackground();
     getTool();
   }, [tooladdress,Backaddress]);
   const getBack = a => {
@@ -50,14 +52,14 @@ const Miniroom = () => {
   }
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
-          <View style={{flex:1,}}>
-          <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back[0].address : initial}`}}/> 
+          <View style={{flex:1,}}> 
+          <Image style={{width:'100%',height:'100%'}}source={{uri: Back ? Back.address : 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'}}/>
           
             <View style={{flexWrap:"wrap"}}>
             {
         tool?.map((row, idx) => {
          {
-            return  <MiniroomBox test={row.address} x={row.getx} y={row.gety}></MiniroomBox>;} 
+            return  <MiniroomBox test={row.address} x={row.getx} y={row.gety} name={row.name}></MiniroomBox>;} 
       })
       }
       </View>

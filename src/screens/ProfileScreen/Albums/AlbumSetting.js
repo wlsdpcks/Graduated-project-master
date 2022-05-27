@@ -36,14 +36,19 @@ const Album = ({navigation,route}) => {
 
         const RenderCard = ({item})=>{
             return (
+              
               <View style={styles.folderContainer}>
                 <Icon name="folder"  size={23} color="orange"/>
-              <Text style={{fontSize : 18,fontFamily: 'DungGeunMo'}}> {item.name}</Text>
-              
+                <Text style={{fontSize : 18,fontFamily: 'DungGeunMo'}}> {item.name}</Text>
+                <View style={{position: 'relative'}}>
+              <Icon name="pencil"  size={20}/>
+              </View>
                 
                 
                 
                 </View>
+                
+               
             )
         }
 
@@ -142,10 +147,11 @@ const styles = StyleSheet.create({
       },
 
     folderContainer :{
+      flex : 1,
       flexDirection: 'row', // 혹은 'column'
-     
       marginLeft : 20,
       marginTop : 20,
+      marginRight : 20
     },
     titleConainer:{
       flexDirection: 'column', // 혹은 'column'

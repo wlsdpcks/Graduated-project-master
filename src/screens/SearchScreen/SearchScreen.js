@@ -5,7 +5,6 @@ import firestore from '@react-native-firebase/firestore'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
-
 var { height, width } = Dimensions.get('window');
 
 const SearchScreen = (props) => {
@@ -15,6 +14,7 @@ const SearchScreen = (props) => {
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [count, setcount] = useState(null);
+  const [Bestposts,setBestPosts] = useState(null)
 
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
@@ -26,6 +26,17 @@ const SearchScreen = (props) => {
    //  console.log(allusers)
    setchangePosts(allposts)
 }
+const getBestPosts = async ()=>{
+  const querySanp = await firestore()
+  .collection('posts')
+  .where('tag', '==' , '동물')
+  .orderBy('postTime', 'desc')
+  .get()
+  const allposts = querySanp.docs.map(docSnap=>docSnap.data())
+ //  console.log(allusers)
+ setBestPosts(allposts)
+}
+
 
 const handleSearchTextChange =  async (text) => {
   
@@ -142,6 +153,7 @@ const TagList =  async (tags) => {
 
 useEffect(()=>{
     getPosts()
+    getBestPosts()
   },[Post])
 
   const RenderCard = ({item})=>{
@@ -187,7 +199,7 @@ useEffect(()=>{
     />
     </View>
    
-    <View style={{flexDirection : 'row'}}>
+    <View style={{flexDirection : 'row',marginBottom : 10}}>
     <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator = {false}>
@@ -214,7 +226,20 @@ useEffect(()=>{
           </TouchableOpacity>
           </ScrollView>
     </View>
-  
+    <Text style={{fontSize : 20, fontWeight : 'bold', marginLeft : 5}}>실시간 인기 게시물</Text>
+    <View style={{flexDirection : 'row'}}>
+    <ScrollView
+    horizontal={true}
+    showsHorizontalScrollIndicator = {false}>
+    {
+        Bestposts?.map((row, idx) => {
+         {
+            return  <Image source ={{uri:row.postImg}} style={{width:150,height:150,}} ></Image>
+         }
+      })
+      }
+      </ScrollView>
+    </View>
        
     <View style={{marginTop : 10}}>
       
@@ -226,8 +251,10 @@ useEffect(()=>{
         }}
          
         />
+        
         </View>
     </View>
+    
   );
 };
 
