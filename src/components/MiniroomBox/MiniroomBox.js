@@ -4,19 +4,23 @@ import useStore from '../../../store/store';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
 
-const MiniroomBox =({test,name,x=10,y=10}) => {
+const MiniroomBox =({test,name,x,y}) => {
   
-  const placex=x;
-  const placey=y;
-  console.log('위치확인'+placex,placey);
+  var testx;
+  var testy;
+  const placex = x;
+  const placey = y;
   const tool = test;
   const testname = name;
-  const {placeX,setplaceX} = useStore();
-  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
+  console.log('내이름은 ',name)
   useEffect(() => {
-  }, [tool,placeX]);
+  }, []);
+
+  const {placeX,setplaceX,wpqkf,setwpqkf} = useStore();
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
   const addItem = (x,y,address,name) => {
       const rows = addminiroom.where('name', '==', name);
+      //console.log(rows);
       rows.get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           doc.ref.update({
@@ -28,7 +32,7 @@ const MiniroomBox =({test,name,x=10,y=10}) => {
         });
       });
       console.log('----------------------');
-      console.log(testname);
+      console.log('이름: ',name);
       console.log('x좌표: ',x);
       console.log('y좌표: ',y);
       console.log('address: ',address);
@@ -53,6 +57,11 @@ const MiniroomBox =({test,name,x=10,y=10}) => {
       onPanResponderRelease: () => {
         pan.flattenOffset();
       },
+      onPanResponderStart: (evt,gesture) => {
+        setwpqkf(testname);
+        console.log(wpqkf);
+        console.log(gesture);
+      },
       onPanResponderEnd: (evt , gesture) => {
         // firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).onSnapshot(doc =>{    
         //   console.log(doc.data())
@@ -60,12 +69,12 @@ const MiniroomBox =({test,name,x=10,y=10}) => {
         testx=gesture.moveX;
         testy=gesture.moveY;
         setplaceX(gesture.moveX);
-        addItem(gesture.moveX,gesture.moveY,tool,name);
+        addItem(gesture.moveX,gesture.moveY,test,name);
       },
     })
   ).current;
     return(
-      <View style={{transform: [{ translateX: 10 }, { translateY: 10 }]}}>
+      <View style={{transform: [{translateX: placex} , {translateY: placey}]}}>
         <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers} >
             <View style={styles.box}>
                 <Image source={{uri:`${test}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
