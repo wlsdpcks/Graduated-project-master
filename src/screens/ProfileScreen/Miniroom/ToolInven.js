@@ -28,6 +28,11 @@ const ToolInven = () => {
   useEffect(() => {
     getShopData();
   }, []);
+  const pushTool =(address) => {
+    firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').add({address:address,getx:'',gety:''});
+    settooladdress(address);
+    console.log('추가완료');
+  }
   return (
     <GestureHandlerRootView
       style={gestureRootViewStyle}>
@@ -36,7 +41,7 @@ const ToolInven = () => {
       {
         tool?.map((row, idx) => {
          {
-            return  <TouchableOpacity onPress={()=>{settooladdress(row.address)}} style={{borderWidth:1}}>
+            return  <TouchableOpacity onPress={()=>{pushTool(row.address)}} style={{borderWidth:1}}>
             <Image source ={{uri:row.address}} style={{width:70,height:70,}} resizeMode="contain" ></Image>
             </TouchableOpacity>;} 
       })

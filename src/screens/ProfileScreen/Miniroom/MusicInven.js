@@ -16,7 +16,7 @@ const MusicInven = () => {
 
   const {Backaddress,setBacksaddress} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('background'); 
-
+  const addBackground = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid);
   const [tool, setTool] = useState();
   const getShopData = async () => {
     try {
@@ -29,11 +29,12 @@ const MusicInven = () => {
   useEffect(() => {
     getShopData();
   }, []);
-  const AddBackground = (address) => {
-    firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid).update({address:address});
-    setBacksaddress(address);
-    console.log('저장완료');
-    console.log(address);
+  const AddBackground = (newaddress) => {
+    addBackground.collection('background').doc('test').update({address:newaddress});
+    //addBackground.collection('background').add({address:newaddress});
+    console.log('저장완료');  
+    console.log(newaddress);
+    setBacksaddress(newaddress);
   }
   return (
     <GestureHandlerRootView

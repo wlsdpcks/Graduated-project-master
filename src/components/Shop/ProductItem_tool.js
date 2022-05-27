@@ -17,8 +17,6 @@ const ProductItem = ({src,name,price,classification}) => {
     const [addname,setaddName] = useState(name);
     const [addprice,setaddPrice] = useState(price);
     const [addaddress,setaddAddress] = useState(src);
-    const [addclassification,setaddclassification] = useState(classification)
-    
     const addTool = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool');
     const addItem = async () => {
         try {

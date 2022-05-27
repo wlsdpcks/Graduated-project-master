@@ -1,4 +1,4 @@
-import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,RefreshControl,Alert} from 'react-native'
+import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput,Dimensions,RefreshControl,Alert,TouchableWithoutFeedback} from 'react-native'
 import React, {useState, useEffect, useContext,useCallback} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -7,14 +7,27 @@ import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
+import useStore from '../../../../store/store'
 
 var { height, width } = Dimensions.get('window');
 
 const PhotoDeatil = ({route,navigation}) => {
+  const {PhotoName,Body,Post} = useStore();
+
   const [refreshing, setRefreshing] = useState(false);
   const [posts,setPosts] = useState([])
   const [deleted, setDeleted] = useState(false);
+  const {uid} = route.params
+  const [CommentData, setCommentData] = useState([]);
+  const [isLiked, setIsLiked] = useState(false);
+  const [numberOfLikes, setNumberOfLikes] = useState(null);
 
+  const handleLiked = (item) => {
+    !isLiked
+      ? setNumberOfLikes(item.numberOfLikes + 1)
+      : setNumberOfLikes(item.numberOfLikes - 1);
+    setIsLiked(!isLiked);
+  };
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -24,7 +37,7 @@ const PhotoDeatil = ({route,navigation}) => {
   }, []);
   const getPosts = async ()=>{
     const querySanp = await firestore().collection('Albums')
-    .doc(firebase.auth().currentUser.uid)
+    .doc(route.params ? route.params.uid : user.uid)
     .collection('groups')
     .doc(route.params.foldername)
     .collection('photos')
@@ -102,8 +115,26 @@ const DeletePhotoCheck = (item) => {
       console.log(error.message);
     }
   };
+  const getComment = async(item) => {
+    const querySanp = await firestore()
+    .collection('Albums')
+    .doc(route.params ? route.params.uid : user.uid)
+    .collection('groups')
+    .doc(route.params.foldername)
+    .collection('photos')
+    .doc(route.params.postid)
+    .collection('comment')
+    .get()
+
+    const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
+    setCommentData(allcomments)
+      
+    
+  }
+  
 useEffect(()=>{
-    getPosts()
+    getPosts();
+    getComment();
     setDeleted(false);
 }, [deleted,refreshing]);
 
@@ -112,12 +143,15 @@ const RenderCard = ({item})=>{
         <View style={styles.container}>
         <View style={styles.title2}>
         <Text style={{fontSize : 20, fontFamily: 'DungGeunMo', padding : 5}}> {item.post}</Text>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => DeletePhotoCheck(item)}>
-         
+        
+        {(() => { 
+      if (route.params.uid === firebase.auth().currentUser.uid)    
+      return  <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => DeletePhotoCheck(item)}>
         <View style={{marginRight :15}}>
-         <Ionicons name="ellipsis-horizontal" size={25} color="black" />
+         <Ionicons name="trash" size={25} color="black" />
         </View>
         </TouchableOpacity>
+         })()} 
         </View>
             
         <Image source={{uri: item.img}} style={styles.postImg} />
@@ -131,20 +165,26 @@ const RenderCard = ({item})=>{
         <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
          
          <View style={{padding : 10, marginTop : 10, marginBottom : 15}}>
-          <Ionicons name="heart" size={25} color="gray" />
+         <TouchableOpacity onPress={handleLiked}>
+            {isLiked ? (
+          <Ionicons name="heart" size={25} color="#ff0800" />
+          ) : (
+          <Ionicons name="heart" size={25} color="#545454" />
+            )}
+            </TouchableOpacity>
          </View>
          </TouchableOpacity>
          <View style={{marginTop : 23, marginBottom : 15}}>
         <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>추천</Text>
         </View>
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{ postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername } )}>
          
          <View style={{padding : 10  ,marginTop : 10, marginBottom : 15}}>
           <Ionicons name="chatbubble-ellipses" size={25} color="gray" />
          </View>
          </TouchableOpacity>
          <View style={{marginTop : 23, marginBottom : 15}}>
-         <TouchableOpacity style={{}} onPress={() => navigation.navigate('Comment',{postid: item.postid, name : item.post, foldername : route.params.foldername} )}>  
+         <TouchableOpacity style={{}} onPress={() => navigation.navigate('Comment',{uid : uid, postid: item.postid, name : item.post, foldername : route.params.foldername} )}>  
         <Text style={{fontSize : 17, fontFamily: 'DungGeunMo'}}>댓글</Text>
         </TouchableOpacity>
         </View>
@@ -248,7 +288,7 @@ const styles = StyleSheet.create({
         
         justifyContent: 'space-between',
         flexDirection: 'row', 
-        
+        marginBottom : 5,
        
       },
 
@@ -274,8 +314,8 @@ const styles = StyleSheet.create({
     row2: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        borderBottomWidth: 10,
-        marginBottom : 20,
+        borderBottomWidth: 30,
+        marginBottom : 30,
         
         borderColor: '#D3D3D3',
     },

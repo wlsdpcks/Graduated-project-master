@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useCallback} from 'react';
+import React, {useEffect, useState,useCallback,useContext,useRef} from 'react';
 import {
   View,
   ScrollView,
@@ -8,9 +8,13 @@ import {
   SafeAreaView,
   Alert,
   RefreshControl,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  TouchableWithoutFeedback
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-
+import colors from '../../res/colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useIsFocused } from '@react-navigation/native';
 import PostCard from '../../utils/PostCard';
@@ -20,17 +24,31 @@ import firestore from '@react-native-firebase/firestore';
 import  firebase from '@react-native-firebase/app';
 import {Container} from '../../../styles/FeedStyles';
 import { AuthContext } from '../../utils/AuthProvider';
-import useStore from '../../../store/store';
+import ADIcon from 'react-native-vector-icons/AntDesign';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import AppText from '../../components/Sns/AppText';
+import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
 
 
-
-const SnsScreen = ({navigation,route}) => {
+const SearchSnsScreen = ({route}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [posts, setPosts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
-  const {Post,SetPost} = useStore(); // 0522새로고침용
+  const {user, logout} = useContext(AuthContext);
+  const [userData, setUserData] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const refUserPosts = useRef(null);
+  const navigation = useNavigation();
+
+  const handleLiked = () => {
+    !isLiked
+      ? setNumberOfLikes(numberOfLikes + 1)
+      : setNumberOfLikes(numberOfLikes - 1);
+    setIsLiked(!isLiked);
+  };
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -38,8 +56,19 @@ const SnsScreen = ({navigation,route}) => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-    
-    
+  
+  const getUser = async() => {
+    await firestore()
+    .collection('users')
+    .doc(route.params.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
 
   const fetchPosts = async () => {
     try {
@@ -49,6 +78,7 @@ const SnsScreen = ({navigation,route}) => {
       await firestore()
         
       .collection("posts")
+      .where('tag', '==' , route.params.tag)
       .orderBy('postTime', 'desc')
       .get()
         .then((querySnapshot) => {
@@ -93,7 +123,17 @@ const SnsScreen = ({navigation,route}) => {
   useEffect(() => {
     fetchPosts();
     setDeleted(false);
-  }, [deleted,refreshing,Post]);
+    getUser()
+    const unsubscribe = navigation.addListener('focus', e => {
+      if(refUserPosts.current){
+          refUserPosts.current.scrollToIndex({ animated: true, index: postIndex });
+      }
+  });
+
+  return () => {
+      unsubscribe();
+  };
+  }, [deleted,refreshing]);
 
   const handleDelete = (postId) => {
     Alert.alert(
@@ -165,8 +205,10 @@ const SnsScreen = ({navigation,route}) => {
     return null;
   };
   return (
+      
 
         <Container>
+
           <FlatList
             data={posts}
             renderItem={({item}) => (
@@ -198,4 +240,75 @@ const SnsScreen = ({navigation,route}) => {
   );
 };
 
-export default SnsScreen;
+export default SearchSnsScreen;
+
+const Styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    marginBottom: 6,
+    marginStart: 10,
+    marginEnd: 10,
+    alignItems: 'center',
+  },
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  personImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+  },
+  personName: {
+    color: 'black',
+    marginStart: 10,
+    fontWeight: 'bold',
+  },
+  placeName: {
+    color: colors.text,
+    marginStart: 10,
+    fontSize: 12,
+  },
+  iconMore: {
+    height: 15,
+    width: 15,
+  },
+  postImg: {
+    height: Dimensions.get('screen').height / 3,
+    width: Dimensions.get('screen').width,
+    
+  },
+  container2: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    //paddingStart: 20,
+    marginEnd: 15,
+    marginTop: 15,
+  },
+  actionIcons: {
+    width: 23,
+    height: 23,
+    marginStart: 15,
+  },
+  container3: {
+    padding: 15,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  leftIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 100,
+  },
+  likes: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  });
