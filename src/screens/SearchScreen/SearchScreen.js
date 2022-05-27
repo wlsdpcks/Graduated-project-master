@@ -5,6 +5,8 @@ import firestore from '@react-native-firebase/firestore'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
+
+import { VirtualizedScrollView } from 'react-native-virtualized-view';
 var { height, width } = Dimensions.get('window');
 
 const SearchScreen = (props) => {
@@ -288,4 +290,3 @@ const styles = StyleSheet.create({
     fontSize:15,
   },
 });
-
