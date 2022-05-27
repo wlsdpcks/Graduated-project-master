@@ -44,10 +44,12 @@ const Weblog = () => {
        .get()
        .then((querySnapshot)=>{
          querySnapshot.forEach(doc=>{
-           const {post,userId,postTime} = doc.data();
+           const {userId,post,postTime} = doc.data();
            list.push({
             id:doc.id,
             userId,
+            userImg:'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+            userName:'Test Name',
             postTime:postTime,
             post,
          });

@@ -1,7 +1,7 @@
 import { View, Text,TouchableOpacity,StyleSheet,SafeAreaView,TextInput,Button, Alert} from 'react-native';
 import React,{useState,useContext} from 'react';
 import {InputFieldGuest, InputWrapperGuest,SubmitBtnGuest,  SubmitBtnTextGuest} from '../../../../styles/AddPost';
-//import storage from '@react-native-firebase/storage';
+import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { ScreenStackHeaderBackButtonImage } from 'react-native-screens';
 import { ActivityIndicator } from 'react-native-paper';
@@ -29,7 +29,7 @@ const GuestBookInput = () => {
       setPost(null);
     })
     .catch((error)=>{
-      console.log('something went wrong adding guestbook');
+      console.log('something went wrong adding guestbook',error);
     });
 
     /*const uploadUri =image;
@@ -78,7 +78,6 @@ const GuestBookInput = () => {
           numberOfLine={2}
           value={post}
           onChangeText={(content)=>setPost(content)}
-
         />
               <SubmitBtnGuest onPress={submitGuestbook}>
                 <SubmitBtnTextGuest>작성</SubmitBtnTextGuest>
