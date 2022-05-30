@@ -2,14 +2,16 @@ import React,{useState,useEffect,useContext} from 'react'
 import { View, Text ,Image,FlatList,StyleSheet,TouchableOpacity,TextInput} from 'react-native'
 import firestore from '@react-native-firebase/firestore'
 import { AuthContext } from '../../utils/AuthProvider'
+import {FAB} from 'react-native-paper'
 import Loading from '../../utils/Loading';
 import Icon from "react-native-vector-icons/SimpleLineIcons";
 
 import { theme } from '../../Chat/ChatTheme';
 import SearchInput from '../../Chat/Components/common/SearchInput'
 import firebase  from '@react-native-firebase/app'; 
-const MessagesScreen = ({navigation}) => {
-     console.log(user)
+
+const PresentScreen = ({navigation}) => {
+	console.log(user)
     const [users,setUsers] = useState(null)
     const {user, logout} = useContext(AuthContext);
     const [friendData, setFriendData] = useState(null);
@@ -99,16 +101,14 @@ const fetchFriends = async () => {
       return (
         
         <View style={styles.container}>
-        <TouchableOpacity style={styles.conversation}
+        <View style={styles.conversation}
         onPress={() => navigation.navigate('CHAT', {name:item.name,uid:item.uid,img:item.userImg, about:item.about
         
       })}>
 
-          <TouchableOpacity 
-            onPress={() => setModalVisible(currentValue => !currentValue)}
-            style={[styles.imageContainer]}>
+          <View style={[styles.imageContainer]}>
             <Image source={{ uri: item.userImg }} style={styles.img} />
-          </TouchableOpacity>
+          </View>
           <View style={{
               flex: 1,
               justifyContent: 'center'
@@ -118,10 +118,8 @@ const fetchFriends = async () => {
               justifyContent: 'space-between'
             }}>
               <Text numerOfLine={1} style={styles.username}>{item.name}</Text>
-              <TouchableOpacity>
+             
               <Icon name="present" size={30}></Icon>
-
-              </TouchableOpacity>
              
             </View>
             <View style={{
@@ -131,7 +129,7 @@ const fetchFriends = async () => {
               
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
         </View>
       )
 }
@@ -152,7 +150,7 @@ return (
 )
 }
 
-export default MessagesScreen
+export default PresentScreen;
 const styles = StyleSheet.create({
 img:{width:60,height:60,borderRadius:30,backgroundColor:"orange"},
 text:{
@@ -228,3 +226,4 @@ notification: {
   fontSize: 10
 },
 });
+

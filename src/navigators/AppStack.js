@@ -30,22 +30,23 @@ const FeedStack = ({navigation}) => (
       name="SNS"
       component={SnsScreen}
       options={{
-        
+        title: '',
         headerTitleStyle: {
-          color: '#FF6347',
-          fontSize: 18,
+         
+         
         },
         headerStyle: {
           shadowColor: '#fff',
           elevation: 0,
+          backgroundColor : 'orange'
         },
         headerRight: () => (
           <View style={{marginRight: 10}}>
             <FontAwesome5.Button
               name="plus"
               size={22}
-              backgroundColor="#fff"
-              color="#FF6347"
+              backgroundColor="orange"
+              color="white"
               onPress={() => navigation.navigate('AddPost')}
             />
           </View>
@@ -87,7 +88,7 @@ const FeedStack = ({navigation}) => (
         headerBackTitleVisible: false,
         headerBackImage: () => (
         <View style={{marginLeft: 15}}>
-        <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+        <Ionicons name="arrow-back" size={25} color="black" />
         </View>
         ),
         }}
@@ -108,7 +109,7 @@ const FeedStack = ({navigation}) => (
        headerBackTitleVisible: false,
        headerBackImage: () => (
        <View style={{marginLeft: 15}}>
-       <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+       <Ionicons name="arrow-back" size={25} color="black" />
        </View>
        ),
        }}

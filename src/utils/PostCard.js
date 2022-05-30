@@ -40,7 +40,6 @@ const PostCard = ({item, onPress,onDelete,}) => {
   const navigation = useNavigation();
   const [deleted, setDeleted] = useState(false);
 
-
   const [refreshing, setRefreshing] = useState(false);
   const likecolor = '#ff0800'
   const wait = (timeout) => {
@@ -74,7 +73,7 @@ const PostCard = ({item, onPress,onDelete,}) => {
         
       })
       setDeleted(true);
-
+      setlikeCheckData(true);
 
     })
 
@@ -91,9 +90,9 @@ const onDislikePress = (item) => {
       .doc(item.postid)
       .update({
         likes : item.likes - 1
-        
       })
       setDeleted(true);
+      setlikeCheckData(false);
 
     })
 }
@@ -121,7 +120,7 @@ const onDislikePress = (item) => {
 
     const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
     setlikeData(allcomments)
-      
+    
     
   }
   const getlikescheck = async(item) => {
@@ -134,7 +133,6 @@ const onDislikePress = (item) => {
     .get()
     .then((documentSnapshot) => {
       if (documentSnapshot.exists) {
-    
         setlikeCheckData(documentSnapshot.data());
       }
 

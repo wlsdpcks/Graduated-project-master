@@ -120,7 +120,7 @@ export const AuthProvider = ({children}) => {
                   phone: phone,
                   age: age,
                   uid: auth().currentUser.uid,
-                  point: 100,
+                  point: 1000,
                   about: null,
                   birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),

@@ -18,8 +18,9 @@ import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
 import songs from '../../data/songdata';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import Loading from '../../utils/Loading';
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
+
 const ProfileScreen = ({navigation,route}) => {
 
   const {user, logout} = useContext(AuthContext);
@@ -29,6 +30,7 @@ const ProfileScreen = ({navigation,route}) => {
   const [songIndex, setSongIndex]=useState(0);
   const [LoginuserData, setLoginUserData] = useState(null);
   const [RequestData, setRequestData] = useState([]);
+  const [ready, setReady] = useState(true)
 
   const getUser = async() => {
     await firestore()
@@ -49,7 +51,6 @@ const ProfileScreen = ({navigation,route}) => {
     .get()
     .then((documentSnapshot) => {
       if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
         setLoginUserData(documentSnapshot.data());
       }
     })
@@ -104,6 +105,9 @@ const ProfileScreen = ({navigation,route}) => {
   };  
   
   useEffect(() => {
+    setTimeout(()=>{
+     setReady(false)
+     },1000)   
     getUser();
     fetchFriends();
     getLoginUser();
@@ -192,6 +196,7 @@ const onMiniroompress = () => {
 
 const handleDelete = () => {};
   return (
+    ready ? <Loading/> :  (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       
       <View style={styles.title}>
@@ -345,6 +350,7 @@ const handleDelete = () => {};
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
+    )
   );
 };
 
