@@ -175,7 +175,7 @@ const onRequsetPressed = () => {
   navigation.navigate('Requset');
 };
   const onweblogpress = () => {
-    navigation.navigate('Weblog');
+    navigation.navigate('Weblog', {name : userData.name ,uid : route.params ? route.params.uid : user.uid});
 };
 
 const onDiarypress = () => {
@@ -204,7 +204,7 @@ const handleDelete = () => {};
          <Ionicons name="arrow-back" size={25} color="#fff" />
 
         </TouchableOpacity>
-          <View style={{ justifyContent : 'center', marginLeft: 75}}>
+          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
         
@@ -213,7 +213,7 @@ const handleDelete = () => {};
       ) : (
         <>
         
-        <View style={{ justifyContent : 'center', marginLeft: 105}}>
+        <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
         </>
@@ -238,21 +238,34 @@ const handleDelete = () => {};
           
           <View style={styles.rightcontainer}>
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>이름                         <Text style={{textAlign:'center',  }}>{userData ? userData.name : ''}</Text></Text>
+            <Text style={{color : 'black'}}>이름</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.name : ''}</Text>
+            </View>
+            
             </View>
             
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>나이                          <Text style={{textAlign:'center',  }}>{userData ? userData.age : ''}</Text></Text>
+            <Text style={{color : 'black'}}>나이</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.age : ''}</Text>
             </View>
-            <View style={styles.action}>
-            <Text style={{color : 'black'}}>생일                  <Text style={{textAlign:'center',  }}>{userData ? userData.birthday : ''}</Text></Text>
-            </View>
-            <View style={styles.action}>
-            <Text style={{color : 'black'}}>오늘의 기분             <Text style={{textAlign:'center',  }}>행복</Text></Text>
             
             </View>
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>Point                       {userData ? userData.point : ''}</Text>
+            <Text style={{color : 'black'}}>생일</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.birthday : ''}</Text>
+            </View>
+            
+            </View>
+       
+            <View style={styles.action}>
+            <Text style={{color : 'black'}}>포인트</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black', marginRight : 15}}>{userData ? userData.point : ''}</Text>
+            </View>
+            
             </View>
             
             </View>
@@ -387,7 +400,7 @@ const styles = StyleSheet.create({
   userImg: {
     height: 125,
     width: 125,
-    borderRadius: 75,
+    borderRadius: 50,
     backgroundColor: '#fff',
     
   },

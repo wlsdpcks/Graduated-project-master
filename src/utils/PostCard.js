@@ -1,8 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, {useContext, useEffect, useState,useCallback} from 'react';
 import colors from '../res/colors';
 import images from '../res/images';
-import Icon from 'react-native-vector-icons/AntDesign'
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   Container,
   Card,
@@ -18,66 +17,87 @@ import {
   InteractionText,
   Divider,
 } from '../../styles/FeedStyles';
-import {Image, Dimensions,Text, View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
+import {Image, Dimensions,Text, View, StyleSheet, TouchableWithoutFeedback,RefreshControl} from 'react-native';
 import ProgressiveImage from './ProgressiveImage';
-import ADIcon from 'react-native-vector-icons/AntDesign';
 import AppText from '../components/Sns/AppText'
 import { AuthContext } from './AuthProvider';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import IoniconsIcon from 'react-native-vector-icons/Ionicons';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from "@react-navigation/native";
+import firebase  from '@react-native-firebase/app';
 
-const PostCard = ({item, likesCount, onPress,onDelete}) => {
+const PostCard = ({item, likesCount, onPress,onDelete,}) => {
   const {user, logout} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
+  const [likeData, setlikeData] = useState([]);
+  const [likeCheckData, setlikeCheckData] = useState(null);
   const [likeIcon, setLikeIcon] = useState(false)
   const [currentUserLike, setCurrentUserLike] = useState(false)
   const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(likesCount);
+  const navigation = useNavigation();
+  const [deleted, setDeleted] = useState(false);
+  
+  const [refreshing, setRefreshing] = useState(false);
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
   const handleLiked = () => {
     !isLiked
-      ? setNumberOfLikes(numberOfLikes + 1)
-      : setNumberOfLikes(numberOfLikes - 1);
+      ? onLikePress(item)
+      : onDislikePress(item);
     setIsLiked(!isLiked);
   };
-  function tapToLike(likeIcon) {
-    
-    if (likeIcon % 2 === 0) {
-      return images.redHeart;
-    } else {
-      return images.like;
-    }
-  }
-  const onLikePress = (userId, postId, item) => {
-    item.likesCount += 1;
-    setCurrentUserLike(true)
-    firebase.firestore()
-        .collection("posts")
-        .doc(userId)
-        .collection("userPosts")
-        .doc(postId)
-        .collection("likes")
-        .doc(firebase.auth().currentUser.uid)
-        .set({})
-        .then()
-    props.sendNotification(user.notificationToken, "New Like", `${props.currentUser.name} liked your post`, { type: 0, postId, user: firebase.auth().currentUser.uid })
+
+  const onLikePress = (item) => {
+    item.likes += 1;
+    firestore()
+    .collection('posts')
+    .doc(item.postid)
+    .collection("likes")
+    .doc(firebase.auth().currentUser.uid)
+    .set({
+      uid : firebase.auth().currentUser.uid
+    }).then(() => {
+      firestore()
+      .collection('posts')
+      .doc(item.postid)
+      .update({
+        likes : item.likes+ 1
+        
+      })
+      setDeleted(true);
+
+    console.log(likeData.length)
+
+    })
 
 }
-const onDislikePress = (userId, postId, item) => {
-    item.likesCount -= 1;
+const onDislikePress = (item) => {
 
-    setCurrentUserLike(false)
-    firebase.firestore()
-        .collection("posts")
-        .doc(userId)
-        .collection("userPosts")
-        .doc(postId)
-        .collection("likes")
-        .doc(firebase.auth().currentUser.uid)
-        .delete()
+    item.likes -= 1;
+    firestore()
+    .collection('posts')
+    .doc(item.postid)
+    .collection("likes")
+    .doc(firebase.auth().currentUser.uid)
+    .delete().then(() => {
+      firestore()
+      .collection('posts')
+      .doc(item.postid)
+      .update({
+        likes : item.likes - 1
+        
+      })
+      setDeleted(true);
+
+    })
 }
 
   const getUser = async () => {
@@ -93,12 +113,51 @@ const onDislikePress = (userId, postId, item) => {
       });
   };
 
+  const getlikes = async(item) => {
+   
+    const querySanp = await firestore()
+    .collection('posts')
+    .doc(item.postid)
+    .collection("likes")
+    .get()
+
+    const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
+    setlikeData(allcomments)
+      
+    
+  }
+  const getlikescheck = async(item) => {
+   
+    const querySanp = await firestore()
+    .collection('posts')
+    .doc(item.postid)
+    .collection("likes")
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if (documentSnapshot.exists) {
+    
+        setlikeCheckData(documentSnapshot.data());
+      }
+    });
+};
+
+  
+
   useEffect(() => {
     getUser();
-  }, []);
+    getlikes(item);
+    getlikescheck(item);
+    setDeleted(false);
+  }, [deleted,refreshing]);
 
   return (
-    <Card key={item.id}>
+    <Card key={item.id}refreshControl={
+      <RefreshControl
+         refreshing={refreshing}
+         onRefresh={onRefresh}
+       />
+     }>
         <View style={Styles.container}>
       <View style={Styles.nameContainer}>
         <Image
@@ -112,6 +171,7 @@ const onDislikePress = (userId, postId, item) => {
         <View>
         <TouchableOpacity onPress={onPress}>
           <Text style={Styles.personName}> {userData ? userData.name || 'Test' : 'Test'}{' '} </Text>
+          
           </TouchableOpacity>
         </View>
       </View>
@@ -126,28 +186,44 @@ const onDislikePress = (userId, postId, item) => {
     <View style={Styles.container}>
       <View style={Styles.iconContainer}>
         <View style={Styles.leftIcons}>
-          <TouchableWithoutFeedback onPress={handleLiked}>
-            {isLiked ? (
-              <ADIcon name="heart" size={25} color={'#ff0800'}  />
-            ) : (
-              <ADIcon name="hearto" size={25} color={'#545454'}  />
-            )}
-            </TouchableWithoutFeedback>
-        <TouchableOpacity onPress={() => console.log('Pressed Comment')}>
-          <FontistoIcon name="comment" size={23} color={'#545454'}  />
-        </TouchableOpacity>
         
+        {(() => { 
+      if (likeCheckData ? likeCheckData.uid : '' === firebase.auth().currentUser.uid) 
+         
+      return  <Ionicons name="heart" size={25} color={'#ff0800'} onPress={() => onDislikePress(item)}
+
+      />
+      else if (likeCheckData ? likeCheckData.uid : '' !== firebase.auth().currentUser.uid) 
+       return <Ionicons name="heart" size={25} color={'#545454'} onPress={() => onLikePress(item)}
+
+      />
+      
+      })()} 
+      
+       
+             
+         
+              
+            
+        
+            <View style={{marginLeft: 5}}>
+        <TouchableOpacity onPress={() => navigation.navigate('PostComment',{uid : item.uid, postid: item.postid, name : item.post} )}>  
+          <Ionicons name="chatbubble-ellipses" size={23} color={'#545454'}  />
+        </TouchableOpacity>
+        </View>
+        <View style={{marginLeft: 5}}>
         <TouchableOpacity onPress={() => onDelete(item.id)}>
         {user.uid == item.uid ? (
          
-            <Ionicons name="md-trash-bin" size={23} />
+            <Ionicons name="trash" size={23} />
           
         ) : null}
         </TouchableOpacity>
         </View>
+        </View>
       </View>
     </View>
-    <AppText style={Styles.likes}>{numberOfLikes} likes</AppText>
+    <AppText style={Styles.likes}>  {likeData.length} likes</AppText>
     <View
       style={{
         marginStart: 15,
@@ -246,7 +322,6 @@ iconContainer: {
 },
 leftIcons: {
   flexDirection: 'row',
-  justifyContent: 'space-between',
   width: 100,
 },
 likes: {

@@ -58,8 +58,7 @@ const fetchFriends = async () => {
       setFriendData(list);
 
    
-    console.log('Friends: ', friendData );
-    console.log('Friends: ', friendData[1].name );
+
 
   } catch (e) {
     console.log(e);

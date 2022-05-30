@@ -22,6 +22,8 @@ const store = (set => ({
     SetPost: (input) => set({ Post: input }),//상점 아이템 url주소값용
     Body: '', //상점 아이템 url주소값용
     SetBody: (input) => set({ Body: input }),//상점 아이템 url주소값용
+    Postid: '', //상점 아이템 url주소값용
+    SetPostid: (input) => set({ Postid: input }),//상점 아이템 url주소값용
     
     
     name:'',// 에딧프로필 수정용

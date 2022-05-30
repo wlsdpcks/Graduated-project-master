@@ -62,6 +62,7 @@ const SnsScreen = ({navigation,route}) => {
               postTime,
               likes,  
               comments,
+              postid,
             } = doc.data();
             list.push({
               id: doc.id,
@@ -71,6 +72,7 @@ const SnsScreen = ({navigation,route}) => {
               post,
               liked: false,
               likes,
+              postid,
               comments,
             });
           });

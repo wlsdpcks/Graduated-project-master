@@ -5,12 +5,12 @@ import firebase  from '@react-native-firebase/app';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
 import {FAB} from 'react-native-paper'
-import { theme } from '../../../Chat/ChatTheme';
+import { theme } from '../../Chat/ChatTheme';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import { AuthContext } from '../../../utils/AuthProvider';
 
-const Comment = ({navigation,route}) => {
+const PostComment = ({navigation,route}) => {
   const [number, setNumber] = useState(0);
   const [CommentData, setCommentData] = useState([]);
   const [userData, setUserData] = useState(null);
@@ -27,11 +27,7 @@ const Comment = ({navigation,route}) => {
   }, []);
   const getComment = async() => {
     const querySanp = await firestore()
-    .collection('Albums')
-    .doc(route.params ? route.params.uid : user.uid)
-    .collection('groups')
-    .doc(route.params.foldername)
-    .collection('photos')
+    .collection('posts')
     .doc(route.params.postid)
     .collection('comment')
     .get()
@@ -45,11 +41,7 @@ const Comment = ({navigation,route}) => {
     
 
     const querySanp = await firestore()
-    .collection('Albums')
-    .doc(route.params ? route.params.uid : user.uid)
-    .collection('groups')
-    .doc(route.params.foldername)
-    .collection('photos')
+    .collection('posts')
     .doc(route.params.postid)
     .collection('comment')
     .add({
@@ -62,23 +54,9 @@ const Comment = ({navigation,route}) => {
       commentCount : 1
     })
     .then(() => {
-    firestore()
-    .collection('Albums')
-    .doc(route.params ? route.params.uid : user.uid)
-    .collection('groups')
-    .doc('전체사진')
-    .collection('photos')
-    .doc(route.params.postid)
-    .collection('comment')
-    .add({
-  
-      username : userData.name,
-      userimg : userData.userImg,
-      comment : comment,
-      commentTime: firestore.Timestamp.fromDate(new Date()),
-      uid : firebase.auth().currentUser.uid,
+    
       
-    })
+    
       console.log('Groups Added!');
       setDeleted(true);
       Alert.alert('댓글 작성 완료!')
@@ -93,6 +71,7 @@ const Comment = ({navigation,route}) => {
       console.log('Something went wrong with added post to firestore.', error);
     });
   }
+
   const DeleteCommentCheck = (item) => {
     Alert.alert(
       '댓글을 삭제합니다',
@@ -112,30 +91,17 @@ const Comment = ({navigation,route}) => {
     );
   };
   const addCollection =  firestore()
-  .collection('Albums')
-  .doc(route.params ? route.params.uid : user.uid)
-  .collection('groups')
-  .doc(route.params.foldername)
-  .collection('photos')
-  .doc(route.params.postid)
-  .collection('comment');
+  .collection('posts')
+    .doc(route.params.postid)
+    .collection('comment');
 
-  const addAllCollection =  firestore()
-  .collection('Albums')
-  .doc(route.params ? route.params.uid : user.uid)
-  .collection('groups')
-  .doc('전체사진')
-  .collection('photos')
-  .doc(route.params.postid)
-  .collection('comment');
 
   const DeleteComment =  async (item) => {
     
  
     try {
       const rows = await addCollection.where('comment', '==', item.comment);
-      const Allrows = await addAllCollection.where('comment', '==', item.comment);
-
+   
       rows.get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
           doc.ref.delete()
@@ -143,15 +109,9 @@ const Comment = ({navigation,route}) => {
       
       
         });
-      });
-
-      Allrows.get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          doc.ref.delete()
-
       
-      
-        });
+
+    
       }) .then(() => {
       setDeleted(true);
 
@@ -246,7 +206,6 @@ const Comment = ({navigation,route}) => {
          </View>
          
        
-
         
         
 
@@ -286,7 +245,7 @@ const Comment = ({navigation,route}) => {
   );
 };
 
-export default Comment;
+export default PostComment;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
