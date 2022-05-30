@@ -6,6 +6,24 @@ import firebase from '@react-native-firebase/app'
 
 const MiniroomBox =({test,name,x,y}) => {
   
+  const [rows,setrows] = useState();
+  const {placeX,setplaceX,wpqkf,setwpqkf} = useStore();
+  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
+  
+  const checktItem = async () => {
+    try{
+    const data = await firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').where("name", '==', name).get();
+    console.log(data);
+    setrows(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+      console.log(rows[0].getx);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  useEffect(() => {
+    checktItem();
+  }, []);
+
   var testx;
   var testy;
   const placex = x;
@@ -13,16 +31,11 @@ const MiniroomBox =({test,name,x,y}) => {
   const tool = test;
   const testname = name;
   console.log('내이름은 ',name)
-  useEffect(() => {
-  }, []);
-
-  const {placeX,setplaceX,wpqkf,setwpqkf} = useStore();
-  const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
+  
   const addItem = (x,y,address,name) => {
-      const rows = addminiroom.where('name', '==', name);
-      //console.log(rows);
       rows.get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
+          console.log(doc);
           doc.ref.update({
             getx:x,
             gety:y,
@@ -57,11 +70,6 @@ const MiniroomBox =({test,name,x,y}) => {
       onPanResponderRelease: () => {
         pan.flattenOffset();
       },
-      onPanResponderStart: (evt,gesture) => {
-        setwpqkf(testname);
-        console.log(wpqkf);
-        console.log(gesture);
-      },
       onPanResponderEnd: (evt , gesture) => {
         // firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).onSnapshot(doc =>{    
         //   console.log(doc.data())
@@ -74,7 +82,7 @@ const MiniroomBox =({test,name,x,y}) => {
     })
   ).current;
     return(
-      <View style={{transform: [{translateX: placex} , {translateY: placey}]}}>
+      <View style={{transform: [{translateX: 1} , {translateY:2}]}}>
         <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers} >
             <View style={styles.box}>
                 <Image source={{uri:`${test}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
