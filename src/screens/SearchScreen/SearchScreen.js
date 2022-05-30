@@ -32,6 +32,7 @@ const getBestPosts = async ()=>{
   const querySanp = await firestore()
   .collection('posts')
   .orderBy('likes', 'desc')
+  .limit((5))
   .get()
   const allposts = querySanp.docs.map(docSnap=>docSnap.data())
  //  console.log(allusers)
@@ -235,7 +236,7 @@ useEffect(()=>{
     {
         Bestposts?.map((row, idx) => {
          {
-            return  <Image source ={{uri:row.postImg}} style={{width:150,height:150,}} ></Image>
+            return  <Image source ={{uri:row.postImg}} style={{width:200,height:150,}} ></Image>
          }
       })
       }
@@ -254,6 +255,7 @@ useEffect(()=>{
         />
         
         </View>
+        
     </View>
     
   );
