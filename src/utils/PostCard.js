@@ -39,9 +39,9 @@ const PostCard = ({item, onPress,onDelete,}) => {
   const [isLiked, setIsLiked] = useState(false);
   const navigation = useNavigation();
   const [deleted, setDeleted] = useState(false);
-
-
   const [refreshing, setRefreshing] = useState(false);
+  const [tlgnsLike,settlgnsLike] = useState(null);
+
   const likecolor = '#ff0800'
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -69,12 +69,12 @@ const PostCard = ({item, onPress,onDelete,}) => {
       firestore()
       .collection('posts')
       .doc(item.postid)
-      .update({
-        likes : item.likes + 1
+      .update({ 
+        likes : item.likes++
         
       })
       setDeleted(true);
-
+      settlgnsLike(true);
 
     })
 
@@ -90,10 +90,10 @@ const onDislikePress = (item) => {
       .collection('posts')
       .doc(item.postid)
       .update({
-        likes : item.likes - 1
-        
+        likes : item.likes --
       })
       setDeleted(true);
+      settlgnsLike(false);
 
     })
 }
@@ -121,7 +121,7 @@ const onDislikePress = (item) => {
 
     const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
     setlikeData(allcomments)
-      
+    
     
   }
   const getlikescheck = async(item) => {
@@ -134,7 +134,6 @@ const onDislikePress = (item) => {
     .get()
     .then((documentSnapshot) => {
       if (documentSnapshot.exists) {
-    
         setlikeCheckData(documentSnapshot.data());
       }
 
@@ -187,7 +186,7 @@ const onDislikePress = (item) => {
         <View style={Styles.leftIcons}>
         
         {(() => { 
-      if (likeCheckData ? likeCheckData.uid : '' === firebase.auth().currentUser.uid) 
+      if (likeCheckData && tlgnsLike ? likeCheckData.uid : '' === firebase.auth().currentUser.uid) 
          
       return  <Ionicons name="heart" size={25} color={'#ff0800'} onPress={() => onDislikePress(item)}
 
