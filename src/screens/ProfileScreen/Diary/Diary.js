@@ -20,6 +20,10 @@ const timeToString =(time)=> {
 const Diary = () => {
   const navigation = useNavigation();
 
+  const onAddDiarypress = () => {
+    navigation.navigate('AddDiary');
+  };
+
   const [items,setItems]=useState({
     '2022-05-05':[
       {name: ' ', cookies:true},
@@ -93,7 +97,7 @@ const renderItem = (item : Item )=>{
       selectedDayBackgroundColor: '#FFA500',
       }}
       />
-        <ActionButton buttonColor="rgb(255, 165, 0)" title="다이어리작성" onPress={()=> navigation.navigate('AddDiary')}>
+        <ActionButton buttonColor="rgb(255, 165, 0)" title="다이어리작성" onPress={()=>onAddDiarypress()}>
             <Icon name="createDiary" style={styles.actionButtonIcon} />
 
         </ActionButton>

@@ -15,8 +15,10 @@ const GuestPostCard = ({item}) =>{
           <UserContainerGuest>
           <UserInfoTextGuest>
           <UserName>{item.userName}</UserName>
-          <PostTime> {item.postTime.toString()}</PostTime>
+          <PostTime> {item.postTime}</PostTime>
+          {user.uid = item.userId ?
           <Ionicons name= "md-trash-bin" size={20}/>
+          :null}
           </UserInfoTextGuest>
           <PostTextGuest>{item.post}</PostTextGuest>
           </UserContainerGuest>
