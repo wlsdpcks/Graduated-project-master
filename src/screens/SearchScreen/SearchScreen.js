@@ -31,8 +31,7 @@ const SearchScreen = (props) => {
 const getBestPosts = async ()=>{
   const querySanp = await firestore()
   .collection('posts')
-  .where('tag', '==' , '동물')
-  .orderBy('postTime', 'desc')
+  .orderBy('likes', 'desc')
   .get()
   const allposts = querySanp.docs.map(docSnap=>docSnap.data())
  //  console.log(allusers)

@@ -29,7 +29,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from "@react-navigation/native";
 import firebase  from '@react-native-firebase/app';
 
-const PostCard = ({item, likesCount, onPress,onDelete,}) => {
+const PostCard = ({item, onPress,onDelete,}) => {
   const {user, logout} = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [likeData, setlikeData] = useState([]);
@@ -39,8 +39,10 @@ const PostCard = ({item, likesCount, onPress,onDelete,}) => {
   const [isLiked, setIsLiked] = useState(false);
   const navigation = useNavigation();
   const [deleted, setDeleted] = useState(false);
-  
+
+
   const [refreshing, setRefreshing] = useState(false);
+  const likecolor = '#ff0800'
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -56,7 +58,6 @@ const PostCard = ({item, likesCount, onPress,onDelete,}) => {
   };
 
   const onLikePress = (item) => {
-    item.likes += 1;
     firestore()
     .collection('posts')
     .doc(item.postid)
@@ -69,19 +70,16 @@ const PostCard = ({item, likesCount, onPress,onDelete,}) => {
       .collection('posts')
       .doc(item.postid)
       .update({
-        likes : item.likes+ 1
+        likes : item.likes + 1
         
       })
       setDeleted(true);
 
-    console.log(likeData.length)
 
     })
 
 }
 const onDislikePress = (item) => {
-
-    item.likes -= 1;
     firestore()
     .collection('posts')
     .doc(item.postid)
@@ -139,6 +137,7 @@ const onDislikePress = (item) => {
     
         setlikeCheckData(documentSnapshot.data());
       }
+
     });
 };
 
@@ -193,7 +192,7 @@ const onDislikePress = (item) => {
       return  <Ionicons name="heart" size={25} color={'#ff0800'} onPress={() => onDislikePress(item)}
 
       />
-      else if (likeCheckData ? likeCheckData.uid : '' !== firebase.auth().currentUser.uid) 
+      else
        return <Ionicons name="heart" size={25} color={'#545454'} onPress={() => onLikePress(item)}
 
       />
