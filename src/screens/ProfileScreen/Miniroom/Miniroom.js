@@ -21,7 +21,7 @@ const Miniroom = () => {
   const {tooladdress,Backaddress,BuyItem,placeX} = useStore();
   const [tool, setTool] = useState();
   const [Back, setBack] = useState(null);
-  const getBackgroundData = async () => {
+  const getBackground = async () => {
     try {
       const data = await usersBackgroundCollection.get();
       console.log('빽그라우우우두',data);
