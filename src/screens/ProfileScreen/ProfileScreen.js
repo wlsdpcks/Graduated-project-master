@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 import { AuthContext } from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
-import MarqueeText from 'react-native-marquee';
 import firebase  from '@react-native-firebase/app';
 import songs from '../../data/songdata';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import Loading from '../../utils/Loading';
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
+
 const ProfileScreen = ({navigation,route}) => {
 
   const {user, logout} = useContext(AuthContext);
@@ -29,6 +29,8 @@ const ProfileScreen = ({navigation,route}) => {
   const [friendData, setFriendData] = useState([]);
   const [songIndex, setSongIndex]=useState(0);
   const [LoginuserData, setLoginUserData] = useState(null);
+  const [RequestData, setRequestData] = useState([]);
+  const [ready, setReady] = useState(true)
 
   const getUser = async() => {
     await firestore()
@@ -49,11 +51,20 @@ const ProfileScreen = ({navigation,route}) => {
     .get()
     .then((documentSnapshot) => {
       if( documentSnapshot.exists ) {
-        console.log('User Data', documentSnapshot.data());
         setLoginUserData(documentSnapshot.data());
       }
     })
   }
+ 
+  const getRequest = async ()=>{
+    const querySanp = await firestore().collection('Request').doc(firebase.auth().currentUser.uid).collection('RequestInfo').get()
+    const allRequests = querySanp.docs.map(docSnap=>docSnap.data())
+   //  console.log(allusers)
+   console.log('Requests: ', RequestData );
+   setRequestData(allRequests)
+   
+}
+  
 
   const fetchFriends = async () => {
     try {
@@ -94,9 +105,13 @@ const ProfileScreen = ({navigation,route}) => {
   };  
   
   useEffect(() => {
+    setTimeout(()=>{
+     setReady(false)
+     },1000)   
     getUser();
     fetchFriends();
     getLoginUser();
+    getRequest();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
@@ -164,7 +179,7 @@ const onRequsetPressed = () => {
   navigation.navigate('Requset');
 };
   const onweblogpress = () => {
-    navigation.navigate('Weblog');
+    navigation.navigate('Weblog', {name : userData.name ,uid : route.params ? route.params.uid : user.uid});
 };
 
 const onDiarypress = () => {
@@ -181,6 +196,7 @@ const onMiniroompress = () => {
 
 const handleDelete = () => {};
   return (
+    ready ? <Loading/> :  (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       
       <View style={styles.title}>
@@ -193,7 +209,7 @@ const handleDelete = () => {};
          <Ionicons name="arrow-back" size={25} color="#fff" />
 
         </TouchableOpacity>
-          <View style={{ justifyContent : 'center', marginLeft: 75}}>
+          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
         
@@ -202,7 +218,7 @@ const handleDelete = () => {};
       ) : (
         <>
         
-        <View style={{ justifyContent : 'center', marginLeft: 105}}>
+        <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
         </>
@@ -227,21 +243,34 @@ const handleDelete = () => {};
           
           <View style={styles.rightcontainer}>
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>이름                         <Text style={{textAlign:'center',  }}>{userData ? userData.name : ''}</Text></Text>
+            <Text style={{color : 'black'}}>이름</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.name : ''}</Text>
+            </View>
+            
             </View>
             
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>나이                          <Text style={{textAlign:'center',  }}>{userData ? userData.age : ''}</Text></Text>
+            <Text style={{color : 'black'}}>나이</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.age : ''}</Text>
             </View>
-            <View style={styles.action}>
-            <Text style={{color : 'black'}}>생일                  <Text style={{textAlign:'center',  }}>{userData ? userData.birthday : ''}</Text></Text>
-            </View>
-            <View style={styles.action}>
-            <Text style={{color : 'black'}}>오늘의 기분             <Text style={{textAlign:'center',  }}>행복</Text></Text>
             
             </View>
             <View style={styles.action}>
-            <Text style={{color : 'black'}}>Point                       {userData ? userData.point : ''}</Text>
+            <Text style={{color : 'black'}}>생일</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black'}}>{userData ? userData.birthday : ''}</Text>
+            </View>
+            
+            </View>
+       
+            <View style={styles.action}>
+            <Text style={{color : 'black'}}>포인트</Text>
+            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
+            <Text style={{color : 'black', marginRight : 15}}>{userData ? userData.point : ''}</Text>
+            </View>
+            
             </View>
             
             </View>
@@ -280,7 +309,7 @@ const handleDelete = () => {};
 
           <TouchableOpacity onPress={() => onRequsetPressed()}>
           <View style={styles.userInfoItem}>
-          <Text style={styles.userInfoTitle2}>요청 목록</Text>
+          <Text style={styles.userInfoTitle2}>요청 목록 <Text style={styles.userInfoTitle}>{RequestData.length}</Text></Text>
             
             
           </View>
@@ -321,6 +350,7 @@ const handleDelete = () => {};
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
+    )
   );
 };
 
@@ -376,7 +406,7 @@ const styles = StyleSheet.create({
   userImg: {
     height: 125,
     width: 125,
-    borderRadius: 75,
+    borderRadius: 50,
     backgroundColor: '#fff',
     
   },

@@ -74,6 +74,7 @@ const AddPostScreen = () => {
       setImage(imageUri);
     });
   };
+  const currentPhotoId = Math.floor(100000 + Math.random() * 9000).toString();
 
   const submitPost = async () => {
     const currentuserId = firebase.auth().currentUser.uid
@@ -83,7 +84,8 @@ const AddPostScreen = () => {
     SetPost(post);
     firestore()
     .collection('posts')
-    .add({
+    .doc(currentPhotoId)
+    .set({
   
       uid: user.uid,
       post: post,
@@ -92,6 +94,7 @@ const AddPostScreen = () => {
       postTime: firestore.Timestamp.fromDate(new Date()),
       likes: 0,
       comments: 0,
+      postid : currentPhotoId,
     })
     .then(() => {
       console.log('Post Added!');

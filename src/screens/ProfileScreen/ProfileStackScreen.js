@@ -183,7 +183,7 @@ const ProfileStackScreen = ({navigation}) => {
                     backgroundColor: '#fff',
                     shadowColor: '#fff',
                     elevation: 0,
-                    
+                    unmountOnBlur: true
           
                     },
                     headerBackTitleVisible: false,
@@ -199,21 +199,9 @@ const ProfileStackScreen = ({navigation}) => {
                     name="AlbumSetting"
                     component={AlbumSetting}
                     options={{
-                    title: '폴더 관리',
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                    backgroundColor: '#fff',
-                    shadowColor: '#fff',
-                    elevation: 0,
-                    
-          
-                    },
-                    headerBackTitleVisible: false,
-                    headerBackImage: () => (
-                    <View style={{marginLeft: 15}}>
-                    <Ionicons name="arrow-back" size={25} color="#2e64e5" />
-                      </View>
-                    ),
+                      headerShown: false,
+
+                 
                     }}
                   />
 

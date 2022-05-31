@@ -120,7 +120,7 @@ export const AuthProvider = ({children}) => {
                   phone: phone,
                   age: age,
                   uid: auth().currentUser.uid,
-                  point: 100,
+                  point: 1000,
                   about: null,
                   birthday: birthday,
                   createdAt: firestore.Timestamp.fromDate(new Date()),
@@ -143,7 +143,7 @@ export const AuthProvider = ({children}) => {
                   postTime: firestore.Timestamp.fromDate(new Date()),
                 }).then(() => {
                   firestore().collection('miniroom').doc(auth().currentUser.uid).collection('room').doc(auth().currentUser.uid).collection('background').doc(auth().currentUser.uid+ 'mid').set({
-                    background: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
+                    address: 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45'
                   }).catch(error => {
                   console.log('Something went wrong with added user to firestore: ', error);
               })

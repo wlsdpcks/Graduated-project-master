@@ -48,6 +48,8 @@ const MiniroomBox =({test,name,x,y}) => {
       console.log('주소: ',address);
       console.log('x좌표: ',x);
       console.log('y좌표: ',y);
+      console.log('address: ',address);
+   
       console.log('save complete');
   };
     const pan = useRef(new Animated.ValueXY()).current;

@@ -39,8 +39,10 @@ const Miniroom = () => {
       console.log(error.message);
     }
   };
+
+
   useEffect(() => {
-    getBackgroundData();
+    getBackground();
     getTool();
   }, [tooladdress,Backaddress,BuyItem,placeX]);
   return (

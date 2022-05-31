@@ -1,4 +1,4 @@
-import { View, Text,TouchableOpacity,StyleSheet,FlatList} from 'react-native';
+import { View, Text,TouchableOpacity,StyleSheet,FlatList,RefreshControl,Alert,} from 'react-native';
 import React, {useState, useEffect, useContext,useCallback} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -8,14 +8,17 @@ import Animated from 'react-native-reanimated';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
 import ActionButton from 'react-native-action-button';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import useStore from '../../../../store/store'
 
 
 const Album = ({navigation,route}) => {
         const {uid} = route.params
-
+        const [refreshing, setRefreshing] = useState(false);
+        const [deleted, setDeleted] = useState(false);
         const name = route.params.name
         const [FolderData, setFolderdData] = useState(null);
-       
+
         const getFolder = async() => {
           const querySanp = await firestore()
           .collection('Albums')
@@ -28,22 +31,87 @@ const Album = ({navigation,route}) => {
             
           
         }
+        const DeletePhotoCheck = (item) => {
+          Alert.alert(
+            '사진을 삭제합니다',
+            '확실합니까? 삭제할시 소중한 추억들이 삭제 됩니다. 다시한번 확인 해주세요.' ,
+            [
+              {
+                text: '취소',
+                onPress: () => console.log('Cancel Pressed!'),
+                style: '취소',
+              },
+              {
+                text: '확인',
+                onPress: () => DeletePhoto(item),
+              },
+            ],
+            {cancelable: false},
+          );
+        };
+        const addCollection =  firestore()
+        .collection('Albums')
+        .doc(firebase.auth().currentUser.uid)
+        .collection('groups')
       
+      
+      
+        const DeletePhoto =  async (item) => {
+          
+          try {
+            const rows = await addCollection.where('name', '==' ,item.name);
+           
+      
+            rows.get().then(function (querySnapshot) {
+              querySnapshot.forEach(function (doc) {
+                doc.ref.delete()
+      
+            
+            
+              });
+            });
+      
+           
+            
+            Alert.alert(
+              '폴더 삭제 완료!',
+              );
+      
+            setDeleted(true);
+            console.log('Delete Complete!', rows);
+          } catch (error) {
+            console.log(error.message);
+          }
+        };
         useEffect(() => {
           getFolder();
-          
-        }, []);
+          setDeleted(false);
+        }, [deleted,refreshing]);
 
         const RenderCard = ({item})=>{
             return (
-              <View style={styles.folderContainer}>
-                <Icon name="folder"  size={23} color="orange"/>
-              <Text style={{fontSize : 18,fontFamily: 'DungGeunMo'}}> {item.name}</Text>
               
-                
-                
-                
-                </View>
+              <View style={styles.folderContainer}>
+              <View style={{ flexDirection: 'row', }}>
+            <Icon name="folder"  size={23} color="orange"/>
+            <Text style={{fontSize : 18,fontFamily: 'DungGeunMo'}}> {item.name}</Text>
+            </View>
+           
+    
+        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => DeletePhotoCheck(item)}>
+        <View style={{marginRight :15}}>
+         <Ionicons name="trash" size={25} color="black" />
+        </View>
+        </TouchableOpacity>
+        
+        
+          </View>
+            
+            
+            
+        
+            
+            
             )
         }
 
@@ -96,15 +164,17 @@ const Album = ({navigation,route}) => {
           
           opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0)),
         }}> 
-        <TouchableOpacity onPress={() => navigation.navigate('Photos',{uid : uid,name :route.params.name } )}>
-            
-        <View style={styles.folderContainer}>
-      
-        
-        
-        
-        </View>
+         <View style={styles.foldertitleback}>
+       <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('Album',{name :route.params.name ,uid : uid } )}>
+         
+          
+         <Ionicons name="arrow-back" size={25} color="black" />
+
         </TouchableOpacity>
+          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center' }}>
+                <Text style={styles.titleText}>폴더 관리</Text>
+          </View>
+          </View>
        <FlatList 
           data={FolderData}
           renderItem={({item})=> {return <RenderCard item={item} />
@@ -142,10 +212,14 @@ const styles = StyleSheet.create({
       },
 
     folderContainer :{
+      flex : 1,
       flexDirection: 'row', // 혹은 'column'
-     
       marginLeft : 20,
       marginTop : 20,
+      marginRight : 20,
+      justifyContent: 'space-between'
+
+
     },
     titleConainer:{
       flexDirection: 'column', // 혹은 'column'
@@ -161,6 +235,13 @@ const styles = StyleSheet.create({
     title:{
       flexDirection: 'row', // 혹은 'column'
       flex: 1,
+    },
+    foldertitleback:{ 
+      height:50,
+      backgroundColor: 'white',
+      flexDirection: 'row', 
+     
+     
     },
     miniroom: {
       width:'100%', 
@@ -220,4 +301,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
       },
+      titleText:{
+        justifyContent: 'space-around',
+        fontSize: 20,
+       
+      },
+  
   });

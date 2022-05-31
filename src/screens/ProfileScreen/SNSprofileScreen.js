@@ -164,12 +164,15 @@ const SNSProfileScreen = ({navigation, route}) => {
         <Text style={styles.userName}>{userData ? userData.name : ''}</Text>
         {/* <Text>{route.params ? route.params.userId : user.uid}</Text> */}
         <Text style={styles.aboutUser}>
-        {userData ? userData.about || 'No details added.' : ''}
+        {userData ? userData.about || '자유로운 소통공간 미니스타!' : ''}
         </Text>
         <View style={styles.userBtnWrapper}>
           {route.params ? (
             <>
-              <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
+              <TouchableOpacity style={styles.userBtn}  onPress={() => navigation.navigate('CHAT', {name:userData.name,uid:userData.uid,img:userData.userImg,about:userData.about
+        
+      })}>
+
                 <Text style={styles.userBtnTxt}>메세지</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.userBtn} onPress={() => FriendRequest()}>

@@ -28,7 +28,7 @@ const ChatHeader = ({ username, bio, picture, onlineStatus, onPress }) => {
 	const navigation = useNavigation();
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Message')}>
+			<TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
 				<Icon name="angle-left" size={30} color={theme.colors.white} />
 			</TouchableOpacity>
 			<View style={styles.profileOptions}>
@@ -48,19 +48,9 @@ const ChatHeader = ({ username, bio, picture, onlineStatus, onPress }) => {
 						})}
 						style={{ paddingHorizontal: 5 }}
 					>
-						<Icon
-							name="phone"
-							size={30}
-							color={theme.colors.white}
-						/>
+						
 					</TouchableOpacity>
-					<TouchableOpacity style={{ paddingHorizontal: 20 }}>
-						<Icon
-							name="ellipsis-v"
-							size={30}
-							color={theme.colors.white}
-						/>
-					</TouchableOpacity>
+				
 				</View>
 			</View>
 		</View>
