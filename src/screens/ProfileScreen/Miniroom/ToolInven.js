@@ -7,7 +7,6 @@ import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import useStore from '../../../../store/store';
 
-const gestureRootViewStyle = { flex: 1 };
 const ToolInven = () => {
 
   const {tooladdress,settooladdress,BuyItem} = useStore();
@@ -37,8 +36,7 @@ const ToolInven = () => {
     settooladdress(address);
   }
   return (
-    <GestureHandlerRootView
-      style={gestureRootViewStyle}>
+    <View>
     <ScrollView>
     <View style={styles.container}>
       {
@@ -51,7 +49,7 @@ const ToolInven = () => {
       }
     </View>
     </ScrollView>
-    </GestureHandlerRootView>
+    </View>
   )
 }
 export default ToolInven;
@@ -61,25 +59,5 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     flexWrap:"wrap",
-},
-draggable: {
-  width: 70,
-  height: 70,
-  borderWidth:1,
-},
-receiver: {
-  width: 70,
-  height: 70,
-  backgroundColor: 'green',
-},
-draggableBox: {
-  height: (Dimensions.get('window').width / 4) - 12,
-    borderRadius: 80,
-    width: (Dimensions.get('window').width / 4) - 12,
-    justifyContent: 'center',
-    flexWrap:'wrap',
-    borderWidth:1,
-    flex:1,
-
 },
 });
