@@ -74,7 +74,7 @@ const PostCard = ({item, onPress,onDelete,}) => {
         
       })
       setDeleted(true);
-      settlgnsLike(true);
+      setlikeCheckData(true);
 
     })
 
@@ -90,10 +90,10 @@ const onDislikePress = (item) => {
       .collection('posts')
       .doc(item.postid)
       .update({
-        likes : item.likes --
+        likes : item.likes - 1
       })
       setDeleted(true);
-      settlgnsLike(false);
+      setlikeCheckData(false);
 
     })
 }
