@@ -24,7 +24,7 @@ import Comment from './Albums/Comment';
 const Stack = createNativeStackNavigator();
 const ProfileStackScreen = ({navigation}) => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: true}}>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
                 <Stack.Screen
                     name="HomeProfileScreen"
                     component={ProfileScreen}
@@ -358,23 +358,23 @@ const ProfileStackScreen = ({navigation}) => {
                   <Stack.Screen
                     name="Miniroom"
                     component={Miniroom}
-                    options={{
-                    title: '',
-                    headerTitleAlign: 'center',
-                    headerStyle: {
-                    backgroundColor: '#fff',
-                    shadowColor: '#fff',
-                    elevation: 0,
+                    //options={{
+                    //title: '',
+                    //headerTitleAlign: 'center',
+                    // headerStyle: {
+                    // backgroundColor: '#fff',
+                    // shadowColor: '#fff',
+                    // elevation: 0,
                     
           
-                    },
-                    headerBackTitleVisible: false,
-                    headerBackImage: () => (
-                    <View style={{marginLeft: 15}}>
-                    <Ionicons name="arrow-back" size={25} color="#2e64e5" />
-                      </View>
-                    ),
-                    }}
+                    // },
+                    //headerBackTitleVisible: false,
+                    // headerBackImage: () => (
+                    // <View style={{marginLeft: 50}}>
+                    // <Ionicons name="arrow-back" size={50} color="#2e64e5" />
+                    //   </View>
+                    // ),
+                    // }}
                   />
 
                 

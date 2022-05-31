@@ -16,8 +16,8 @@ const store = (set => ({
 
     BuyItem:'',
     setBuyItem: (input) => set({BuyItem:input}), //상점 - > 미니룸 랜더링용
-    wpqkf:'',
-    setwpqkf: (input) => set({wpqkf:input}), //상점 - > 미니룸 랜더링용
+    Itemhold:'',
+    setItemhold: (input) => set({Itemhold:input}), //상점 - > 미니룸 랜더링용
 
     FolderName: '', //프로필 랜더링용
     setFolderName: (input) => set({ FolderName: input }),//프로필 랜더링용

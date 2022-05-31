@@ -17,14 +17,16 @@ const Tab = createMaterialTopTabNavigator();
 const gestureRootViewStyle = { flex: 1};
 const Miniroom = () => {  
   const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
-  const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');  
+  const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const {tooladdress,Backaddress,BuyItem,placeX} = useStore();
   const [tool, setTool] = useState();
   const [Back, setBack] = useState(null);
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
-      setBack(data._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+      console.log('빽그라우우우두',data);
+      setBack(data._docs.data());
+      console.log('빽그라우우우2222두',Back);
     } catch (error) {
       console.log(error.message);
     }
@@ -44,7 +46,7 @@ const Miniroom = () => {
   return (
     <GestureHandlerRootView style={gestureRootViewStyle}>      
           <View style={{flex:1,}}>
-          <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back[0].address : initial}`}}/> 
+          <Image style={{width:'100%',height:'100%'}}source={{uri:`${Back ? Back.address : initial}`}}/> 
           
             <View style={{flexWrap:"wrap"}}>
             {

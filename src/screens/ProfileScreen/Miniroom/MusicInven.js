@@ -30,7 +30,7 @@ const MusicInven = () => {
     getShopData();
   }, []);
   const AddBackground = (newaddress) => {
-    addBackground.collection('background').doc('test').update({address:newaddress});
+    addBackground.collection('background').doc(firebase.auth().currentUser.uid+ 'mid').update({address:newaddress});
     //addBackground.collection('background').add({address:newaddress});
     console.log('저장완료');  
     console.log(newaddress);
