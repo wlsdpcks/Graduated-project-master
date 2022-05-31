@@ -18,7 +18,9 @@ const timeToString =(time)=> {
 
 
 const Diary = () => {
+  const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
+
 
   const onAddDiarypress = () => {
     navigation.navigate('AddDiary');
@@ -33,49 +35,26 @@ const Diary = () => {
   }); 
 
 
-  /*const loadItems=(day)=>{
-    setTimeout(()=>{
-      for(let i=-15; i<85; i++){
-        const time =day.timestamp + i *24 *60*60*1000;
-        const strTime =timeToString(time);
-        if(!items[strTime]){
-          items[strTime]=[];
-          const numItems =Math.floor(Math.random()*3+1);
-          for(let j=0;j<numItems;j++){
-            items[strTime].push({
-              name:'Itmea for' + strTime +'#'+j,
-            height:Math.max(50,Math.floor(Math.random()*150)),
-            });
-          }
-        }
-      }
-    const newItems ={};
-    Object.keys(items).forEach((key)=>{newItems[key]=items[key];});
-    setItems(newItems);
-  },1000);
-}*/
-
-//지우고 js파일 만들기 --> DiaryStyles.js
-const renderItem = (item : Item )=>{
-  return (
+const renderCard = ({item})=>{
+    return (
     <TouchableOpacity Style={styles.itemConstainer}>
     <Card>
     <Card.Content>
     <View style={styles.diaryTitle}>
-    <Text>내미니룸~</Text>
+    <Text>내미니룸~/item.Title/</Text>
     </View>
     <View style={styles.picContainer}>
 <Image source={{uri: 'https://t1.daumcdn.net/cafeattach/MT4/648d42cb50cafc47f7d02fdfc380f91449afca84'}}
-       style={styles.pic}/>
+       style={styles.pic}/> 
     </View>
        <View style={styles.line}/>
-    <Text>{item.name}</Text>
+    <Text>/item.content/</Text>
     <View style={styles.iconContainer}>
     <Ionicons style={{marginRight:270}}
      name="heart-outline" size={20} color="#777777"/> 
     <Ionicons name="share-outline" size={20} color="#777777"/>
     </View>
-    <Text style={{marginTop:10}}>{item.cookies ? ' my miniroom':'🍤🍙🍔🍭'}</Text>
+    <Text style={{marginTop:10}}>/item/</Text>
     </Card.Content>
     </Card>
     </TouchableOpacity>
@@ -87,11 +66,12 @@ const renderItem = (item : Item )=>{
       <Agenda 
       markingType={'custom'}
       items={items}
-      renderItem={renderItem}
-      minDate={'2022-01-01'}
+      renderItem={({item})=> {return <renderCard item={item} />
+      }}
+      minDate={'2022-03-01'}
       maxDate={'2022-08-28'}
-      pastScrollRange={5}
-      futureScrollRange={5}
+      pastScrollRange={2}
+      futureScrollRange={2}
       theme={{
       todayTextColor: '#FFA500',
       selectedDayBackgroundColor: '#FFA500',
@@ -141,8 +121,6 @@ const styles = StyleSheet.create({
       height: 22,
       color: 'white',
     },
-    selectedDay:{
-      backgroundColor:'#FFCC64',
-    }
+
 
   });

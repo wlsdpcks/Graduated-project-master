@@ -45,9 +45,14 @@ export const InputFieldGuest = styled.TextInput`
 
 `;
 
+export const AddImageD = styled.Image`
+    width: 30%;
+    height: 100px;
+    margin-left: 15px;
+`;
 export const AddImage = styled.Image`
-    width: 100%;
-    height: 250px;
+    width: 30%;
+    height: 100px;
     margin-bottom: 15px;
 `;
 
@@ -108,6 +113,12 @@ export const DiaryBtn = styled.TouchableOpacity`
     justify-content: center;
     background-color: #FFA500;
     padding: 10px 25px;
+    border-radius: 5px;
+    /*
+    borderWidth:1;
+    borderColor: #FFA500;
+    */
+
     /*    margin:10px;
     width:100;
     border-radius: 5px;
