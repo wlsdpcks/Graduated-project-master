@@ -434,8 +434,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
   },
   userBtnTxt: {
     fontFamily: "DungGeunMo",

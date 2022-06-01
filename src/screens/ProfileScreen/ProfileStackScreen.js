@@ -4,6 +4,7 @@ import EditProfile from './EditProfile';
 import Music from './Music/Music';
 import Friend from './Friend/Friend';
 import Diary from './Diary/Diary';
+import AddDiary from './Diary/AddDiary';
 import Album from './Albums/Album';
 import Weblog from './GuestBook/Weblog';
 import Miniroom from './Miniroom/Miniroom';
@@ -172,6 +173,11 @@ const ProfileStackScreen = ({navigation}) => {
                       </View>
                     ),
                     }}
+                  />
+                  <Stack.Screen 
+                  name="AddDiary" 
+                  component={AddDiary}
+
                   />
                   <Stack.Screen
                     name="Album"
