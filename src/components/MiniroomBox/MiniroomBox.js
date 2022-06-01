@@ -1,18 +1,17 @@
-import {View ,StyleSheet,Animated,PanResponder,Image,Button } from 'react-native';
+import {View ,StyleSheet,Animated,PanResponder,Image,Button} from 'react-native';
 import React,{useRef, useState,useEffect} from 'react'
 import useStore from '../../../store/store';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app'
-
+import{ useAnimatedGestureHandler,withSpring } from 'react-native-reanimated';
 const MiniroomBox =({test,name,x,y}) => {
+  
   const tool = test;
   const testname = name;
-  let dlatlx= 200;
-  let dlatly= 287;
+  let dlatlx= x;
+  let dlatly= y;
   const addminiroom = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool');
-  const {placeX,setplaceX,Itemhold,setItemhold} = useStore();
-  const [Holdx,setHoldx] = useState();
-  const [Holdy,setHoldy] = useState();
+  const {placeX,setplaceX,Itemhold,setItemhold,countItem} = useStore();
   
   const checktItem = () => {
     try{
@@ -29,13 +28,16 @@ const MiniroomBox =({test,name,x,y}) => {
       console.log('y좌표 : ',dlatly);
       addItem(dlatlx,dlatly,tool,testname);
     }
-  }, []);
+  }, [countItem]);
   
   const addItem = (x,y,address,name) => {
     const rows = addminiroom.where('name', '==', name);  
     rows.get().then(function (querySnapshot) {
         querySnapshot.forEach(function (doc) {
-          //console.log(doc);
+          //x=Math.floor(x/20)*20;
+          //y=Math.floor(y/20)*20;
+          //if(x>=360)x=370;
+          //if(y>=320)y=320;
           doc.ref.update({
             getx:x,
             gety:y,
@@ -80,10 +82,10 @@ const MiniroomBox =({test,name,x,y}) => {
     })
   ).current;
     return(
-      <View style={{borderWidth:1,width:40,transform: [{translateX: x} , {translateY:y}]}}>
-        <Animated.View style={{transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers} >
+      <View style={{position:'absolute',transform: [{translateX: x} , {translateY:y}]}}>
+        <Animated.View style={{width:5,height:5,backgroundColor:'red',position:'absolute',transform: [{ translateX: pan.x }, { translateY: pan.y }]}}{...panResponder.panHandlers}>
             <View style={styles.box}>
-                <Image source={{uri:`${test}`}} resizeMode='stretch' style={{borderWidth:1,flex:1}}></Image>
+                <Image source={{uri:`${test}`}} resizeMode='stretch' style={{flex:1}}></Image>
             </View>
       </Animated.View>
       </View>
@@ -92,10 +94,9 @@ const MiniroomBox =({test,name,x,y}) => {
 
     const styles =StyleSheet.create({
         box:{
-            height: 40,
-            width: 40,
-            borderColor: "blue",
-            borderWidth:1,
+            height: 80,
+            width: 80,
+            position:'absolute'
           },
     });
     export default MiniroomBox

@@ -9,7 +9,7 @@ import useStore from '../../../../store/store';
 
 const ToolInven = () => {
 
-  const {tooladdress,settooladdress,BuyItem} = useStore();
+  const {tooladdress,settooladdress,BuyItem,countItem,setcountItem,} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const [tool, setTool] = useState();
   const getShopData = async () => {
@@ -22,18 +22,18 @@ const ToolInven = () => {
   };
   useEffect(() => {
     getShopData();
-  }, [BuyItem]);
+  }, [BuyItem,countItem]);
   const pushTool =(address,name) => {
-    
     firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').doc(name).set({
       name:name,
       address:address,
-      getx:140,
-      gety:140});
- 
+      getx:223,
+      gety:217});
     console.log('추가완료');
     console.log(name);
     settooladdress(address);
+    setcountItem();
+    console.log(countItem);
   }
   return (
     <View>
