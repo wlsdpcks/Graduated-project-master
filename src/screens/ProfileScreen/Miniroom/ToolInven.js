@@ -7,10 +7,9 @@ import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
 import useStore from '../../../../store/store';
 
-const gestureRootViewStyle = { flex: 1 };
 const ToolInven = () => {
 
-  const {tooladdress,settooladdress,BuyItem} = useStore();
+  const {tooladdress,settooladdress,BuyItem,countItem,setcountItem,} = useStore();
   const usersCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const [tool, setTool] = useState();
   const getShopData = async () => {
@@ -23,22 +22,21 @@ const ToolInven = () => {
   };
   useEffect(() => {
     getShopData();
-  }, [BuyItem]);
+  }, [BuyItem,countItem]);
   const pushTool =(address,name) => {
-    
     firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').doc(name).set({
       name:name,
       address:address,
-      getx:140,
-      gety:140});
- 
+      getx:223,
+      gety:217});
     console.log('추가완료');
     console.log(name);
     settooladdress(address);
+    setcountItem();
+    console.log(countItem);
   }
   return (
-    <GestureHandlerRootView
-      style={gestureRootViewStyle}>
+    <View>
     <ScrollView>
     <View style={styles.container}>
       {
@@ -51,7 +49,7 @@ const ToolInven = () => {
       }
     </View>
     </ScrollView>
-    </GestureHandlerRootView>
+    </View>
   )
 }
 export default ToolInven;
@@ -61,25 +59,5 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     flexWrap:"wrap",
-},
-draggable: {
-  width: 70,
-  height: 70,
-  borderWidth:1,
-},
-receiver: {
-  width: 70,
-  height: 70,
-  backgroundColor: 'green',
-},
-draggableBox: {
-  height: (Dimensions.get('window').width / 4) - 12,
-    borderRadius: 80,
-    width: (Dimensions.get('window').width / 4) - 12,
-    justifyContent: 'center',
-    flexWrap:'wrap',
-    borderWidth:1,
-    flex:1,
-
 },
 });

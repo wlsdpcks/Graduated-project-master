@@ -6,6 +6,8 @@ const store = (set => ({
     settooladdress: (input) => set({ tooladdress: input }),//상점 아이템 url주소값용
     Backaddress: '', //상점 아이템 url주소값용
     setBacksaddress: (input) => set({ Backaddress: input }),//상점 아이템 url주소값용
+    isMinime: '', //상점 아이템 url주소값용
+    setMinime: (input) => set({ isMinime: input }),//상점 아이템 url주소값용
     placeX: '', //미니룸 아이템 배치 좌표저장용
     setplaceX: (input) => set({placeX:input}), //미니룸 아이템 배치 좌표저장용
     placeY: '', //미니룸 아이템 배치 좌표저장용
@@ -18,6 +20,9 @@ const store = (set => ({
     setBuyItem: (input) => set({BuyItem:input}), //상점 - > 미니룸 랜더링용
     Itemhold:'',
     setItemhold: (input) => set({Itemhold:input}), //상점 - > 미니룸 랜더링용
+
+    countItem:0,
+    setcountItem: () => set(state => ({countItem:state.countItem+1})), //상점 - > 미니룸 랜더링용
 
     FolderName: '', //프로필 랜더링용
     setFolderName: (input) => set({ FolderName: input }),//프로필 랜더링용
