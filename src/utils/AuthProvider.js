@@ -15,7 +15,7 @@ export const AuthProvider = ({children}) => {
   const getUser = async() => {
     const currentUser = await firestore()
     .collection('users')
-    .doc(auth().currentUser.uid)
+    .doc(firebase.auth().currentUser.uid)
     .get()
     .then((documentSnapshot) => {
       if( documentSnapshot.exists ) {
@@ -37,15 +37,16 @@ export const AuthProvider = ({children}) => {
           try {
             await auth().signInWithEmailAndPassword(email, password)
             .then(() => {
-              Alert.alert(
-                '10 포인트가 지급 되었습니다.',
-              );
+             
               firestore()
               .collection('users')
-              .doc(auth().currentUser.uid)
+              .doc(firebase.auth().currentUser.uid)
               .update({
                 point :  userData.point + 10
-              }).catch(error => {
+              })
+              Alert.alert(
+                '10 포인트가 지급 되었습니다.',
+              ).catch(error => {
                   console.log('Something went wrong with added user to firestore: ', error);
               })
             })
