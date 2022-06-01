@@ -10,7 +10,7 @@ import useStore from '../../../store/store';
 
 const DetailsScreen = ({navigation, route}) => {  
 const {user, logout} = useContext(AuthContext);
-const {isPoint,setPoint} = useStore();
+const {isPoint,setPoint,BuyItem,setBuyItem} = useStore();
 const [userData, setUserData] = useState(null);
 
 const plant = route.params;
@@ -70,8 +70,9 @@ const addItem = async () => {
       updatePoint();
       console.log(`update 완료`);
       console.log(`이름 : ${plant.name} 가격: ${plant.price} 주소 : ${plant.address} `);
+      setBuyItem(plant.name);
       navigation.navigate('StoreHome');
-    
+     
     } catch (error) {
       console.log(error.message);
     }
