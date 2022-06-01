@@ -21,7 +21,7 @@ import  firebase from '@react-native-firebase/app';
 import {Container} from '../../../styles/FeedStyles';
 import { AuthContext } from '../../utils/AuthProvider';
 import useStore from '../../../store/store';
-
+import Loading from '../../utils/Loading';
 
 
 const SnsScreen = ({navigation,route}) => {
@@ -31,6 +31,7 @@ const SnsScreen = ({navigation,route}) => {
   const [deleted, setDeleted] = useState(false);
   const [currentUserLike, setCurrentUserLike] = useState(false)
   const {Post,SetPost} = useStore(); // 0522새로고침용
+  const [ready, setReady] = useState(true)
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -62,6 +63,7 @@ const SnsScreen = ({navigation,route}) => {
               postTime,
               likes,  
               comments,
+              postid,
             } = doc.data();
             list.push({
               id: doc.id,
@@ -71,6 +73,7 @@ const SnsScreen = ({navigation,route}) => {
               post,
               liked: false,
               likes,
+              postid,
               comments,
             });
           });
@@ -91,6 +94,9 @@ const SnsScreen = ({navigation,route}) => {
 
 
   useEffect(() => {
+    setTimeout(()=>{
+      setReady(false)
+      },1000)   
     fetchPosts();
     setDeleted(false);
   }, [deleted,refreshing,Post]);
@@ -165,6 +171,7 @@ const SnsScreen = ({navigation,route}) => {
     return null;
   };
   return (
+    ready ? <Loading/> :  (
 
         <Container>
           <FlatList
@@ -194,7 +201,7 @@ const SnsScreen = ({navigation,route}) => {
           />
         </Container>
     
-   
+    )
   );
 };
 

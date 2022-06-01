@@ -1,23 +1,18 @@
+import React from "react";
+import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
+import { StyleSheet,View,Text} from "react-native";
+import {LocaleConfig} from 'react-native-calendars';
 
-import { View, Text,TouchableOpacity,StyleSheet,SafeAreaView,Image} from 'react-native';
-import React, { useState,useEffect } from 'react';
-import {Agenda} from 'react-native-calendars';
-import { Card } from 'react-native-paper';
-import ActionButton from 'react-native-action-button';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-
-
-
-const timeToString =(time)=> {
-   const date =new Date(time);
-  return date.toISOString().split('T')[0];
+LocaleConfig.locales['fr'] = {
+  monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+  monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+  dayNames: ['일요일','월요일', '화요일','수요일','목요일','금요일','토요일'],
+  dayNamesShort: ['일', '월','화','수','목','금','토'],
+  today: 'Aujourd\'hui'
 };
-
-
-
+LocaleConfig.defaultLocale = 'fr';
 const Diary = () => {
+
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
 
@@ -123,4 +118,3 @@ const styles = StyleSheet.create({
     },
 
 
-  });

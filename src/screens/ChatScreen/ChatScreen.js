@@ -91,7 +91,7 @@ export default function ChatScreen({route}) {
 				username={route.params.name}
         picture={route.params.img}
 				
-				onlineStatus={'Online'}/>
+				onlineStatus= {route.params ? route.params.about || '자유로운 소통공간 미니스타!' : ''}/>
         <GiftedChat
              messages={messages}
              onSend={text => onSend(text)}

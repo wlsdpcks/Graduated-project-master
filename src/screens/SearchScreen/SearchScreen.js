@@ -5,6 +5,7 @@ import firestore from '@react-native-firebase/firestore'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
+import Loading from '../../utils/Loading';
 import { VirtualizedScrollView } from 'react-native-virtualized-view';
 var { height, width } = Dimensions.get('window');
 
@@ -16,7 +17,7 @@ const SearchScreen = (props) => {
   const [searchText, setSearchText] = useState('');
   const [count, setcount] = useState(null);
   const [Bestposts,setBestPosts] = useState(null)
-
+  const [ready, setReady] = useState(true)
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
   const [changepost,setchangePosts] = useState(null)
@@ -30,8 +31,8 @@ const SearchScreen = (props) => {
 const getBestPosts = async ()=>{
   const querySanp = await firestore()
   .collection('posts')
-  .where('tag', '==' , '동물')
-  .orderBy('postTime', 'desc')
+  .orderBy('likes', 'desc')
+  .limit((5))
   .get()
   const allposts = querySanp.docs.map(docSnap=>docSnap.data())
  //  console.log(allusers)
@@ -105,6 +106,7 @@ const TagList =  async (tags) => {
         // console.log('Total Posts: ', querySnapshot.size);
         querySnapshot.forEach((doc) => {
           const {
+            postid,
             uid,
             post,
             postImg,
@@ -116,6 +118,7 @@ const TagList =  async (tags) => {
           list.push({
             id: doc.id,
             uid,
+            postid,
             userName: 'Test Name',
             userImg:
               'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
@@ -152,7 +155,63 @@ const TagList =  async (tags) => {
   }
 };
 
+const getBesttagPosts =  async () => {
+  try {
+    const list = [];
+    
+    await firestore()
+      .collection('posts')
+      .orderBy('likes', 'desc')
+      .get()
+      .then((querySnapshot) => {
+        // console.log('Total Posts: ', querySnapshot.size);
+        querySnapshot.forEach((doc) => {
+          const {
+            postid,
+            uid,
+            post,
+            postImg,
+            postTime,
+            tag,
+            likes,
+            comments,
+          } = doc.data();
+          list.push({
+            id: doc.id,
+            uid,
+            userName: 'Test Name',
+            userImg:
+              'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+            postTime: postTime,
+            tag,
+            post,
+            postImg,
+            liked: false,
+            likes,
+            comments,
+            postid
+          });
+        });
+      })
+     
+    setchangePosts(list);
+
+    if (loading) {
+      setLoading(false);
+    }
+
+    console.log('Posts: ', posts);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+
+
 useEffect(()=>{
+  setTimeout(()=>{
+    setReady(false)
+    },1000)
     getPosts()
     getBestPosts()
   },[Post])
@@ -185,6 +244,7 @@ useEffect(()=>{
 
   return (
     
+    ready ? <Loading/> :  (
     <View style={{ backgroundColor: 'white', flex: 1 }}>
     <View style={styles.serach}>
     <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => getPosts()}>
@@ -204,7 +264,7 @@ useEffect(()=>{
     <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator = {false}>
-    <TouchableOpacity style={styles.button} onPress={() => TagList()}>
+    <TouchableOpacity style={styles.button} onPress={() => getBesttagPosts()}>
               <Text style={styles.userBtnTxt}>인기</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => TagList(tags[0])}>
@@ -235,7 +295,7 @@ useEffect(()=>{
     {
         Bestposts?.map((row, idx) => {
          {
-            return  <Image source ={{uri:row.postImg}} style={{width:150,height:150,}} ></Image>
+            return  <Image source ={{uri:row.postImg}} style={{width:200,height:150,}} ></Image>
          }
       })
       }
@@ -254,8 +314,9 @@ useEffect(()=>{
         />
         
         </View>
+        
     </View>
-    
+    )
   );
 };
 
