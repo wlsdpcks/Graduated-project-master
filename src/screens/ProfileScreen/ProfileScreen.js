@@ -13,6 +13,7 @@ import {
   
   
 } from 'react-native';
+import Icon from "react-native-vector-icons/Entypo";
 import { AuthContext } from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
@@ -212,8 +213,12 @@ const handleDelete = () => {};
           <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
+          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('PointGuide')}>
+
+          <Icon name="dots-three-horizontal" size={25} color="#fff" />
         
-      
+          </TouchableOpacity>
+
       </>
       ) : (
         <>
@@ -221,6 +226,11 @@ const handleDelete = () => {};
         <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
                 <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
           </View>
+          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('PointGuide')}>
+
+          <Icon name="dots-three-horizontal" size={25} color="#fff" />
+          </TouchableOpacity>
+
         </>
           )}
         </View>
