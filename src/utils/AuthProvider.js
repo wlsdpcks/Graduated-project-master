@@ -1,15 +1,33 @@
-import React, {createContext, useState} from 'react';
-import {Image} from 'react-native';
+import React, {createContext, useState,useEffect} from 'react';
+import {Alert} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-community/google-signin';
 import firebase from '@react-native-firebase/app'
+import { useCardAnimation } from '@react-navigation/stack';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
 
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(auth().currentUser.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+  useEffect(() => {
+
+    getUser();
+  }, []);
   return (
     <AuthContext.Provider
       value={{
@@ -17,7 +35,25 @@ export const AuthProvider = ({children}) => {
         setUser,
         login: async (email, password) => {
           try {
-            await auth().signInWithEmailAndPassword(email, password);
+            await auth().signInWithEmailAndPassword(email, password)
+            .then(() => {
+              Alert.alert(
+                '10 포인트가 지급 되었습니다.',
+              );
+              firestore()
+              .collection('users')
+              .doc(auth().currentUser.uid)
+              .update({
+                point :  userData.point + 10
+              }).catch(error => {
+                  console.log('Something went wrong with added user to firestore: ', error);
+              })
+            })
+          
+          
+        
+           
+           
           } catch (e) {
             console.log(e);
           }
