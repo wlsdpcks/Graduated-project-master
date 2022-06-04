@@ -122,3 +122,10 @@ const styles = StyleSheet.create({
     },
   });
 
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> 96de29db8eb1346fa778facfa9c477359ba896df

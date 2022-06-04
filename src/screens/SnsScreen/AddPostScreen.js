@@ -173,7 +173,6 @@ const AddPostScreen = () => {
       await task;
 
       const url = await storageRef.getDownloadURL();
-
       setUploading(false);
       setImage(null);
 

@@ -14,8 +14,6 @@ import Requset from './Friend/Requset';
 import Photos from './Albums/Photos';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SNSProfileScreen from './SNSprofileScreen';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import Icon from 'react-native-vector-icons/Ionicons'
 import AlbumSetting from './Albums/AlbumSetting';
 import AddFolder from './Albums/AddFolder';
 import AddPhotos from './Albums/AddPhotos';
@@ -26,7 +24,7 @@ import PointGuide from '../SettingScreen/PointGuide';
 const Stack = createNativeStackNavigator();
 const ProfileStackScreen = ({navigation}) => {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{headerShown: true}}>
                 <Stack.Screen
                     name="HomeProfileScreen"
                     component={ProfileScreen}
@@ -373,23 +371,13 @@ const ProfileStackScreen = ({navigation}) => {
                   <Stack.Screen
                     name="Miniroom"
                     component={Miniroom}
-                    //options={{
-                    //title: '',
-                    //headerTitleAlign: 'center',
-                    // headerStyle: {
-                    // backgroundColor: '#fff',
-                    // shadowColor: '#fff',
-                    // elevation: 0,
-                    
+                    options={{
+                      headerShown : false
           
-                    // },
-                    //headerBackTitleVisible: false,
-                    // headerBackImage: () => (
-                    // <View style={{marginLeft: 50}}>
-                    // <Ionicons name="arrow-back" size={50} color="#2e64e5" />
-                    //   </View>
-                    // ),
-                    // }}
+                     
+                    
+                    
+                     }}
                   />
 
                 

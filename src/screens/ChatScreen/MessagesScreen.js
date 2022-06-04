@@ -4,17 +4,18 @@ import firestore from '@react-native-firebase/firestore'
 import { AuthContext } from '../../utils/AuthProvider'
 import Loading from '../../utils/Loading';
 import Icon from "react-native-vector-icons/SimpleLineIcons";
-
+import MessageCard from '../../utils/MessageCard';
 import { theme } from '../../Chat/ChatTheme';
 import SearchInput from '../../Chat/Components/common/SearchInput'
 import firebase  from '@react-native-firebase/app'; 
-const MessagesScreen = ({navigation}) => {
+const MessagesScreen = ({navigation,item}) => {
      console.log(user)
     const [users,setUsers] = useState(null)
     const {user, logout} = useContext(AuthContext);
     const [friendData, setFriendData] = useState(null);
     const friend = friendData
     const [ready, setReady] = useState(true)
+    const [presentData, setPresent]= useState(null)
     const getUsers = async ()=>{
              const querySanp = await firestore().collection('users').where('uid','!=', user.uid).get()
              const allusers = querySanp.docs.map(docSnap=>docSnap.data())
@@ -22,9 +23,18 @@ const MessagesScreen = ({navigation}) => {
            
             setUsers(allusers)
     }
+   
 
-
-
+const getPresent = async (item)=>{
+  const querySanp = await firestore()
+  .collection('present')
+  .doc(item.uid)
+  .collection('presentDetail')
+  .get()
+  const allposts = querySanp.docs.map(docSnap=>docSnap.data())
+ //  console.log(allusers)
+ setPresent(allposts)
+} 
 
 const fetchFriends = async () => {
   try {
@@ -37,7 +47,6 @@ const fetchFriends = async () => {
       .where('uid','!=', firebase.auth().currentUser.uid)
       .get()
       .then((querySnapshot) => {
-         console.log('Total Friends: ', querySnapshot.size);
         
         querySnapshot.forEach((doc) => {
           const {
@@ -70,6 +79,7 @@ const fetchFriends = async () => {
         },1000)   
         getUsers();
         fetchFriends();
+        getPresent(item);
     },[])
     /*
     const showStoryCircle = () => {
@@ -103,7 +113,7 @@ const fetchFriends = async () => {
         onPress={() => navigation.navigate('CHAT', {name:item.name,uid:item.uid,img:item.userImg, about:item.about
         
       })}>
-
+          
           <TouchableOpacity 
             onPress={() => setModalVisible(currentValue => !currentValue)}
             style={[styles.imageContainer]}>
@@ -124,6 +134,13 @@ const fetchFriends = async () => {
               </TouchableOpacity>
              
             </View>
+  
+         
+           
+
+      
+    
+           
             <View style={{
               flexDirection: 'row',
               justifyContent: 'space-between'
@@ -139,13 +156,22 @@ return (
   ready ? <Loading/> :  (
       <View style={{ backgroundColor: theme.colors.white, flex: 1 }}>
         <SearchInput />
-        <FlatList 
-          data={users}
-          renderItem={({item})=> {return <RenderCard item={item} 
-          /> }}
-          keyExtractor={(item)=>item.uid}
-        />
-     
+    
+      <FlatList
+            data={users}
+            renderItem={({item}) => (
+              <MessageCard
+                item={item}
+            
+                
+              />
+            )}
+            keyExtractor={(item) => item.uid}
+          
+            showsVerticalScrollIndicator={false}
+            
+            
+          />
         
     </View>
 )

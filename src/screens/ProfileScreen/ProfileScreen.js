@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect, useContext,useRef} from 'react';
 
 
 import {
@@ -10,7 +10,7 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
-  
+  Button
   
 } from 'react-native';
 import Icon from "react-native-vector-icons/Entypo";
@@ -21,6 +21,8 @@ import songs from '../../data/songdata';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Loading from '../../utils/Loading';
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
+import ViewShot from 'react-native-view-shot';
+import storage from '@react-native-firebase/storage';
 
 const ProfileScreen = ({navigation,route}) => {
 
@@ -32,6 +34,81 @@ const ProfileScreen = ({navigation,route}) => {
   const [LoginuserData, setLoginUserData] = useState(null);
   const [RequestData, setRequestData] = useState([]);
   const [ready, setReady] = useState(true)
+  const captureRef = useRef();
+  const [image, setImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [transferred, setTransferred] = useState(0);
+
+  const uploadImage = async () => {
+  
+    const uploadUri = await getPhotoUri();
+    
+    let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
+
+    // Add timestamp to File Name
+    const extension = filename.split('.').pop(); 
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+
+    setUploading(true);
+
+    const storageRef = storage().ref(`miniRoomImage/${filename}`);
+    const task = storageRef.putFile(uploadUri);
+    task.on('state_changed', (taskSnapshot) => {
+      console.log(
+        `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+      );
+
+      setTransferred(
+        Math.round(taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) *
+          100,
+      );
+    });
+
+    try {
+      await task;
+
+      const url = await storageRef.getDownloadURL();
+      console.log('uri', url)
+
+      setUploading(false);
+      setImage(null);
+      firestore()
+      .collection('users')
+      .doc(firebase.auth().currentUser.uid)
+      .update({
+        miniRoom : url
+      })
+      // Alert.alert(
+      //   'Image uploaded!',
+      //   'Your image has been uploaded to the Firebase Cloud Storage Successfully!',
+      // );
+      return url;
+
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+
+
+  }; 
+  const getPhotoUri = async () => {
+    const uri = await captureRef.current.capture();
+    console.log('👂👂 Image saved to', uri);
+    return uri;
+  };
+    
+  const onSave = async () => {
+    const uri = await getPhotoUri();
+    const imageuri = uploadImage();
+    console.log('Image Url: ', imageuri);
+
+ 
+    
+  
+
+
+  };
 
   const getUser = async() => {
     await firestore()
@@ -250,8 +327,9 @@ const handleDelete = () => {};
           
           
           </View>
-          
+
           <View style={styles.rightcontainer}>
+
             <View style={styles.action}>
             <Text style={{color : 'black'}}>이름</Text>
             <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
@@ -285,7 +363,6 @@ const handleDelete = () => {};
             
             </View>
           </View> 
-        
        
         
         
@@ -348,16 +425,20 @@ const handleDelete = () => {};
                 <Text style={styles.userBtnTxt}> 방명록</Text>
               </TouchableOpacity>
         </View>
+        <ViewShot ref={captureRef} options={{ format: 'jpg', quality: 0.9, backgroundColor : 'white' }}>
+
         <TouchableOpacity style={styles.miniroom} onPress={() => onMiniroompress()}>
         <View>
-        <Text style={{fontSize:20,textAlign:'center',marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
-          <Image source={{uri: 'https://t1.daumcdn.net/cafeattach/MT4/648d42cb50cafc47f7d02fdfc380f91449afca84'}}
-       style={{width: 400, height: 230,marginTop:0}}>
+        <Text style={{fontSize:20,textAlign:'center',marginTop : 50,marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
+          <Image source={{ uri: userData ? userData.miniRoom || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
+       style={{width: 400, height: 300,marginBottom:0,resizeMode:'cover' }}>
 
           </Image>
         </View>
         
         </TouchableOpacity>
+        </ViewShot>
+
       </ScrollView>
     </SafeAreaView>
     )
