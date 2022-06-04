@@ -21,7 +21,7 @@ import ChatNavigator from '../Chat/ChatNavigator'
 import SNSProfileScreen from '../screens/ProfileScreen/SNSprofileScreen'; 
 import Store from '../screens/StoreScreen/Store';
 import SearchSnsScreen from '../screens/SearchScreen/SearchSnsScreen';
-
+import PostComment from '../screens/SnsScreen/PostComment';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -30,22 +30,23 @@ const FeedStack = ({navigation}) => (
       name="SNS"
       component={SnsScreen}
       options={{
-        
+        title: '',
         headerTitleStyle: {
-          color: '#FF6347',
-          fontSize: 18,
+         
+         
         },
         headerStyle: {
           shadowColor: '#fff',
           elevation: 0,
+          backgroundColor : 'orange'
         },
         headerRight: () => (
           <View style={{marginRight: 10}}>
             <FontAwesome5.Button
               name="plus"
               size={22}
-              backgroundColor="#fff"
-              color="#FF6347"
+              backgroundColor="orange"
+              color="white"
               onPress={() => navigation.navigate('AddPost')}
             />
           </View>
@@ -72,6 +73,27 @@ const FeedStack = ({navigation}) => (
       }}
     />
     <Stack.Screen
+        name="PostComment"
+        component={PostComment}
+        options={{
+        title: '댓글',
+        headerTitleAlign: 'center',
+        headerStyle: {
+        backgroundColor: '#fff',
+        shadowColor: '#fff',
+        elevation: 0,
+                    
+          
+        },
+        headerBackTitleVisible: false,
+        headerBackImage: () => (
+        <View style={{marginLeft: 15}}>
+        <Ionicons name="arrow-back" size={25} color="black" />
+        </View>
+        ),
+        }}
+        />
+    <Stack.Screen
       name="SNSProfile"
       component={SNSProfileScreen}
       options={{
@@ -87,7 +109,7 @@ const FeedStack = ({navigation}) => (
        headerBackTitleVisible: false,
        headerBackImage: () => (
        <View style={{marginLeft: 15}}>
-       <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+       <Ionicons name="arrow-back" size={25} color="black" />
        </View>
        ),
        }}
@@ -99,7 +121,18 @@ const FeedStack = ({navigation}) => (
         headerShown: false,
         }}
         />
+      <Stack.Screen
+      name="CHAT"
       
+      options={({route}) => ({
+        
+        headerShown: false,
+        tabBarStyle: { display: 'none' }
+      })}
+    >
+      {props => <ChatScreen {...props}  /> }
+    </Stack.Screen>
+
     
   </Stack.Navigator>
 );

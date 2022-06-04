@@ -19,6 +19,7 @@ const timeToString =(time)=> {
 
 
 const Diary = () => {
+
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
   const [DiaryData, setDiaryData] = useState([]);
@@ -183,4 +184,3 @@ const styles = StyleSheet.create({
     },
 
 
-  });

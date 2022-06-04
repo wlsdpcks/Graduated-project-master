@@ -7,7 +7,7 @@ import useStore from '../../../../store/store'
 
 
 const AddFolder = ({navigation,route}) => {
-    const rname = route.params.name
+const rname = route.params.name
 const [name, setName] = useState(null);
 const {FolderName,setFolderName} = useStore();
 const {uid} = route.params
