@@ -429,16 +429,15 @@ const handleDelete = () => {};
 
         <TouchableOpacity style={styles.miniroom} onPress={() => onMiniroompress()}>
         <View>
-        <Text style={{fontSize:20,textAlign:'center',marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
+        <Text style={{fontSize:20,textAlign:'center',marginTop : 50,marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
           <Image source={{ uri: userData ? userData.miniRoom || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
-       style={{width: 400, height: 230,marginTop:0, resizeMode : 'cover'}}>
+       style={{width: 400, height: 300,marginBottom:0,resizeMode:'cover' }}>
 
           </Image>
         </View>
         
         </TouchableOpacity>
         </ViewShot>
-        <Button title="갤러리에 저장" onPress={onSave} />
 
       </ScrollView>
     </SafeAreaView>
