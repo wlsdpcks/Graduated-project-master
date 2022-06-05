@@ -6,7 +6,6 @@ import store from './store';
 import {Provider} from "react-redux";
 import { theme } from './src/Chat/ChatTheme';
 const App = () => {
-
   LogBox.ignoreLogs([
     'Animated: `useNativeDriver` was not specified.',
   ]);
