@@ -80,13 +80,17 @@ const FeedStack = ({navigation}) => (
           </View>
         ),
       }}
-    />
+    />   
     <Stack.Screen
       name="AddPost"
       component={AddPostScreen}
       options={{
-        title: '',
+        title: '게시글을 작성해보세요!',
         headerTitleAlign: 'center',
+        headerTitleStyle: {
+        fontFamily: 'Jalnan',
+        color : 'orange'
+         },
         headerStyle: {
           backgroundColor: 'white',
           shadowColor: 'white',
@@ -217,9 +221,13 @@ const ProfileStack = ({navigation}) => (
       name="EditProfile"
       component={EditProfile}
       options={{
-        headerTitle: 'Edit Profile',
+        title : '프로필을 변경해보세요!',
         headerBackTitleVisible: false,
         headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontFamily: 'Jalnan',
+          color : '#696969'
+         },
         headerStyle: {
           backgroundColor: '#fff',
           shadowColor: '#fff',
