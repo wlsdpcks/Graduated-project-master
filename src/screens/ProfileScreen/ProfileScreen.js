@@ -23,6 +23,8 @@ import Loading from '../../utils/Loading';
 import {songT} from '../../components/MusicPlayer/MusicPlayer'
 import ViewShot from 'react-native-view-shot';
 import storage from '@react-native-firebase/storage';
+import { theme } from '../../Chat/ChatTheme';
+import moment from 'moment';
 
 const ProfileScreen = ({navigation,route}) => {
 
@@ -38,7 +40,20 @@ const ProfileScreen = ({navigation,route}) => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
+  const [CommentData, setCommentData] = useState([]);
 
+  const getComment = async() => {
+    const querySanp = await firestore()
+    .collection('guestbook')
+    .doc(route.params ? route.params.uid : user.uid)
+    .collection('comment')
+    .get()
+
+    const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
+    setCommentData(allcomments)
+      
+    
+  }
   const uploadImage = async () => {
   
     const uploadUri = await getPhotoUri();
@@ -190,6 +205,7 @@ const ProfileScreen = ({navigation,route}) => {
     fetchFriends();
     getLoginUser();
     getRequest();
+    getComment();
     navigation.addListener("focus", () => setLoading(!loading));
   }, [navigation, loading]);
 
@@ -429,7 +445,7 @@ const handleDelete = () => {};
 
         <TouchableOpacity style={styles.miniroom} onPress={() => onMiniroompress()}>
         <View>
-        <Text style={{fontSize:20,textAlign:'center',marginTop : 50,marginBottom:10, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
+        <Text style={{fontSize:20,textAlign:'center',marginTop : 70,marginBottom:20, fontFamily: "DungGeunMo", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
           <Image source={{ uri: userData ? userData.miniRoom || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
        style={{width: 400, height: 300,marginBottom:0,resizeMode:'cover' }}>
 
@@ -438,7 +454,56 @@ const handleDelete = () => {};
         
         </TouchableOpacity>
         </ViewShot>
-
+        {
+              
+              CommentData?.map((row, idx) => {
+                return (
+                  
+                  <View style={styles.guestBtn}>
+                  <View style={styles.conversation}> 
+                  
+                <TouchableOpacity 
+                      onPress={() => setModalVisible()}
+                      style={[styles.imageContainer]}>
+                      <Image source={{ uri: row.userImg }} style={styles.img} />
+                    </TouchableOpacity>
+                    <View style={{
+                        marginLeft : 15,
+                        flex: 1,
+                        justifyContent: 'center'
+                      }}>
+                      <View style={{
+                        flexDirection: 'row',
+          
+                      }}>
+                        <Text numerOfLine={1} style={styles.username}>{row.name}</Text>
+                        
+                        
+                      </View>
+                      <View style={{
+                        flexDirection: 'row',
+                      }}>
+                        <Text style={styles.message}>{row.comment}</Text>
+                        
+                      </View>
+                      <View style={{
+                        flexDirection: 'row',
+                      }}>
+                        <Text style={styles.message}>{moment(row.commentTime.toDate()).fromNow()}</Text>
+                        
+                      </View>
+                      </View>
+                      
+                      
+                      </View>
+                      </View>
+                  
+              
+              
+                )  ;      
+               
+            })
+            } 
       </ScrollView>
     </SafeAreaView>
     )
@@ -473,11 +538,32 @@ const styles = StyleSheet.create({
     marginTop:10,
    
   },
+  imageContainer: {
+    marginLeft : 10,
+    borderRadius: 25,
+    height: 60,
+    width: 60,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center' 
+  },
   music:{
     marginTop:10,
     height:25,
     marginLeft:25,
     marginRight:25,
+  },
+  username: {
+    fontSize: theme.fontSize.title,
+    color: theme.colors.title,
+    width: 210
+  },
+  message: {
+    fontSize: theme.fontSize.message,
+    width: 240,
+    color: theme.colors.subTitle,
+    marginTop : 5,
   },
 
   title:{ 
@@ -487,12 +573,19 @@ const styles = StyleSheet.create({
     
    
   },
+  img:{width:60,height:60,borderRadius:30,backgroundColor:"orange"},
   titleText:{
     fontFamily: "DungGeunMo",
     justifyContent: 'space-around',
     fontSize: 20,
     color:'white',
    
+  },
+  conversation: {
+    flexDirection: 'row',
+    paddingBottom: 25,
+    paddingRight: 20,
+    paddingTop : 20,
   },
   userImg: {
     height: 125,
@@ -525,6 +618,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  guestBtn: {
+    width : 395,
+    backgroundColor:'#ffffff',
+    borderColor: '#ffffff',
+    borderBottomColor:'#fff',
+    borderWidth:1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginBottom : 10,
+ 
   },
   userBtnTxt: {
     fontFamily: "DungGeunMo",
@@ -568,6 +676,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     paddingVertical: 8,
     paddingHorizontal: 8,
+    marginBottom : 70
 
   },
 

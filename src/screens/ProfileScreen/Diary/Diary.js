@@ -1,87 +1,208 @@
-import React ,{ useState } from 'react';
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-import { StyleSheet,View,Text,SafeAreaView} from "react-native";
-import {LocaleConfig} from 'react-native-calendars';
-import { useNavigation } from "@react-navigation/native";
+
+import { View, Text,TouchableOpacity,StyleSheet,SafeAreaView,Image,RefreshControl,Alert} from 'react-native';
+import React, {useEffect,useCallback,useState } from 'react';
+import {Agenda, Calendar, CalendarList} from 'react-native-calendars';
+import { Card } from 'react-native-paper';
 import ActionButton from 'react-native-action-button';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
-import Icon from "react-native-vector-icons/Entypo";
+import {LocaleConfig} from 'react-native-calendars';
+import { onChange } from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
+
 LocaleConfig.locales['fr'] = {
-  monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-  monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+  monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+  monthNamesShort: ['Janv.','Févr.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
   dayNames: ['일요일','월요일', '화요일','수요일','목요일','금요일','토요일'],
   dayNamesShort: ['일', '월','화','수','목','금','토'],
   today: 'Aujourd\'hui'
 };
 LocaleConfig.defaultLocale = 'fr';
-const Diary = () => {
+
+
+
+
+
+const Diary = ({onDelete}) => {
 
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
+  const [DiaryData, setDiaryData] = useState([]);
+  const [deleted, setDeleted] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [checkday, setCheckday] = useState(null);
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }, []);
 
+  const getDiary = async() => {
+    const querySanp = await firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(checkday)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        setDiaryData(documentSnapshot.data());
+      }
+    })
+  
+  
+ 
+    
+  }
+
+  
 
   const onAddDiarypress = () => {
     navigation.navigate('AddDiary');
   };
 
-  const [items,setItems]=useState({
-    '2022-05-05':[
-      {name: ' ', cookies:true},
-    ],
+  const handleDelete = (postId) => {
+    Alert.alert(
+      '글 삭제하기',
+      '확실합니까?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: () => deletePost(postId),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  const deletePost = (postId) => {
+    console.log('Current Post Id: ', postId);
+
+    firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(postId)
+    .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          const {img} = documentSnapshot.data();
+
+          if (img != null) {
+            const storageRef = storage().refFromURL(img);
+            const imageRef = storage().ref(storageRef.fullPath);
+
+            imageRef
+              .delete()
+              .then(() => {
+                console.log(`${img} 성공적으로 삭제되었습니다.`);
+                deleteFirestoreData(postId);
+              })
+              .catch((e) => {
+                console.log('Error while deleting the image. ', e);
+              });
+            // If the post image is not available
+          } else {
+            deleteFirestoreData(postId);
+          }
+        }
+      });
+  };
+
+  const deleteFirestoreData = (postId) => {
+    firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(postId)
+      .delete()
+      .then(() => {
+        Alert.alert(
+          '글이 삭제되었습니다.',
+          '당신의 글이 성공적으로 삭제되었습니다!',
+        );
+        setDeleted(true);
+      })
+      .catch((e) => console.log('Error deleting posst.', e));
+  };
+
+  const getUser = async() => {
+    await firestore()
+    .collection('users')
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+
+  useEffect(() => {
+    getDiary();
+    getUser();
+    setDeleted(false);
+  }, [deleted,refreshing]);
 
 
-  }); 
 
 
-const renderCard = ({item})=>{
     return (
-    <TouchableOpacity Style={styles.itemConstainer}>
-    <Card>
-    <Card.Content>
-    <View style={styles.diaryTitle}>
-    <Text>내미니룸~/item.Title/</Text>
-    </View>
-    <View style={styles.picContainer}>
-<Image source={{uri: 'https://t1.daumcdn.net/cafeattach/MT4/648d42cb50cafc47f7d02fdfc380f91449afca84'}}
-       style={styles.pic}/> 
-    </View>
-       <View style={styles.line}/>
-    <Text>/item.content/</Text>
-    <View style={styles.iconContainer}>
-    <Ionicons style={{marginRight:270}}
-     name="heart-outline" size={20} color="#777777"/> 
-    <Ionicons name="share-outline" size={20} color="#777777"/>
-    </View>
-    <Text style={{marginTop:10}}>/item/</Text>
-    </Card.Content>
-    </Card>
-    </TouchableOpacity>
-  );
-};
+      <ScrollView>
+      <View style={{backgroundColor : '#fff'}}>
+        <View style={styles.title}>
+                <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
+         
+          
+         <Ionicons name="arrow-back" size={25} color="black" />
 
-    return (
-      <SafeAreaView style={{flex:1}}>
-      <Agenda 
-      markingType={'custom'}
-      items={items}
-      renderItem={({item})=> {return <renderCard item={item} />
-      }}
-      minDate={'2022-03-01'}
-      maxDate={'2022-08-28'}
-      pastScrollRange={2}
-      futureScrollRange={2}
-      theme={{
-      todayTextColor: '#FFA500',
-      selectedDayBackgroundColor: '#FFA500',
-      }}
-      />
-        <ActionButton buttonColor="rgb(255, 165, 0)" title="다이어리작성" onPress={()=>onAddDiarypress()}>
-            <Icon name="createDiary" style={styles.actionButtonIcon} />
+        </TouchableOpacity>
+          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center',}}>
+                <Text style={{fontFamily : 'Jalnan'}}>다이어리</Text>
+          </View>
+          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={()=> navigation.navigate('AddDiary')}>
 
-        </ActionButton>
+          <Icon name="add" size={25} color="black" />
+        
+          </TouchableOpacity>
+          </View>
+      <Calendar 
+      onDayPress={(day) => {
+        console.log('selected day', day)
+        Alert.alert(
+          day.dateString,
+          
+         setCheckday(day.dateString)
+           
+        );   
+        
+    }}
+    
+      monthFormat={'yyyy년 M월'} />
+      
+      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20}}>{checkday}</Text>
+      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20, marginBottom : 10}}>{DiaryData.post}</Text>
+      <View style={{ alignItems  : 'center'}}>
+      <Image style={styles.userImg} source={{uri: DiaryData.img}}></Image>
+      </View>
+      <Text style={{marginTop : 10,fontFamily : 'Jalnan', fontSize : 15,marginLeft : 10}}numberOfLines ={3}>{DiaryData.body}</Text>
 
-      </SafeAreaView>
+     
+  </View>
+  </ScrollView>
+  
   );
 };
 
@@ -94,6 +215,7 @@ const styles = StyleSheet.create({
     },
     diaryTitle:{
       marginBottom:10,
+      fontSize:18,
     },
     picContainer:{
       width:200,
@@ -120,9 +242,19 @@ const styles = StyleSheet.create({
       height: 22,
       color: 'white',
     },
-  });
+    title:{ 
+      height:50,
+      backgroundColor: '#fff',
+      flexDirection: 'row', 
+      
+     
+    },
+    userImg: {
+      height: 200,
+      width: 200,
+      resizeMode : 'stretch',
+      backgroundColor: '#fff',
+      flex: 1,
+    },
 
-
-
-
-
+  })

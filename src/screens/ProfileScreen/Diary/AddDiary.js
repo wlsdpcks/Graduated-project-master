@@ -1,5 +1,7 @@
 import { View,  ActivityIndicator, Text,TouchableOpacity,StyleSheet,SafeAreaView,Button} from 'react-native';
 import React, { useState,useEffect,useContext,useCallback } from 'react';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {format} from 'date-fns';
 import { InputFieldDiary, InputTitle, InputWrapper,Boundary, SubmitBtn, AddImageD,
   SubmitBtnText, DiaryBtn, DiaryBtnText, DiaryBtnWapper, AddImage,StatusWrapper, } from '../../../../styles/AddPost';
 import DatePicker from '../../../components/DatePicker/DatePicker';
@@ -13,15 +15,20 @@ import firebase  from '@react-native-firebase/app';
 import storage from '@react-native-firebase/storage';
 import useStore from '../../../../store/store'
 import { ScrollView } from 'react-native-gesture-handler';
-import {date2} from '../Diary/Diary';
-
+import {
+  actions,
+  RichEditor,
+  RichToolbar,
+} from "react-native-pell-rich-editor";
 
 const AddDiary = () =>{
+
 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const {setPhotoName,SetBody,SetPost} = useStore();
+  const [date2,setdate2]=useState(null);
 
   const {user, logout} = useContext(AuthContext);
 
@@ -83,6 +90,8 @@ const AddDiary = () =>{
     })
     .then(()=>{
       navigation.goBack();
+      setDeleted(true);
+      Alert.alert('다이어리 작성 완료')
     })
     .catch((error) => {
       console.log('Something went wrong with added post to firestore.', error);
@@ -143,6 +152,54 @@ const AddDiary = () =>{
     }
 
   };
+  const DatePicker = () => {
+
+    firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(date2)   
+    .set({
+  
+    })
+  
+  
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [date, setDate] = useState(new Date().getTime());
+  
+    const showDatePicker = () => {
+      setDatePickerVisibility(true);
+    };
+  
+    const hideDatePicker = () => {
+      setDatePickerVisibility(false);
+    };
+  
+    const handleConfirm = date => {
+      setDate(date);
+      hideDatePicker();
+      setdate2(format(date, 'yyyy-MM-dd'));
+    };
+  
+    return (
+      <View>
+        <Text style={{fontSize: 20}}>
+          {format(date, 'yyyy/MM/dd')}
+        </Text>
+        <DiaryBtn onPress={showDatePicker}>
+        <DiaryBtnText>날짜</DiaryBtnText>
+        </DiaryBtn>
+  
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+      </View>
+    );
+  };
+  
 
     return(
         <SafeAreaView style= {styles.container}>

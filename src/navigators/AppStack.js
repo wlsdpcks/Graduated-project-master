@@ -23,6 +23,8 @@ import Store from '../screens/StoreScreen/Store';
 import SearchSnsScreen from '../screens/SearchScreen/SearchSnsScreen';
 import PostComment from '../screens/SnsScreen/PostComment';
 import BestSnsScreen from '../screens/SnsScreen/BestSnsScreen';
+import PresentScreen from '../screens/ChatScreen/PresentScreen';
+import PresentDetailScreen from '../screens/ChatScreen/PresentDetailScreen'
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const FeedStack = ({navigation}) => (
@@ -181,6 +183,25 @@ const MessageStack = ({navigation}) => (
     >
       {props => <ChatScreen {...props}  /> }
     </Stack.Screen>
+    
+    <Stack.Screen
+      name="Present"
+      component={PresentScreen}
+      options={{
+        headerShown: false,
+        
+        
+      }}
+    />
+    <Stack.Screen
+      name="PresentDetail"
+      component={PresentDetailScreen}
+      options={{
+        headerShown: false,
+        
+        
+      }}
+    />
   </Stack.Navigator>
 );
 const ProfileStack = ({navigation}) => (

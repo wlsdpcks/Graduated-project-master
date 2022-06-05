@@ -183,9 +183,7 @@ const SnsScreen = ({props}) => {
       .catch((e) => console.log('Error deleting posst.', e));
   };
 
-  const ListHeader = () => {
-    return null;
-  };
+ 
   return (
     ready ? <Loading/> :  (
 <ScrollView style={{flex: 1}}>
@@ -227,8 +225,6 @@ const SnsScreen = ({props}) => {
               />
             )}
             keyExtractor={(item) => item.id}
-            ListHeaderComponent={ListHeader}
-            ListFooterComponent={ListHeader}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
