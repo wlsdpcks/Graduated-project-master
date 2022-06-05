@@ -12,6 +12,7 @@ import firebase  from '@react-native-firebase/app';
 import {LocaleConfig} from 'react-native-calendars';
 import { onChange } from 'react-native-reanimated';
 import { ScrollView } from 'react-native-gesture-handler';
+import useStore from '../../../../store/store'
 
 LocaleConfig.locales['fr'] = {
   monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
@@ -27,14 +28,17 @@ LocaleConfig.defaultLocale = 'fr';
 
 
 const Diary = ({onDelete}) => {
-
+  const {DiaryPost,Checkday,setCheckday2} = useStore();
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
   const [DiaryData, setDiaryData] = useState([]);
   const [deleted, setDeleted] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [checkday, setCheckday] = useState(null);
+  const [checkday, setCheckday] = useState([]);
+  const usersDiaryCollection = firestore().collection('Diary').doc(firebase.auth().currentUser.uid).collection('DiaryDetails');
+
+  
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -44,16 +48,19 @@ const Diary = ({onDelete}) => {
   }, []);
 
   const getDiary = async() => {
+    console.log('================================')
+    console.log(Checkday);
     const querySanp = await firestore()
     .collection('Diary')
     .doc(firebase.auth().currentUser.uid)
     .collection('DiaryDetails')
-    .doc(checkday)
+    .doc(Checkday)
     .get()
     .then((documentSnapshot) => {
       if( documentSnapshot.exists ) {
         setDiaryData(documentSnapshot.data());
-      }
+        console.log(documentSnapshot.data());
+      }console.log('xxx');
     })
   
   
@@ -154,7 +161,7 @@ const Diary = ({onDelete}) => {
     getDiary();
     getUser();
     setDeleted(false);
-  }, [deleted,refreshing]);
+  }, [deleted,refreshing,Checkday]);
 
 
 
@@ -183,11 +190,9 @@ const Diary = ({onDelete}) => {
         console.log('selected day', day)
         Alert.alert(
           day.dateString,
-          
          setCheckday(day.dateString)
-           
         );   
-        
+        setCheckday2(day.dateString);
     }}
     
       monthFormat={'yyyy년 M월'} />
