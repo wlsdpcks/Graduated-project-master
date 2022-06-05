@@ -137,12 +137,14 @@ const Miniroom = () => {
     getBackgroundData();
     getMinime();
     getTool();
-    
+    return () => {
+      onSave();
+    }
   }, [tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime]);
   return (
 
     <View style={{flex:1}}>
-              <Button title="갤러리에 저장" onPress={onSave} />
+              
 
     <ViewShot style ={{flex : 1}} ref={captureRef} options={{ format: 'jpg', quality: 0.9 }}>
 
