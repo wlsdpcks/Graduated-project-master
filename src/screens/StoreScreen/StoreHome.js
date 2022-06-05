@@ -136,7 +136,7 @@ const StoreHome = ({navigation}) => {
             />
           </View>
 
-          <Text style={{fontWeight: 'bold', fontSize: 17, marginTop: 10}}>
+          <Text style={{ fontFamily : "Jalnan", fontSize: 17, marginTop: 10}}>
             {plant.name}
           </Text>
           <View
@@ -145,7 +145,7 @@ const StoreHome = ({navigation}) => {
               justifyContent: 'space-between',
               marginTop: 5,
             }}>
-            <Text style={{fontSize: 19, fontWeight: 'bold'}}>
+            <Text style={{fontSize: 19,  fontFamily : "Jalnan"}}>
             ₩{plant.price}
             </Text>
             <View
@@ -172,12 +172,12 @@ const StoreHome = ({navigation}) => {
       style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
       <View style={style.header}>
         <View>        
-          <Text style={{fontSize: 25, fontWeight: 'bold'}}>Welcome to</Text>
-          <Text style={{fontSize: 38, color: COLORS.green, fontWeight: 'bold'}}>
+          <Text style={{fontSize: 25,  fontFamily : "Jalnan"}}>Welcome to</Text>
+          <Text style={{fontSize: 38, color: COLORS.green,  fontFamily : "Jalnan"}}>
             MiniRoom Shop
           </Text>
         </View>
-        <Text>Point {userData ? userData.point : ''}</Text>
+        <Text style={{ fontFamily : "Jalnan"}}>Point {userData ? userData.point : ''}</Text>
       </View>
       <View style={{marginTop: 30, flexDirection: 'row'}}>
         <View style={style.searchContainer}>
@@ -219,7 +219,7 @@ const style = StyleSheet.create({
     marginBottom: 20,
     justifyContent: 'space-between',
   },
-  categoryText: {fontSize: 16, color: 'grey', fontWeight: 'bold'},
+  categoryText: {fontSize: 16, color: 'grey', fontFamily : "Jalnan"},
   categoryTextSelected: {
     color: COLORS.green,
     paddingBottom: 5,

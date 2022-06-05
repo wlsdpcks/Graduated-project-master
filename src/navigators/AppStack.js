@@ -109,6 +109,10 @@ const FeedStack = ({navigation}) => (
         component={PostComment}
         options={{
         title: '댓글',
+        headerTitleStyle: {
+          fontFamily: 'Jalnan',
+          color : '#696969'
+        },
         headerTitleAlign: 'center',
         headerStyle: {
         backgroundColor: '#fff',
@@ -172,6 +176,7 @@ const FeedStack = ({navigation}) => (
 const MessageStack = ({navigation}) => (
   <Stack.Navigator>
     <Stack.Screen name="Message"  component={ChatNavigator} options={{
+      
 				headerShown: true,
 				header: () => <Header title="채팅" />
 			}} />
@@ -296,11 +301,13 @@ const AppStack = () => {
         tabBarHideOnKeyboard: true,
         
         
+        
       }}>
             <Tab.Screen
         name="Home"
         component={ProfileStackScreen}
         options={{
+          
           // tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => (
             <Ionicons name="person-outline" color={color} size={size} />
