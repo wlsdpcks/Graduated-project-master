@@ -166,100 +166,111 @@ const Diary = ({onDelete}) => {
 
 
 
-    return (
-      <ScrollView>
-      <View style={{backgroundColor : '#fff'}}>
-        <View style={styles.title}>
-                <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
-         
-          
-         <Ionicons name="arrow-back" size={25} color="black" />
+  return (
+    <View>
+    <ScrollView>
+    <View style={{backgroundColor : '#fff'}}>
 
-        </TouchableOpacity>
-          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center',}}>
-                <Text style={{fontFamily : 'Jalnan'}}>다이어리</Text>
-          </View>
-          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={()=> navigation.navigate('AddDiary')}>
-
-          <Icon name="add" size={25} color="black" />
-        
-          </TouchableOpacity>
-          </View>
-      <Calendar 
-      onDayPress={(day) => {
-        console.log('selected day', day)
-        Alert.alert(
-          day.dateString,
-         setCheckday(day.dateString)
-        );   
-        setCheckday2(day.dateString);
-    }}
-    
-      monthFormat={'yyyy년 M월'} />
-      
-      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20}}>{checkday}</Text>
-      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20, marginBottom : 10}}>{DiaryData.post}</Text>
-      <View style={{ alignItems  : 'center'}}>
-      <Image style={styles.userImg} source={{uri: DiaryData.img}}></Image>
-      </View>
-      <Text style={{marginTop : 10,fontFamily : 'Jalnan', fontSize : 15,marginLeft : 10}}numberOfLines ={3}>{DiaryData.body}</Text>
-
+    <Calendar 
+    onDayPress={(day) => {
+      console.log('selected day', day)
      
-  </View>
-  </ScrollView>
+       setCheckday(day.dateString)
+         
+      
+      setCheckday2(day.dateString);
+  }}
   
-  );
+    monthFormat={'yyyy년 M월'} />
+    
+    
+    <TouchableOpacity Style={styles.itemConstainer}>
+    <View style={styles.content}>
+  <View style={styles.diaryTitle}>
+  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.post}</Text>
+  <Text style={styles.checkday}>{checkday}</Text>
+  </View>
+  
+  <View style={styles.picContainer}>
+<Image  source={{uri: DiaryData.img}} style={styles.pic}/> 
+  </View>
+  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.body}</Text>
+    </View>
+  </TouchableOpacity>
+   
+</View>
+</ScrollView>
+<ActionButton buttonColor="rgb(255, 165, 0)" title="다이어리작성" onPress={()=>onAddDiarypress()}>
+          <Icon name="createDiary" style={styles.actionButtonIcon} />
+          </ActionButton>
+</View>
+
+);
 };
 
 export default Diary;
 
 const styles = StyleSheet.create({
-  itemConstainer:{
-    marginRight:10,
-    marginTop:17
-    },
-    diaryTitle:{
-      marginBottom:10,
-      fontSize:18,
-    },
-    picContainer:{
-      width:200,
-      height:200,
-      marginLeft:50,
-    },
-    pic:{
-      width:'100%',
-      height:'100%',
+itemConstainer:{
+  width:'100%',
 
-    },
-    line:{
-      marginTop:10,
-      borderBottomColor: 'gray',
-      borderBottomWidth: 1,
+  },
+  content:{    
+    marginLeft:40,
+    marginTop:20,
+    marginRight:20,
 
-    },
-    iconContainer:{
-      flexDirection: 'row',
+  },
+  checkday:{
+    fontSize : 20,
+    alignSelf: 'flex-end',
+    fontSize:18,
+    marginRight:40,
+    fontFamily: 'DungGeunMo'
+  },
+  diaryTitle:{
+    marginBottom:10,
+  },
+  picContainer:{
+    width:200,
+    height:200,
+    marginLeft:60,
+    marginTop:20,
+    marginBottom:20,
+  },
+  pic:{
+    width:'100%',
+    height:'100%',
 
-    },
-    actionButtonIcon: {
-      fontSize: 20,
-      height: 22,
-      color: 'white',
-    },
-    title:{ 
-      height:50,
-      backgroundColor: '#fff',
-      flexDirection: 'row', 
-      
-     
-    },
-    userImg: {
-      height: 200,
-      width: 200,
-      resizeMode : 'stretch',
-      backgroundColor: '#fff',
-      flex: 1,
-    },
+  },
+  line:{
+    marginTop:10,
+    borderBottomColor: 'gray',
+    borderBottomWidth: 1,
 
-  })
+  },
+  iconContainer:{
+    flexDirection: 'row',
+
+  },
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: 'white',
+  },
+  title:{ 
+    height:50,
+    backgroundColor: '#fff',
+    flexDirection: 'row', 
+    
+   
+  },
+  userImg: {
+    height: 200,
+    width: 200,
+    resizeMode : 'stretch',
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+
+})
