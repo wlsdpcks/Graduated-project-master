@@ -1,37 +1,27 @@
 
-
-import { View, Text,TouchableOpacity,StyleSheet,SafeAreaView,Image,RefreshControl} from 'react-native';
+import { View, Text,TouchableOpacity,StyleSheet,SafeAreaView,Image,RefreshControl,Alert} from 'react-native';
 import React, {useEffect,useCallback,useState } from 'react';
-import {Agenda} from 'react-native-calendars';
+import {Agenda, Calendar, CalendarList} from 'react-native-calendars';
 import { Card } from 'react-native-paper';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-
-
-const timeToString =(time)=> {
-   const date =new Date(time);
-  return date.toISOString().split('T')[0];
-
-import React ,{ useState } from 'react';
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-import { StyleSheet,View,Text,SafeAreaView} from "react-native";
-import {LocaleConfig} from 'react-native-calendars';
-import { useNavigation } from "@react-navigation/native";
-import ActionButton from 'react-native-action-button';
 import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
-import Icon from "react-native-vector-icons/Entypo";
+import {LocaleConfig} from 'react-native-calendars';
+import { onChange } from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
+
 LocaleConfig.locales['fr'] = {
-  monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-  monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+  monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+  monthNamesShort: ['Janv.','Févr.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'],
   dayNames: ['일요일','월요일', '화요일','수요일','목요일','금요일','토요일'],
   dayNamesShort: ['일', '월','화','수','목','금','토'],
   today: 'Aujourd\'hui'
-
 };
+LocaleConfig.defaultLocale = 'fr';
+
 
 
 
@@ -43,7 +33,8 @@ const Diary = ({onDelete}) => {
   const [DiaryData, setDiaryData] = useState([]);
   const [deleted, setDeleted] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-
+  const [userData, setUserData] = useState(null);
+  const [checkday, setCheckday] = useState(null);
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -51,17 +42,26 @@ const Diary = ({onDelete}) => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
+
   const getDiary = async() => {
     const querySanp = await firestore()
     .collection('Diary')
     .doc(firebase.auth().currentUser.uid)
     .collection('DiaryDetails')
+    .doc(checkday)
     .get()
-
-    const allDiary = querySanp.docs.map(docSnap=>docSnap.data())
-    setDiaryData(allDiary)
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        setDiaryData(documentSnapshot.data());
+      }
+    })
+  
+  
+ 
     
   }
+
+  
 
   const onAddDiarypress = () => {
     navigation.navigate('AddDiary');
@@ -157,64 +157,52 @@ const Diary = ({onDelete}) => {
   }, [deleted,refreshing]);
 
 
-const RenderCard = ({item})=>{
+
+
     return (
-    <TouchableOpacity Style={styles.itemConstainer}>
-    <Card>
-    <Card.Content>
-    <View style={styles.diaryTitle}>
-    <Text>{item.post}</Text>
-    <TouchableOpacity onPress={() => onDelete(item.id)}>
-        {user.uid == item.uid ? (
+      <ScrollView>
+      <View style={{backgroundColor : '#fff'}}>
+        <View style={styles.title}>
+                <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
          
-            <Ionicons name="trash" size={20} />
           
-        ) : null}
+         <Ionicons name="arrow-back" size={25} color="black" />
+
         </TouchableOpacity>
-    </View>
-    <View style={styles.picContainer}>
-<Image  source={{uri: item.postImg}} style={styles.pic}/> 
-    </View>
-    <Text>{item.body}</Text>
-    </Card.Content>
-    </Card>
-    </TouchableOpacity>
-  );
-};
+          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center',}}>
+                <Text style={{fontFamily : 'Jalnan'}}>다이어리</Text>
+          </View>
+          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={()=> navigation.navigate('AddDiary')}>
 
-    return (
-      <SafeAreaView style={{flex:1}}>
-      <Agenda 
-      markingType={'custom'}
-      items={DiaryData}
-      renderItem={({item})=>(<RenderCard 
-        item={item} 
-        onDelete={handleDelete}
-        />
-        )}
-      refreshControl={
-          <RefreshControl
-             refreshing={refreshing}
-             onRefresh={onRefresh}
-           />
-         }
-      minDate={'2022-04-01'}
-      maxDate={'2022-08-28'}
-      pastScrollRange={2}
-      futureScrollRange={2}
-
-      theme={{
-      todayTextColor: '#FFA500',
-      selectedDayBackgroundColor: '#FFA500',
-      }}
-      />
+          <Icon name="add" size={25} color="black" />
+        
+          </TouchableOpacity>
+          </View>
+      <Calendar 
+      onDayPress={(day) => {
+        console.log('selected day', day)
+        Alert.alert(
+          day.dateString,
+          
+         setCheckday(day.dateString)
+           
+        );   
+        
+    }}
+    
+      monthFormat={'yyyy년 M월'} />
       
-        <ActionButton buttonColor="rgb(255, 165, 0)" title="다이어리작성" onPress={()=>onAddDiarypress()}>
-            <Icon name="createDiary" style={styles.actionButtonIcon} />
+      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20}}>{checkday}</Text>
+      <Text style={{textAlign : 'center',marginTop : 10,fontFamily : 'Jalnan', fontSize : 20, marginBottom : 10}}>{DiaryData.post}</Text>
+      <View style={{ alignItems  : 'center'}}>
+      <Image style={styles.userImg} source={{uri: DiaryData.img}}></Image>
+      </View>
+      <Text style={{marginTop : 10,fontFamily : 'Jalnan', fontSize : 15,marginLeft : 10}}numberOfLines ={3}>{DiaryData.body}</Text>
 
-        </ActionButton>
-
-      </SafeAreaView>
+     
+  </View>
+  </ScrollView>
+  
   );
 };
 
@@ -254,14 +242,19 @@ const styles = StyleSheet.create({
       height: 22,
       color: 'white',
     },
-
+    title:{ 
+      height:50,
+      backgroundColor: '#fff',
+      flexDirection: 'row', 
+      
+     
+    },
+    userImg: {
+      height: 200,
+      width: 200,
+      resizeMode : 'stretch',
+      backgroundColor: '#fff',
+      flex: 1,
+    },
 
   })
-
-  });
-
-
-
-
-
-
