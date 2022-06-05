@@ -18,7 +18,7 @@ const timeToString =(time)=> {
 
 
 
-const Diary = () => {
+const Diary = ({onDelete}) => {
 
   const [posts, setPosts] = useState(null);
   const navigation = useNavigation();
@@ -49,31 +49,74 @@ const Diary = () => {
     navigation.navigate('AddDiary');
   };
 
-  const DeleteComment =  async (item) => {
-    
- 
-    try {
-      const rows = await addCollection.where('comment', '==', item.comment);
+  const handleDelete = (postId) => {
+    Alert.alert(
+      '글 삭제하기',
+      '확실합니까?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed!'),
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: () => deletePost(postId),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
 
-      rows.get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          doc.ref.delete()
+  const deletePost = (postId) => {
+    console.log('Current Post Id: ', postId);
 
-      
-      
-        });
-      }).then(() => {
-      setDeleted(true);
+    firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(postId)
+    .get()
+      .then((documentSnapshot) => {
+        if (documentSnapshot.exists) {
+          const {img} = documentSnapshot.data();
 
-      Alert.alert(
-        '댓글 삭제 완료!',
+          if (img != null) {
+            const storageRef = storage().refFromURL(img);
+            const imageRef = storage().ref(storageRef.fullPath);
+
+            imageRef
+              .delete()
+              .then(() => {
+                console.log(`${img} 성공적으로 삭제되었습니다.`);
+                deleteFirestoreData(postId);
+              })
+              .catch((e) => {
+                console.log('Error while deleting the image. ', e);
+              });
+            // If the post image is not available
+          } else {
+            deleteFirestoreData(postId);
+          }
+        }
+      });
+  };
+
+  const deleteFirestoreData = (postId) => {
+    firestore()
+    .collection('Diary')
+    .doc(firebase.auth().currentUser.uid)
+    .collection('DiaryDetails')
+    .doc(postId)
+      .delete()
+      .then(() => {
+        Alert.alert(
+          '글이 삭제되었습니다.',
+          '당신의 글이 성공적으로 삭제되었습니다!',
         );
-
-      console.log('Delete Complete!', rows);
-    })
-    } catch (error) {
-      console.log(error.message);
-    }
+        setDeleted(true);
+      })
+      .catch((e) => console.log('Error deleting posst.', e));
   };
 
   const getUser = async() => {
@@ -95,6 +138,7 @@ const Diary = () => {
     setDeleted(false);
   }, [deleted,refreshing]);
 
+
 const RenderCard = ({item})=>{
     return (
     <TouchableOpacity Style={styles.itemConstainer}>
@@ -102,6 +146,13 @@ const RenderCard = ({item})=>{
     <Card.Content>
     <View style={styles.diaryTitle}>
     <Text>{item.post}</Text>
+    <TouchableOpacity onPress={() => onDelete(item.id)}>
+        {user.uid == item.uid ? (
+         
+            <Ionicons name="trash" size={20} />
+          
+        ) : null}
+        </TouchableOpacity>
     </View>
     <View style={styles.picContainer}>
 <Image  source={{uri: item.postImg}} style={styles.pic}/> 
@@ -118,8 +169,11 @@ const RenderCard = ({item})=>{
       <Agenda 
       markingType={'custom'}
       items={DiaryData}
-      renderItem={({item})=> {return <RenderCard item={item} />
-      }}
+      renderItem={({item})=>(<RenderCard 
+        item={item} 
+        onDelete={handleDelete}
+        />
+        )}
       refreshControl={
           <RefreshControl
              refreshing={refreshing}
@@ -183,4 +237,4 @@ const styles = StyleSheet.create({
       color: 'white',
     },
 
-
+  })

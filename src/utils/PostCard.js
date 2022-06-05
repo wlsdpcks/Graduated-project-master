@@ -149,7 +149,7 @@ const onDislikePress = (item) => {
   }, [deleted,refreshing]);
 
   return (
-    <Card key={item.id}refreshControl={
+    <Card key={item.id} refreshControl={
       <RefreshControl
          refreshing={refreshing}
          onRefresh={onRefresh}
