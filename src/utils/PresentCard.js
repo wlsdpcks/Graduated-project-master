@@ -103,14 +103,31 @@ try {
               justifyContent: 'space-between'
             }}>
               <Text numerOfLine={1} style={styles.username}>{item.name}</Text>
-         
+              <TouchableOpacity>
+              <Icon name="present" size={30}></Icon>
+
+              </TouchableOpacity>
              
             </View>
   
             <View style={{flexDirection : 'row'}}>
-            
+            {
               
+        presentData?.map((row, idx) => {
+          return (
+            
+            <View style={{}}>
+              
+              <TouchableOpacity onPress={() => navigation.navigate('PresentDetail', {uid : item.uid, name : row.name, img : row.img, price : row.price, })}>
+              <Image source ={{uri:row.img}} style={{width:30,height:30,marginLeft : 10, resizeMode : "contain"}} ></Image>
+              </TouchableOpacity>
+              </View>
         
+        
+          )  ;      
+         
+      })
+      } 
       </View>
 
       

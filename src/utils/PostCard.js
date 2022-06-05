@@ -34,8 +34,6 @@ const PostCard = ({item, onPress,onDelete,}) => {
   const [userData, setUserData] = useState(null);
   const [likeData, setlikeData] = useState([]);
   const [likeCheckData, setlikeCheckData] = useState(null);
-  const [likeIcon, setLikeIcon] = useState(false)
-  const [currentUserLike, setCurrentUserLike] = useState(false)
   const [isLiked, setIsLiked] = useState(false);
   const navigation = useNavigation();
   const [deleted, setDeleted] = useState(false);
@@ -49,12 +47,7 @@ const PostCard = ({item, onPress,onDelete,}) => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   }, []);
-  const handleLiked = () => {
-    !isLiked
-      ? onLikePress(item)
-      : onDislikePress(item);
-    setIsLiked(!isLiked);
-  };
+  
 
   const onLikePress = (item) => {
     firestore()
