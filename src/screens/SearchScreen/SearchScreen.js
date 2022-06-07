@@ -250,7 +250,7 @@ useEffect(()=>{
     getPosts()
     getBestPosts()
     getUser()
-  },[Post,Lsearch,Lsearchcount])
+  },[Post,Lsearchcount])
 
   const RenderCard = ({item})=>{
     return (

@@ -31,7 +31,7 @@ const Miniroom = () => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
-
+  const categories = ['도구', '미니미', '배경'];
 
 
   const getBackgroundData = async () => {
