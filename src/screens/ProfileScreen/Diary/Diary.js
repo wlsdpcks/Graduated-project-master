@@ -189,14 +189,14 @@ const Diary = ({onDelete}) => {
     <TouchableOpacity Style={styles.itemConstainer}>
     <View style={styles.content}>
   <View style={styles.diaryTitle}>
-  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.post}</Text>
+  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.post ? DiaryData.post : '없어용'}</Text>
   <Text style={styles.checkday}>{checkday}</Text>
   </View>
   
   <View style={styles.picContainer}>
 <Image  source={{uri: DiaryData.img}} style={styles.pic}/> 
   </View>
-  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.body}</Text>
+  <Text style={{fontSize : 20,fontFamily: 'DungGeunMo'}}>{DiaryData.body ? DiaryData.body : '없어용'}</Text>
     </View>
   </TouchableOpacity>
    
