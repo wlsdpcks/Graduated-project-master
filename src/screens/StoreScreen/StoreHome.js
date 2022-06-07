@@ -22,7 +22,7 @@ const StoreHome = ({navigation}) => {
   const usersCollection = firestore().collection('shops').doc('shopitems').collection('tool');
   const usersCollectionM = firestore().collection('shops').doc('shopitems').collection('minime');
   const usersCollectionB = firestore().collection('shops').doc('shopitems').collection('background');
-  const categories = ['TOOL', 'MINIME', 'BACKGROUND'];
+  const categories = ['도구', '미니미', '배경'];
   
   const {user, logout} = useContext(AuthContext);
   const {isPoint,setPoint} = useStore();
@@ -172,22 +172,14 @@ const StoreHome = ({navigation}) => {
       style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
       <View style={style.header}>
         <View>        
-          <Text style={{fontSize: 25,  fontFamily : "Jalnan"}}>Welcome to</Text>
+          <Text style={{fontSize: 25,  fontFamily : "Jalnan"}}>환영합니다 !</Text>
           <Text style={{fontSize: 38, color: COLORS.green,  fontFamily : "Jalnan"}}>
-            MiniRoom Shop
+            미니룸 상점
           </Text>
         </View>
-        <Text style={{ fontFamily : "Jalnan"}}>Point {userData ? userData.point : ''}</Text>
+        <Text style={{ fontFamily : "Jalnan"}}>보유 포인트 {userData ? userData.point : ''}</Text>
       </View>
-      <View style={{marginTop: 30, flexDirection: 'row'}}>
-        <View style={style.searchContainer}>
-          <Icon name="search" size={25} style={{marginLeft: 20}} />
-          <TextInput placeholder="Search" style={style.input} />
-        </View>
-        <View style={style.sortBtn}>
-          <Icon name="sort" size={30} color={COLORS.white} />
-        </View>
-      </View>
+      
       <CategoryList />
       <FlatList
         columnWrapperStyle={{justifyContent: 'space-between'}}

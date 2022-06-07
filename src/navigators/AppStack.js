@@ -277,6 +277,30 @@ const SearchStack = ({navigation}) => (
          ),
          }}
          />
+         <Stack.Screen
+      name="SerachBestSnsScreen"
+      component={BestSnsScreen}
+      options={{
+        title: 'Top 5 게시물 !',
+        headerTitleAlign: 'center',
+
+        headerTitleStyle: {
+         fontFamily: 'Jalnan',
+
+        },
+        headerStyle: {
+          shadowColor: '#fff',
+          elevation: 0,
+          backgroundColor : '#fff'
+        },
+        headerBackTitleVisible: false,
+        headerBackImage: () => (
+          <View style={{marginLeft: 15}}>
+            <Ionicons name="arrow-back" size={25} color="black" />
+          </View>
+        ),
+      }}
+    />   
 
   </Stack.Navigator>
   
