@@ -7,7 +7,8 @@ const store = (set => ({
     Backaddress: '', //상점 아이템 url주소값용
     setBacksaddress: (input) => set({ Backaddress: input }),//상점 아이템 url주소값용
     isMinime: '', //상점 아이템 url주소값용
-    setMinime: (input) => set({ isMinime: input }),//상점 아이템 url주소값용
+    setisMinime: (input) => set({ isMinime: input }),//상점 아이템 url주소값용
+    
     placeX: '', //미니룸 아이템 배치 좌표저장용
     setplaceX: (input) => set({placeX:input}), //미니룸 아이템 배치 좌표저장용
     placeY: '', //미니룸 아이템 배치 좌표저장용
