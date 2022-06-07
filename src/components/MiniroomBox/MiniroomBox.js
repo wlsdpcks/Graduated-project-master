@@ -77,7 +77,6 @@ const MiniroomBox =({test,name,x,y}) => {
         console.log('아이템 : ',name);
         console.log('x좌표 : ',dlatlx);
         console.log('y좌표 : ',dlatly);
-        
       },
     })
   ).current;
