@@ -30,6 +30,9 @@ const store = (set => ({
     setCheckday2: (input) => set({Checkday:input}), //상점 - > 미니룸 랜더링용
     Lsearch: '',
     setLsearch: (input) => set({Lsearch:input}),
+    
+    Lsearchcount:0, //검색 새로고침용
+    setLsearchcount: () => set(state => ({Lsearchcount:state.Lsearchcount+1})), //검색 새로고침용
 
     FolderName: '', //프로필 랜더링용
     setFolderName: (input) => set({ FolderName: input }),//프로필 랜더링용

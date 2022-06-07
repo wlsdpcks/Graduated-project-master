@@ -20,7 +20,7 @@ const SearchScreen = ({props,navigation}) => {
   const [count, setcount] = useState(null);
   const [Bestposts,setBestPosts] = useState(null)
   const [ready, setReady] = useState(true)
-  const {Lsearch, setLsearch}  = useStore()
+  const {Lsearch, setLsearch,setLsearchcount,Lsearchcount}  = useStore()
   const [userData, setUserData] = useState(null);
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
@@ -109,8 +109,7 @@ const SubmitSearch = async () => {
   .update({
     Lsearch : Lsearch
   })
-  
-      
+    setLsearchcount();  
  
 
     
@@ -251,7 +250,7 @@ useEffect(()=>{
     getPosts()
     getBestPosts()
     getUser()
-  },[Post])
+  },[Post,Lsearch,Lsearchcount])
 
   const RenderCard = ({item})=>{
     return (
