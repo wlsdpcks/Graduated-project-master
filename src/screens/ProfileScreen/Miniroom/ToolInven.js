@@ -27,8 +27,8 @@ const ToolInven = () => {
     firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').doc(name).set({
       name:name,
       address:address,
-      getx:223,
-      gety:217});
+      getx:1,
+      gety:1});
     console.log('추가완료');
     console.log(name);
     settooladdress(address);

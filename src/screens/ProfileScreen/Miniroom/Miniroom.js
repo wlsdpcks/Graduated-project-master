@@ -114,7 +114,7 @@ const Miniroom = () => {
 
 
   };
-
+ 
   const getMinime = async () => {
     try {
       const data = await usersMinimeCollection.get();
