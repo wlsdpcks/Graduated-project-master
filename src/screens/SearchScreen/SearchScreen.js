@@ -6,10 +6,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firebase  from '@react-native-firebase/app';
 import useStore from '../../../store/store';
 import Loading from '../../utils/Loading';
-import { VirtualizedScrollView } from 'react-native-virtualized-view';
+import { theme } from '../../Chat/ChatTheme';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 var { height, width } = Dimensions.get('window');
 
-const SearchScreen = (props) => {
+const SearchScreen = ({props,navigation}) => {
   const {Post} = useStore(); // 0522새로고침용
   const [posts,setPosts] = useState(null)
   const [serachposts, searchsetPosts] = useState(null);
@@ -18,6 +20,8 @@ const SearchScreen = (props) => {
   const [count, setcount] = useState(null);
   const [Bestposts,setBestPosts] = useState(null)
   const [ready, setReady] = useState(true)
+  const {Lsearch, setLsearch}  = useStore()
+  const [userData, setUserData] = useState(null);
 
   const tags = ["인물", "배경", "음식", "동물", "물건", "문화"]
   const [changepost,setchangePosts] = useState(null)
@@ -78,9 +82,12 @@ const handleSearchTextChange =  async (text) => {
             comments,
           });
         });
-       
+   
       })
+      
       setchangePosts(list);
+      setLsearch(text);
+      
       
     if (loading) {
       setLoading(false);
@@ -92,7 +99,36 @@ const handleSearchTextChange =  async (text) => {
   }
   
 };
+const SubmitSearch = async () => {
+    
+    
 
+  firestore()
+  .collection('users')
+  .doc(firebase.auth().currentUser.uid)
+  .update({
+    Lsearch : Lsearch
+  })
+  
+      
+ 
+
+    
+
+}
+
+const getUser = async() => {
+  await firestore()
+  .collection('users')
+  .doc(firebase.auth().currentUser.uid)
+  .get()
+  .then((documentSnapshot) => {
+    if( documentSnapshot.exists ) {
+      console.log('User Data', documentSnapshot.data());
+      setUserData(documentSnapshot.data());
+    }
+  })
+}
 const TagList =  async (tags) => {
   try {
     const list = [];
@@ -214,6 +250,7 @@ useEffect(()=>{
     },1000)
     getPosts()
     getBestPosts()
+    getUser()
   },[Post])
 
   const RenderCard = ({item})=>{
@@ -245,6 +282,7 @@ useEffect(()=>{
   return (
     
     ready ? <Loading/> :  (
+      <ScrollView>
     <View style={{ backgroundColor: 'white', flex: 1 }}>
     <View style={styles.serach}>
     <TouchableOpacity style={{marginTop : 6,marginLeft : 5}} onPress={() => getPosts()}>
@@ -252,17 +290,53 @@ useEffect(()=>{
          <Ionicons name="arrow-back" size={25} color="black" />
 
         </TouchableOpacity>
-      <SearchBar
-     
-      placeholder="Search here"      
-      onChangeText={(text) => handleSearchTextChange(text)}
-     
-    />
+        <View style={styles.container}>
+			<View style={styles.row}>
+				<Icon name="search" size={20} color={theme.colors.searchIcon} />
+				<TextInput style={styles.input}
+         onChangeText={(text) => {handleSearchTextChange(text)}}
+         placeholder="Search"
+          maxLength={10} />
+			</View>
+		</View>
+    <TouchableOpacity onPress={SubmitSearch}>
+    <View style={styles.serachBtn}>
+    <Text style={{color : theme.colors.searchText ,}}>검색</Text>
+    
+    </View>
+    </TouchableOpacity>
     </View>
    
     
-    
-    <View style={{flexDirection : 'row',marginBottom : 10}}>
+    <View style={{flexDirection : 'row'}}>
+
+    <Text style={{fontSize : 20, marginLeft : 5, fontFamily : 'Jalnan',marginTop : 5, color : 'orange'}}>🎉인기 게시물 Top 5🎉  </Text>
+    <TouchableOpacity style={styles.button2} onPress={() => TagList(userData ? userData.Lsearch : '')}>
+              <Text style={styles.userBtnTxt2}>최근 검색어</Text>
+          </TouchableOpacity>
+          </View>
+    <View style={{flexDirection : 'row', marginBottom : 10}}>
+    <ScrollView
+    horizontal={true}
+    showsHorizontalScrollIndicator = {false}>
+    {
+        Bestposts?.map((row, idx) => {
+          return (
+            <View>
+              <TouchableOpacity 
+              onPress={() => navigation.navigate('SerachBestSnsScreen', { uid : row.uid, postimg : row.postImg, post: row.post, postTime : row.postTime })}
+              >
+              <Image source ={{uri:row.postImg}} style={{width:200,height:150,marginLeft : 10}} ></Image>
+              </TouchableOpacity>
+              </View>
+        
+          )  ;      
+         
+      })
+      }
+      </ScrollView>
+    </View>
+    <View style={{flexDirection : 'row',marginBottom : 5}}>
     <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator = {false}>
@@ -303,6 +377,7 @@ useEffect(()=>{
         </View>
         
     </View>
+    </ScrollView>
     )
   );
 };
@@ -314,6 +389,16 @@ const styles = StyleSheet.create({
     flexDirection : 'row',
     marginTop: 10,
     marginBottom: 10,
+  },
+  textInput: {
+    marginLeft : 10,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    height: 35,
+    width : 250,
+    borderRadius: 10,
+    borderColor: 'gray',
+    borderWidth: 1
   },
   button: {
     marginLeft : 10,
@@ -330,10 +415,59 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
+  button2: {
+    marginLeft : 10,
+    marginRight : 8,
+    width: 100,
+    height: 30,
+    backgroundColor: "orange",
+    borderColor: 'orange',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderBottomColor:'#fff',
+    justifyContent: "center",
+    alignItems: "center"
+  },
   userBtnTxt: {
     fontFamily: "DungGeunMo",
     color: '#3e3e3e',
     textAlign:'center',  
     fontSize:15,
   },
+  serachBtn: {
+    marginLeft : 10,
+    width: 50,
+    height: 35,
+    backgroundColor: theme.colors.searchBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  userBtnTxt2: {
+    fontFamily: "Jalnan",
+    color: '#fff',
+    textAlign:'center',  
+    fontSize:15,
+  },
+  container: {
+	
+	},
+	row: {
+		backgroundColor: theme.colors.searchBackground,
+		flexDirection: 'row',
+		borderRadius: 5,
+		height: 35,
+		alignItems: 'center',
+		paddingHorizontal: 10,
+    marginLeft : 10
+	},
+	input: {
+		fontSize: 15,
+		height: 45,
+    width : 250,
+   
+		color: theme.colors.searchText
+	}
 });

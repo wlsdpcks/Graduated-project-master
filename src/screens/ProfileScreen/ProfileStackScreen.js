@@ -193,13 +193,31 @@ const ProfileStackScreen = ({navigation}) => {
                     ),
                     }}
                   />
-                  <Stack.Screen
+                     <Stack.Screen
                     name="Diary"
                     component={Diary}
                     options={{
-                      headerShown: false,
-                      }}
-                      />
+                    title: '다이어리',
+                    headerTitleStyle: {
+                      fontFamily: 'Jalnan',
+                      color : '#696969'
+                     },
+                    headerTitleAlign: 'center',
+                    headerStyle: {
+                    backgroundColor: '#fff',
+                    shadowColor: '#fff',
+                    elevation: 0,
+                    
+          
+                    },
+                    headerBackTitleVisible: false,
+                    headerBackImage: () => (
+                    <View style={{marginLeft: 15}}>
+                    <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+                      </View>
+                    ),
+                    }}
+                  />
                  
                   <Stack.Screen 
                   name="AddDiary" 

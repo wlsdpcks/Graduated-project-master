@@ -118,7 +118,7 @@ const addItem = async () => {
     <View style={{flex:1}}>
       <View style={style.header}>
         <Icon name="arrow-back" size={28} onPress={() => navigation.goBack()} />
-        <Text>Point {userData ? userData.point : ''}</Text>
+        <Text style={{ fontFamily : "Jalnan"}}>Point {userData ? userData.point : ''}</Text>
       </View>
       <View style={style.imageContainer}>
         
@@ -132,7 +132,7 @@ const addItem = async () => {
             alignItems: 'flex-end',
           }}>
           <View style={style.line} />
-          <Text style={{fontSize: 18, fontWeight: 'bold'}}>Best choice</Text>
+          <Text style={{fontSize: 18,  fontFamily : "Jalnan"}}>Best choice</Text>
         </View>
         <View
           style={{
@@ -142,7 +142,7 @@ const addItem = async () => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={{fontSize: 22, fontWeight: 'bold'}}>{plant.name}</Text>
+          <Text style={{fontSize: 22,  fontFamily : "Jalnan"}}>{plant.name}</Text>
           <View style={style.priceTag}>
             <Text
               style={{
@@ -158,13 +158,14 @@ const addItem = async () => {
         <View style={{paddingHorizontal: 20, marginTop: 10}}>
           <View style={{height:80}}>
           <ScrollView>
-          <Text style={{fontSize: 20, fontWeight: 'bold'}}>About</Text>
+          <Text style={{fontSize: 20,  fontFamily : "Jalnan"}}>About</Text>
           <Text
             style={{
               color: 'grey',
               fontSize: 16,
               lineHeight: 22,
               marginTop: 10,
+              fontFamily : "Jalnan"
             }}>
             {plant.about}
           </Text>
@@ -199,7 +200,7 @@ const addItem = async () => {
             <TouchableOpacity onPress={CheckBuy}>
             <View style={style.buyBtn}>
               <Text
-                style={{color: COLORS.white, fontSize: 18, fontWeight: 'bold'}}>
+                style={{color: COLORS.white, fontSize: 18,  fontFamily : "Jalnan"}}>
                 구매
               </Text>
             </View>
@@ -207,7 +208,7 @@ const addItem = async () => {
             <TouchableOpacity onPress={CheckPresent}>
             <View style={style.buyBtn}>
               <Text
-                style={{color: COLORS.white, fontSize: 18, fontWeight: 'bold'}}>
+                style={{color: COLORS.white, fontSize: 18,  fontFamily : "Jalnan"}}>
                 조르기
               </Text>
             </View>
