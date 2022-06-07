@@ -28,6 +28,8 @@ const store = (set => ({
     setDiaryPost: (input) => set({DiaryPost:input}), //상점 - > 미니룸 랜더링용
     Checkday: new Date(),
     setCheckday2: (input) => set({Checkday:input}), //상점 - > 미니룸 랜더링용
+    Lsearch: '',
+    setLsearch: (input) => set({Lsearch:input}),
 
     FolderName: '', //프로필 랜더링용
     setFolderName: (input) => set({ FolderName: input }),//프로필 랜더링용
