@@ -1,21 +1,20 @@
 import React from 'react';
-import { View, Text,TouchableOpacity,StyleSheet,} from 'react-native';
-import MusicPlayer from '../../../components/MusicPlayer/MusicPlayer';
+import {StyleSheet, Text, View} from 'react-native';
+import PlayerScreen from '../../../components/MusicPlayer/PlayerScreen';
 
-const Music = () => {
-
-    return (
+export default function App() {
+  return (
     <View style={styles.container}>
-    <MusicPlayer/>
+      <PlayerScreen />
     </View>
   );
-};
+}
 
-export default Music;
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-
-    },
-   
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    // alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
