@@ -2,9 +2,7 @@ import { View, Text,TouchableOpacity,StyleSheet,Image,SafeAreaView,Dimensions,An
 import React,{useState,useEffect,useRef} from 'react'
 import { DraxView,DraxProvider,DraxList } from 'react-native-drax';
 import { FlatList, GestureHandlerRootView } from 'react-native-gesture-handler';
-import ToolInven from './ToolInven';
-import MinimiInven from './MinimiInven';
-import MusicInven from './MusicInven';
+
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
 import {useNavigation} from '@react-navigation/native';
@@ -22,28 +20,50 @@ const Miniroom = () => {
   const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersMinimeCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minime').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool'); 
+  const usersMinipatCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minipat').doc(firebase.auth().currentUser.uid+ 'mid');
+
 
   const InventoolCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
   const InvenminimeCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('minime');
   const InvenBackgroundCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('background');
+  const InvenMinipatCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('minipat');
   const {tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime,settooladdress,setcountItem,setBacksaddress,setisMinime} = useStore();
   const [tool, setTool] = useState();
-  const [Back, setBack] = useState(null);
   const [Minime, setMinime] = useState(null);
+  const [Back, setBack] = useState(null);
+  const [Minipat, setMinipat] = useState(null);
+
   const captureRef = useRef();
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   
   const [catergoryIndex, setCategoryIndex] = useState(0);
-  const categories = ['도구', '미니미', '배경'];
+  const categories = ['가구', '미니미', '배경','미니펫'];
 
   const [InvenMinime, setInvenMinime] = useState();
   const [InvenBackground, setInvenBackground] = useState();
   const [InvenTool, setInvenTool] = useState();
+  const [InvenMinipat, setInvenMinipat] = useState();
 
 
 /*미니룸 보여지는곳 전용*/
+const getTool = async () => {
+  try {
+    const datatool = await usersToolCollection.get();
+    setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const getMinime = async () => {
+  try {
+    const data = await usersMinimeCollection.get();
+    setMinime(data._data.address);
+  } catch (error) {
+    console.log(error.message);
+  }
+};
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
@@ -52,22 +72,14 @@ const Miniroom = () => {
       console.log(error.message);
     }
   };
-   const getMinime = async () => {
-     try {
-       const data = await usersMinimeCollection.get();
-       setMinime(data._data.address);
-     } catch (error) {
-       console.log(error.message);
-     }
-   };
-   const getTool = async () => {
-     try {
-       const datatool = await usersToolCollection.get();
-       setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
-     } catch (error) {
-       console.log(error.message);
-     }
-   };
+  const getMinipatData = async () => {
+    try {
+      const data = await usersMinipatCollection.get();
+      setMinipat(data._data.address);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
  
  
    /*미니룸 인벤 전용*/
@@ -121,14 +133,30 @@ const Miniroom = () => {
     console.log(newaddress);
     setBacksaddress(newaddress);
   }
+  const getMinipatInven = async () => {
+    try {
+      const data = await InvenMinipatCollection.get();
+      setInvenMinipat(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const updateMinipat = (newaddress) => {
+    usersMinipatCollection.update({address:newaddress});
+    console.log('저장완료');  
+    console.log(newaddress);
+    setMinipat(newaddress);
+  }
 
    useEffect(() => {
      getBackgroundData();
      getMinime();
      getTool();
+     getMinipatData();
      getMinimeInven();
      getBackgroundInven();
      getToolInven();
+     getMinipatInven();
      return () => {
        onSave();
      }
@@ -230,37 +258,21 @@ const Miniroom = () => {
             if (catergoryIndex === 0) return addTool(plant.address,plant.name);
             if (catergoryIndex === 1) return updateMinime(plant.address);
             if (catergoryIndex === 2) return updateBackground(plant.address);
+            if (catergoryIndex === 3) return updateMinipat(plant.address);
         }
           }}>
         <View style={styles.card}>
-          <View style={{alignItems: 'flex-end'}}>
-            <View
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-                
-              }}>
-            </View>
-          </View>
-
           <View
             style={{
-              height: 90,
+              height: 70,
               alignItems: 'center',
+              justifyContent:'center',
             }}>
             <Image
               source={{uri:plant.address}}
               style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}}
             />
-          </View>
-
-          <Text style={{ fontFamily : "Jalnan", fontSize: 17, marginTop: 10}}>
-            {plant.name}
-          </Text>
-          
+          </View>          
         </View>
       </TouchableOpacity>
     );
@@ -280,6 +292,7 @@ const Miniroom = () => {
 
               </View>
           < Image style={styles.minime} source={{uri:`${Minime ? Minime : initial}`}}></ Image>
+          < Image style={styles.minipat} source={{uri:`${Minipat ? Minipat : initial}`}}></ Image>
             <View style={styles.item}>
             {
         tool?.map((row, idx) => {
@@ -293,18 +306,19 @@ const Miniroom = () => {
       style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
             <CategoryList />
             <FlatList
-        columnWrapperStyle={{justifyContent: 'space-between'}}
+        columnWrapperStyle={{justifyContent: 'flex-start'}}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           marginTop: 10,
           paddingBottom: 50,
         }}
-        numColumns={2}
+        numColumns={4}
         data={
           (function() {
             if (catergoryIndex === 0) return InvenTool;
             if (catergoryIndex === 1) return InvenMinime;
             if (catergoryIndex === 2) return InvenBackground;
+            if (catergoryIndex === 3) return InvenMinipat;
           })()
         }
         renderItem={({item}) => {
@@ -343,6 +357,13 @@ const styles = StyleSheet.create({
       width:100,
       height:100,
     },
+    minipat: {
+      resizeMode:'stretch',
+      position: 'absolute',
+      transform: [{translateX: 350} , {translateY:220}],
+      width:100,
+      height:100,
+    },
     categoryContainer: {
       flexDirection: 'row',
       marginTop: 30,
@@ -351,19 +372,20 @@ const styles = StyleSheet.create({
     },
     categoryText: {fontSize: 16, color: 'grey', fontFamily : "Jalnan"},
     categoryTextSelected: {
-      color: COLORS.green,
+      color: COLORS.orange,
       paddingBottom: 5,
       borderBottomWidth: 2,
-      borderColor: COLORS.green,
+      borderColor: COLORS.orange,
     },
     card: {
-      height: 225,
+      height: 90,
+      width: 90,
       backgroundColor: COLORS.light,
-      width,
       marginHorizontal: 2,
       borderRadius: 10,
       marginBottom: 20,
-      padding: 15,
+      alignItems: 'center',
+      justifyContent:'center',
     },
     header: {
       marginTop: 30,
