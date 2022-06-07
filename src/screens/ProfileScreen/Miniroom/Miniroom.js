@@ -14,16 +14,19 @@ import firestore from '@react-native-firebase/firestore';
 import firebase  from '@react-native-firebase/app';
 import ViewShot from 'react-native-view-shot';
 import storage from '@react-native-firebase/storage';
+import COLORS from '../Miniroom/colors';
 
 const initial = 'https://firebasestorage.googleapis.com/v0/b/graduated-project-ce605.appspot.com/o/Background%2Fbackground1.png?alt=media&token=f59b87fe-3a69-46b9-aed6-6455dd80ba45';
-const Tab = createMaterialTopTabNavigator();
-//const Tab = createBottomTabNavigator();
-const gestureRootViewStyle = { flex: 1};
+const width = Dimensions.get('window').width / 2 - 30;
 const Miniroom = () => {  
   const usersBackgroundCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('background').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersMinimeCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('minime').doc(firebase.auth().currentUser.uid+ 'mid');
   const usersToolCollection = firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool'); 
-  const {tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime} = useStore();
+
+  const InventoolCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('tool'); 
+  const InvenminimeCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('minime');
+  const InvenBackgroundCollection = firestore().collection('Inventory').doc(firebase.auth().currentUser.uid).collection('background');
+  const {tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime,settooladdress,setcountItem,setBacksaddress,setisMinime} = useStore();
   const [tool, setTool] = useState();
   const [Back, setBack] = useState(null);
   const [Minime, setMinime] = useState(null);
@@ -31,9 +34,16 @@ const Miniroom = () => {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
+  
+  const [catergoryIndex, setCategoryIndex] = useState(0);
   const categories = ['도구', '미니미', '배경'];
 
+  const [InvenMinime, setInvenMinime] = useState();
+  const [InvenBackground, setInvenBackground] = useState();
+  const [InvenTool, setInvenTool] = useState();
 
+
+/*미니룸 보여지는곳 전용*/
   const getBackgroundData = async () => {
     try {
       const data = await usersBackgroundCollection.get();
@@ -42,10 +52,91 @@ const Miniroom = () => {
       console.log(error.message);
     }
   };
-
-
-  const uploadImage = async () => {
+   const getMinime = async () => {
+     try {
+       const data = await usersMinimeCollection.get();
+       setMinime(data._data.address);
+     } catch (error) {
+       console.log(error.message);
+     }
+   };
+   const getTool = async () => {
+     try {
+       const datatool = await usersToolCollection.get();
+       setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
+     } catch (error) {
+       console.log(error.message);
+     }
+   };
+ 
+ 
+   /*미니룸 인벤 전용*/
+   const getToolInven = async () => {
+     try {
+       const data = await InventoolCollection.get();
+       setInvenTool(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+     } catch (error) {
+       console.log(error.message);
+     }
+   };
+   const addTool =(address,name) => {
+    firestore().collection('miniroom').doc(firebase.auth().currentUser.uid).collection('room').doc(firebase.auth().currentUser.uid).collection('tool').doc(name).set({
+      name:name,
+      address:address,
+      getx:1,
+      gety:1});
+    console.log('추가완료');
+    console.log(name);
+    settooladdress(address);
+    setcountItem();
+    console.log(countItem);
+  }
+   const getMinimeInven = async () => {
+    try {
+      const data = await InvenminimeCollection.get();
+      setInvenMinime(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const updateMinime = (newaddress) => {
+    usersMinimeCollection.update({address:newaddress});
+    //addBackground.collection('background').add({address:newaddress});
+    console.log('저장완료');  
+    console.log(newaddress);
+    setisMinime(newaddress);
+  };
   
+  const getBackgroundInven = async () => {
+    try {
+      const data = await InvenBackgroundCollection.get();
+      setInvenBackground(data._docs.map(doc => ({ ...doc.data(), id: doc.id })));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  const updateBackground = (newaddress) => {
+    usersBackgroundCollection.update({address:newaddress});
+    console.log('저장완료');  
+    console.log(newaddress);
+    setBacksaddress(newaddress);
+  }
+
+   useEffect(() => {
+     getBackgroundData();
+     getMinime();
+     getTool();
+     getMinimeInven();
+     getBackgroundInven();
+     getToolInven();
+     return () => {
+       onSave();
+     }
+   }, [tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime]);
+  
+  
+  const uploadImage = async () => {
+    
     const uploadUri = await getPhotoUri();
     
     let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
@@ -107,40 +198,74 @@ const Miniroom = () => {
     const uri = await getPhotoUri();
     const imageuri = uploadImage();
     console.log('Image Url: ', imageuri);
-
- 
-    
-  
-
-
   };
- 
-  const getMinime = async () => {
-    try {
-      const data = await usersMinimeCollection.get();
-      setMinime(data._data.address);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-  const getTool = async () => {
-    try {
-      const datatool = await usersToolCollection.get();
-      setTool(datatool._docs.map(doc => ({ ...doc.data(), id: doc.id, })));
-    } catch (error) {
-      console.log(error.message);
-    }
+  const CategoryList = () => {
+    return (
+      
+      <View style={styles.categoryContainer}>
+        {categories.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={0.8}
+            onPress={() => setCategoryIndex(index)}>
+            <Text
+              style={[
+                styles.categoryText,
+                catergoryIndex === index && styles.categoryTextSelected,
+              ]}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
   };
 
+  const Card = ({plant}) => {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => {
+          {
+            if (catergoryIndex === 0) return addTool(plant.address,plant.name);
+            if (catergoryIndex === 1) return updateMinime(plant.address);
+            if (catergoryIndex === 2) return updateBackground(plant.address);
+        }
+          }}>
+        <View style={styles.card}>
+          <View style={{alignItems: 'flex-end'}}>
+            <View
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                
+              }}>
+            </View>
+          </View>
 
-  useEffect(() => {
-    getBackgroundData();
-    getMinime();
-    getTool();
-    return () => {
-      onSave();
-    }
-  }, [tooladdress,Backaddress,BuyItem,placeX,countItem,isMinime]);
+          <View
+            style={{
+              height: 90,
+              alignItems: 'center',
+            }}>
+            <Image
+              source={{uri:plant.address}}
+              style={{flex: 1, resizeMode: 'contain',aspectRatio: 1.0,}}
+            />
+          </View>
+
+          <Text style={{ fontFamily : "Jalnan", fontSize: 17, marginTop: 10}}>
+            {plant.name}
+          </Text>
+          
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
 
     <View style={{flex:1}}>
@@ -164,15 +289,29 @@ const Miniroom = () => {
       }
             </View>
             </ViewShot>
-        <View style={styles.miniroom}>
-        <Tab.Navigator>
-      <Tab.Screen name="가구" component={ToolInven} />
-      <Tab.Screen name="미니미" component={MinimiInven} />
-      <Tab.Screen name="배경" component={MusicInven} />
-    </Tab.Navigator>
-    
-        </View>
-        
+            <SafeAreaView
+      style={{flex: 1, paddingHorizontal: 20, backgroundColor: COLORS.white}}>
+            <CategoryList />
+            <FlatList
+        columnWrapperStyle={{justifyContent: 'space-between'}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          marginTop: 10,
+          paddingBottom: 50,
+        }}
+        numColumns={2}
+        data={
+          (function() {
+            if (catergoryIndex === 0) return InvenTool;
+            if (catergoryIndex === 1) return InvenMinime;
+            if (catergoryIndex === 2) return InvenBackground;
+          })()
+        }
+        renderItem={({item}) => {
+          return <Card plant={item} />;
+        }}
+      />
+        </SafeAreaView>
     </View>
     
   ); 
@@ -180,9 +319,7 @@ const Miniroom = () => {
 
 export default Miniroom;
 const styles = StyleSheet.create({
-    miniroom: {
-      height:250,
-    },
+
     background: {
       flex: 1,
       resizeMode:'stretch',
@@ -205,5 +342,55 @@ const styles = StyleSheet.create({
       transform: [{translateX: 150} , {translateY:200}],
       width:100,
       height:100,
-    }
+    },
+    categoryContainer: {
+      flexDirection: 'row',
+      marginTop: 30,
+      marginBottom: 20,
+      justifyContent: 'space-between',
+    },
+    categoryText: {fontSize: 16, color: 'grey', fontFamily : "Jalnan"},
+    categoryTextSelected: {
+      color: COLORS.green,
+      paddingBottom: 5,
+      borderBottomWidth: 2,
+      borderColor: COLORS.green,
+    },
+    card: {
+      height: 225,
+      backgroundColor: COLORS.light,
+      width,
+      marginHorizontal: 2,
+      borderRadius: 10,
+      marginBottom: 20,
+      padding: 15,
+    },
+    header: {
+      marginTop: 30,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    searchContainer: {
+      height: 50,
+      backgroundColor: COLORS.light,
+      borderRadius: 10,
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    input: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      flex: 1,
+      color: COLORS.dark,
+    },
+    sortBtn: {
+      marginLeft: 10,
+      height: 50,
+      width: 50,
+      borderRadius: 10,
+      backgroundColor: COLORS.green,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   });
