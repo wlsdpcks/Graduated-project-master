@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext,useRef} from 'react';
+import React, {useState, useEffect, useContext, useRef} from 'react';
 
 import {
   View,
@@ -9,25 +9,23 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
-  Button
-  
+  Button,
 } from 'react-native';
-import Icon from "react-native-vector-icons/Entypo";
-import { AuthContext } from '../../utils/AuthProvider';
+import Icon from 'react-native-vector-icons/Entypo';
+import {AuthContext} from '../../utils/AuthProvider';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
-import songs from '../../components/MusicPlayer/data.js';
+import songs from '../../data/songdata';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Loading from '../../utils/Loading';
-import {songT} from '../../components/MusicPlayer/MusicPlayer'
+import {songT} from '../../components/MusicPlayer/MusicPlayer';
 import ViewShot from 'react-native-view-shot';
 import storage from '@react-native-firebase/storage';
-import { theme } from '../../Chat/ChatTheme';
+import {theme} from '../../Chat/ChatTheme';
 import moment from 'moment';
 import useStore from '../../../store/store';
 
-const ProfileScreen = ({navigation,route}) => {
-
+const ProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
@@ -35,33 +33,30 @@ const ProfileScreen = ({navigation,route}) => {
   const [songIndex, setSongIndex] = useState(0);
   const [LoginuserData, setLoginUserData] = useState(null);
   const [RequestData, setRequestData] = useState([]);
-  const [ready, setReady] = useState(true)
+  const [ready, setReady] = useState(true);
   const captureRef = useRef();
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [CommentData, setCommentData] = useState([]);
-  const {countItem,BuyItem} = useStore();
-  const getComment = async() => {
+  const {countItem, BuyItem} = useStore();
+  const getComment = async () => {
     const querySanp = await firestore()
-    .collection('guestbook')
-    .doc(route.params ? route.params.uid : user.uid)
-    .collection('comment')
-    .get()
+      .collection('guestbook')
+      .doc(route.params ? route.params.uid : user.uid)
+      .collection('comment')
+      .get();
 
-    const allcomments = querySanp.docs.map(docSnap=>docSnap.data())
-    setCommentData(allcomments)
-      
-    
-  }
+    const allcomments = querySanp.docs.map(docSnap => docSnap.data());
+    setCommentData(allcomments);
+  };
   const uploadImage = async () => {
-  
     const uploadUri = await getPhotoUri();
-    
+
     let filename = uploadUri.substring(uploadUri.lastIndexOf('/') + 1);
 
     // Add timestamp to File Name
-    const extension = filename.split('.').pop(); 
+    const extension = filename.split('.').pop();
     const name = filename.split('.').slice(0, -1).join('.');
     filename = name + Date.now() + '.' + extension;
 
@@ -69,7 +64,7 @@ const ProfileScreen = ({navigation,route}) => {
 
     const storageRef = storage().ref(`miniRoomImage/${filename}`);
     const task = storageRef.putFile(uploadUri);
-    task.on('state_changed', (taskSnapshot) => {
+    task.on('state_changed', taskSnapshot => {
       console.log(
         `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
       );
@@ -84,45 +79,36 @@ const ProfileScreen = ({navigation,route}) => {
       await task;
 
       const url = await storageRef.getDownloadURL();
-      console.log('uri', url)
+      console.log('uri', url);
 
       setUploading(false);
       setImage(null);
       firestore()
-      .collection('users')
-      .doc(firebase.auth().currentUser.uid)
-      .update({
-        miniRoom : url
-      })
+        .collection('users')
+        .doc(firebase.auth().currentUser.uid)
+        .update({
+          miniRoom: url,
+        });
       // Alert.alert(
       //   'Image uploaded!',
       //   'Your image has been uploaded to the Firebase Cloud Storage Successfully!',
       // );
       return url;
-
     } catch (e) {
       console.log(e);
       return null;
     }
-
-
-  }; 
+  };
   const getPhotoUri = async () => {
     const uri = await captureRef.current.capture();
     console.log('👂👂 Image saved to', uri);
     return uri;
   };
-    
+
   const onSave = async () => {
     const uri = await getPhotoUri();
     const imageuri = uploadImage();
     console.log('Image Url: ', imageuri);
-
- 
-    
-  
-
-
   };
 
   const getUser = async () => {
@@ -139,25 +125,27 @@ const ProfileScreen = ({navigation,route}) => {
   };
   const getLoginUser = async () => {
     const currentUser = await firestore()
-    .collection('users')
-    .doc(user.uid)
-    .get()
-    .then((documentSnapshot) => {
-      if( documentSnapshot.exists ) {
-        setLoginUserData(documentSnapshot.data());
-      }
-    })
-  }
- 
-  const getRequest = async ()=>{
-    const querySanp = await firestore().collection('Request').doc(firebase.auth().currentUser.uid).collection('RequestInfo').get()
-    const allRequests = querySanp.docs.map(docSnap=>docSnap.data())
-   //  console.log(allusers)
-   console.log('Requests: ', RequestData );
-   setRequestData(allRequests)
-   
-}
-  
+      .collection('users')
+      .doc(user.uid)
+      .get()
+      .then(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          setLoginUserData(documentSnapshot.data());
+        }
+      });
+  };
+
+  const getRequest = async () => {
+    const querySanp = await firestore()
+      .collection('Request')
+      .doc(firebase.auth().currentUser.uid)
+      .collection('RequestInfo')
+      .get();
+    const allRequests = querySanp.docs.map(docSnap => docSnap.data());
+    //  console.log(allusers)
+    console.log('Requests: ', RequestData);
+    setRequestData(allRequests);
+  };
 
   const fetchFriends = async () => {
     try {
@@ -194,16 +182,16 @@ const ProfileScreen = ({navigation,route}) => {
   };
 
   useEffect(() => {
-    setTimeout(()=>{
-     setReady(false)
-     },1000)   
+    setTimeout(() => {
+      setReady(false);
+    }, 1000);
     getUser();
     fetchFriends();
     getLoginUser();
     getRequest();
     getComment();
-    navigation.addListener("focus", () => setLoading(!loading));
-  }, [navigation, loading,countItem,BuyItem]);
+    navigation.addListener('focus', () => setLoading(!loading));
+  }, [navigation, loading, countItem, BuyItem]);
 
   const FriendRequest = () => {
     Alert.alert(
@@ -281,47 +269,52 @@ const ProfileScreen = ({navigation,route}) => {
   };
 
   const handleDelete = () => {};
-  return (
-    ready ? <Loading/> :  (
+  return ready ? (
+    <Loading />
+  ) : (
     <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
       <View style={styles.title}>
-      {route.params ? (
-        <>
-        
-        <TouchableOpacity style={{marginLeft: 15, justifyContent : 'center'}} onPress={() => navigation.goBack()}>
-         
-          
-         <Ionicons name="arrow-back" size={25} color="#fff" />
-
-        </TouchableOpacity>
-          <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
-          </View>
-          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('PointGuide')}>
-
-          <Icon name="dots-three-horizontal" size={25} color="#fff" />
-        
-          </TouchableOpacity>
-
-      </>
-      ) : (
-        <>
-        
-        <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-                <Text style={styles.titleText}>{userData ? userData.name : ''}님의 미니홈피</Text>
-          </View>
-          <TouchableOpacity style={{marginRight: 15, justifyContent : 'center'}} onPress={() => navigation.navigate('PointGuide')}>
-
-          <Icon name="dots-three-horizontal" size={25} color="#fff" />
-          </TouchableOpacity>
-
-        </>
-          )}
-        </View>
+        {route.params ? (
+          <>
+            <TouchableOpacity
+              style={{marginLeft: 15, justifyContent: 'center'}}
+              onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={25} color="#fff" />
+            </TouchableOpacity>
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.titleText}>
+                {userData ? userData.name : ''}님의 미니홈피
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{marginRight: 15, justifyContent: 'center'}}
+              onPress={() => navigation.navigate('PointGuide')}>
+              <Icon name="dots-three-horizontal" size={25} color="#fff" />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.titleText}>
+                {userData ? userData.name : ''}님의 미니홈피
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{marginRight: 15, justifyContent: 'center'}}
+              onPress={() => navigation.navigate('PointGuide')}>
+              <Icon name="dots-three-horizontal" size={25} color="#fff" />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
 
       <TouchableOpacity style={styles.music} onPress={() => onMusicPressed()}>
-      <Text style={{ fontSize: 15, textAlign: 'center',fontFamily : "Jalnan",}}>{songs[songIndex].title} - {songs[songIndex].artist}</Text>
-            </TouchableOpacity>
+        <Text style={{fontSize: 15, textAlign: 'center', fontFamily: 'Jalnan'}}>
+          {songs[songIndex].title} - {songs[songIndex].artist}
+        </Text>
+      </TouchableOpacity>
       <ScrollView
         style={styles.container}
         contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
@@ -342,64 +335,60 @@ const ProfileScreen = ({navigation,route}) => {
           </View>
 
           <View style={styles.rightcontainer}>
-
             <View style={styles.action}>
-            <Text style={{fontFamily : 'Jalnan',}}>이름</Text>
-            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-            <Text style={{fontFamily : 'Jalnan',}}>{userData ? userData.name : ''}</Text>
-            </View>
-            
-            </View>
-
-            <View style={styles.action}>
-            <Text style={{fontFamily : 'Jalnan',}}>나이</Text>
-            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-            <Text style={{fontFamily : 'Jalnan',}}>{userData ? userData.age : ''}</Text>
-            </View>
-            
-            </View>
-            <View style={styles.action}>
-            <Text style={{fontFamily : 'Jalnan',}}>생일</Text>
-            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-            <Text style={{fontFamily : 'Jalnan',}}>{userData ? userData.birthday : ''}</Text>
+              <Text style={{fontFamily: 'Jalnan'}}>이름</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontFamily: 'Jalnan'}}>
+                  {userData ? userData.name : ''}
+                </Text>
+              </View>
             </View>
 
             <View style={styles.action}>
-            <Text style={{fontFamily : 'Jalnan',}}>포인트</Text>
-            <View style={{ flex : 1 ,justifyContent : 'center',alignItems : 'center'}}>
-            <Text style={{fontFamily : 'Jalnan', marginRight : 15}}>{userData ? userData.point : ''}</Text>
+              <Text style={{fontFamily: 'Jalnan'}}>나이</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontFamily: 'Jalnan'}}>
+                  {userData ? userData.age : ''}
+                </Text>
+              </View>
             </View>
-            
+            <View style={styles.action}>
+              <Text style={{fontFamily: 'Jalnan'}}>생일</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontFamily: 'Jalnan'}}>
+                  {userData ? userData.birthday : ''}
+                </Text>
+              </View>
             </View>
-            
+
+            <View style={styles.action}>
+              <Text style={{fontFamily: 'Jalnan'}}>포인트</Text>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontFamily: 'Jalnan', marginRight: 15}}>
+                  {userData ? userData.point : ''}
+                </Text>
+              </View>
             </View>
-          </View> 
-       
-        
-        
-        <View style={styles.userInfoWrapper}>
-        {route.params ? (
-        <>
-        <TouchableOpacity onPress={() => FriendRequest()}>
-          <View style={styles.userInfoItem}>
-            
-            <Text style={styles.userInfoTitle2}>친구요청</Text>
-          </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('SNSProfile', {uid: userData.uid})}>
-          <View style={styles.userInfoItem}>
-            <Text style={styles.userInfoTitle2}>SNS 방문</Text>
-          </View>
-          </TouchableOpacity>
-        </>
-        ) : (
-            <>
-                 <TouchableOpacity onPress={() => onEditFriendPressed()}>
-          <View style={styles.userInfoItem}>
-          <Text style={styles.userInfoTitle2}>친구 <Text style={styles.userInfoTitle}>{friendData.length}</Text></Text>
-            
-            
-            
           </View>
         </View>
 
@@ -462,21 +451,11 @@ const ProfileScreen = ({navigation,route}) => {
             <Text style={styles.userBtnTxt}>다이어리</Text>
           </TouchableOpacity>
 
-              <TouchableOpacity style={styles.userBtn} onPress={() => onalbumpress()}>
-                <Text style={styles.userBtnTxt}> 사진첩</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.userBtn} onPress={() => onweblogpress()}>
-                <Text style={styles.userBtnTxt}> 방명록</Text>
-              </TouchableOpacity>
-        </View>
-        <ViewShot ref={captureRef} options={{ format: 'jpg', quality: 0.9, backgroundColor : 'white' }}>
-
-        <TouchableOpacity style={styles.miniroom} onPress={() => onMiniroompress()}>
-        <View>
-        <Text style={{fontSize:20,textAlign:'center',marginTop : 70,marginBottom:20, fontFamily: "Jalnan", color: "#129fcd" }}>{userData ? userData.name : ''}님의 Mini Room</Text>
-          <Image source={{ uri: userData ? userData.miniRoom || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
-       style={{width: 400, height: 300,marginBottom:0,resizeMode:'cover' }}>
+          <TouchableOpacity
+            style={styles.userBtn}
+            onPress={() => onalbumpress()}>
+            <Text style={styles.userBtnTxt}> 사진첩</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.userBtn}
@@ -484,83 +463,88 @@ const ProfileScreen = ({navigation,route}) => {
             <Text style={styles.userBtnTxt}> 방명록</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.miniroom}
-          onPress={() => onMiniroompress()}>
-          <View>
-            <Text
-              style={{
-                fontSize: 20,
-                textAlign: 'center',
-                marginBottom: 10,
-                fontFamily: 'DungGeunMo',
-                color: '#129fcd',
-              }}>
-              {userData ? userData.name : ''}님의 Mini Room
-            </Text>
-            <Image
-              source={{
-                uri: 'https://t1.daumcdn.net/cafeattach/MT4/648d42cb50cafc47f7d02fdfc380f91449afca84',
-              }}
-              style={{width: 400, height: 230, marginTop: 0}}></Image>
-          </View>
-        </TouchableOpacity>
+        <ViewShot
+          ref={captureRef}
+          options={{format: 'jpg', quality: 0.9, backgroundColor: 'white'}}>
+          <TouchableOpacity
+            style={styles.miniroom}
+            onPress={() => onMiniroompress()}>
+            <View>
+              <Text
+                style={{
+                  fontSize: 20,
+                  textAlign: 'center',
+                  marginTop: 70,
+                  marginBottom: 20,
+                  fontFamily: 'Jalnan',
+                  color: '#129fcd',
+                }}>
+                {userData ? userData.name : ''}님의 Mini Room
+              </Text>
+              <Image
+                source={{
+                  uri: userData
+                    ? userData.miniRoom ||
+                      'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                    : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg',
+                }}
+                style={{
+                  width: 400,
+                  height: 300,
+                  marginBottom: 0,
+                  resizeMode: 'cover',
+                }}></Image>
+            </View>
+          </TouchableOpacity>
         </ViewShot>
-        <Text style={{fontSize:20,marginBottom:20, fontFamily: "Jalnan",}}>친구들의 방명록</Text>
-      
-        {
-              
-              CommentData?.map((row, idx) => {
-                return (
-                  
-                  <View style={styles.guestBtn}>
-                  <View style={styles.conversation}> 
-                  
-                <TouchableOpacity 
-                      onPress={() => setModalVisible()}
-                      style={[styles.imageContainer]}>
-                      <Image source={{ uri: row.userImg }} style={styles.img} />
-                    </TouchableOpacity>
-                    <View style={{
-                        marginLeft : 15,
-                        flex: 1,
-                        justifyContent: 'center'
-                      }}>
-                      <View style={{
-                        flexDirection: 'row',
-          
-                      }}>
-                        <Text numerOfLine={1} style={styles.username}>{row.name}</Text>
-                        
-                        
-                      </View>
-                      <View style={{
-                        flexDirection: 'row',
-                      }}>
-                        <Text style={styles.message}>{row.comment}</Text>
-                        
-                      </View>
-                      <View style={{
-                        flexDirection: 'row',
-                      }}>
-                        <Text style={styles.message}>{moment(row.commentTime.toDate()).fromNow()}</Text>
-                        
-                      </View>
-                      </View>
-                      
-                      
-                      </View>
-                      </View>
-                  
-              
-              
-                )  ;      
-               
-            })
-            } 
+        <Text style={{fontSize: 20, marginBottom: 20, fontFamily: 'Jalnan'}}>
+          친구들의 방명록
+        </Text>
+
+        {CommentData?.map((row, idx) => {
+          return (
+            <View style={styles.guestBtn}>
+              <View style={styles.conversation}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible()}
+                  style={[styles.imageContainer]}>
+                  <Image source={{uri: row.userImg}} style={styles.img} />
+                </TouchableOpacity>
+                <View
+                  style={{
+                    marginLeft: 15,
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <Text numerOfLine={1} style={styles.username}>
+                      {row.name}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <Text style={styles.message}>{row.comment}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <Text style={styles.message}>
+                      {moment(row.commentTime.toDate()).fromNow()}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
-    )
   );
 };
 
@@ -590,33 +574,33 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   imageContainer: {
-    marginLeft : 10,
+    marginLeft: 10,
     borderRadius: 25,
     height: 60,
     width: 60,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center' 
+    alignSelf: 'center',
   },
-  music:{
-    marginTop:10,
-    height:25,
-    marginLeft:25,
-    marginRight:25,
+  music: {
+    marginTop: 10,
+    height: 25,
+    marginLeft: 25,
+    marginRight: 25,
   },
   username: {
     fontSize: theme.fontSize.title,
     color: '#696969',
     width: 210,
-    fontFamily : "Jalnan",
+    fontFamily: 'Jalnan',
   },
   message: {
     fontSize: theme.fontSize.message,
     width: 240,
     color: theme.colors.subTitle,
-    marginTop : 5,
-    fontFamily : "Jalnan",
+    marginTop: 5,
+    fontFamily: 'Jalnan',
   },
 
   title: {
@@ -624,9 +608,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'orange',
     flexDirection: 'row',
   },
-  img:{width:60,height:60,borderRadius:30,backgroundColor:"orange"},
-  titleText:{
-    fontFamily: "Jalnan",
+  img: {width: 60, height: 60, borderRadius: 30, backgroundColor: 'orange'},
+  titleText: {
+    fontFamily: 'Jalnan',
     justifyContent: 'space-around',
     fontSize: 20,
     color: 'white',
@@ -635,7 +619,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingBottom: 25,
     paddingRight: 20,
-    paddingTop : 20,
+    paddingTop: 20,
   },
   userImg: {
     height: 125,
@@ -670,20 +654,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   guestBtn: {
-    width : 395,
-    backgroundColor:'#f6f6f6',
+    width: 395,
+    backgroundColor: '#f6f6f6',
     borderColor: '#f6f6f6',
-    borderBottomColor:'#fff',
-    borderWidth:1,
+    borderBottomColor: '#fff',
+    borderWidth: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    marginBottom : 10,
- 
+    marginBottom: 10,
   },
   userBtnTxt: {
-    fontFamily : 'Jalnan',
+    fontFamily: 'Jalnan',
     color: '#fff',
     textAlign: 'center',
     fontSize: 15,
@@ -707,7 +690,7 @@ const styles = StyleSheet.create({
   },
   userInfoTitle2: {
     color: '#129fcd',
-    fontFamily: "Jalnan",
+    fontFamily: 'Jalnan',
     fontSize: 18,
     marginBottom: 5,
   },
@@ -723,7 +706,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     paddingHorizontal: 8,
-    marginBottom : 70
-
+    marginBottom: 70,
   },
 });
