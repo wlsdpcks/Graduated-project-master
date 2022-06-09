@@ -5,13 +5,15 @@ import { LogBox } from "react-native";
 import store from './store';
 import {Provider} from "react-redux";
 import { theme } from './src/Chat/ChatTheme';
-const App = () => {
 
+const App = () => {
   LogBox.ignoreLogs([
     'Animated: `useNativeDriver` was not specified.',
   ]);
-
+  
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+  
+
 
   useEffect(() => {
     const backAction = () => {
@@ -32,7 +34,10 @@ const App = () => {
 
     return () => backHandler.remove();
   }, []);
+  LogBox.ignoreAllLogs();
+  LogBox.ignoreLogs(['Warning: ...']);
   return (
+    
     <SafeAreaView style={styles.container}>
   <StatusBar style="light" backgroundColor='orange' />
   <Provider store ={store}><Providers /></Provider>

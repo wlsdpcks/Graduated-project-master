@@ -31,7 +31,7 @@ import { AuthContext } from '../../../utils/AuthProvider';
 import { configureStore } from '@reduxjs/toolkit';
 
 const AddPhotos = ({route}) => {
-
+  const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [deleted, setDeleted] = useState(false);
@@ -74,6 +74,19 @@ const AddPhotos = ({route}) => {
       setImage(imageUri);
     });
   };
+
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
   const submitPost = async () => {
     const currentPhotoId = Math.floor(100000 + Math.random() * 9000).toString();
     const currentuserId = firebase.auth().currentUser.uid
@@ -114,6 +127,15 @@ const AddPhotos = ({route}) => {
           postTime: firestore.Timestamp.fromDate(new Date()),
           
         })
+        .then(() => {
+         
+            firestore()
+            .collection('users')
+            .doc(user.uid)
+            .update({
+              point :  userData.point + 10
+            })
+        })
       console.log('Post Added!');
       Alert.alert(
         '게시물 업데이트 완료!',
@@ -133,6 +155,7 @@ const AddPhotos = ({route}) => {
 
   useEffect(() => {
     setDeleted(false);
+    getUser();
   }, [deleted,refreshing]);
 
   const uploadImage = async () => {
@@ -193,7 +216,8 @@ const AddPhotos = ({route}) => {
         {image != null ? <AddImage source={{uri: image}} /> : null}
         <View style={styles.row}>
         <InputField
-          placeholder="게시물 제목을 작성하세요!"
+          fontFamily = "Jalnan"
+          placeholder="사진의 제목을 작성하세요!"
           multiline
           numberOfLines={3}
           value={post}
@@ -201,6 +225,7 @@ const AddPhotos = ({route}) => {
         />
         </View>
         <InputField
+          fontFamily = "Jalnan"
           placeholder="게시물 내용을 작성하세요!"
           multiline
           numberOfLines={2}

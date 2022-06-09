@@ -42,7 +42,8 @@ const AddPostScreen = () => {
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [post, setPost] = useState([null]);
-  
+  const [userData, setUserData] = useState(null);
+
   const [tag, setTag] = useState(null);
   const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -74,6 +75,20 @@ const AddPostScreen = () => {
       setImage(imageUri);
     });
   };
+
+  const getUser = async() => {
+    const currentUser = await firestore()
+    .collection('users')
+    .doc(user.uid)
+    .get()
+    .then((documentSnapshot) => {
+      if( documentSnapshot.exists ) {
+        console.log('User Data', documentSnapshot.data());
+        setUserData(documentSnapshot.data());
+      }
+    })
+  }
+
   const currentPhotoId = Math.floor(100000 + Math.random() * 9000).toString();
 
   const submitPost = async () => {
@@ -97,6 +112,12 @@ const AddPostScreen = () => {
       postid : currentPhotoId,
     })
     .then(() => {
+      firestore()
+      .collection('users')
+      .doc(user.uid)
+      .update({
+        point :  userData.point + 10
+      })
       console.log('Post Added!');
       Alert.alert(
         '게시물 업데이트 완료!',
@@ -115,6 +136,7 @@ const AddPostScreen = () => {
 
   useEffect(() => {
     setDeleted(false);
+    getUser();
   }, [deleted,refreshing]);
 
   const uploadImage = async () => {
@@ -151,7 +173,6 @@ const AddPostScreen = () => {
       await task;
 
       const url = await storageRef.getDownloadURL();
-
       setUploading(false);
       setImage(null);
 
@@ -175,6 +196,7 @@ const AddPostScreen = () => {
         {image != null ? <AddImage source={{uri: image}} /> : null}
         <View style={styles.row}>
         <InputField
+          fontFamily="Jalnan"
           placeholder="게시물 내용을 작성하세요!"
           multiline
           numberOfLines={3}
@@ -182,7 +204,7 @@ const AddPostScreen = () => {
           onChangeText={(content) => setPost(content)}
         />
         </View>
-        <Text style={{marginTop : 20,marginBottom : 20}}>게시물의 주제를 선택하세요</Text>
+        <Text style={{marginTop : 20,marginBottom : 20,fontFamily : "Jalnan"}}>게시물의 주제를 선택하세요</Text>
         <SelectDropdown
            data={tags}
            onSelect={(selectedItem, index) => {
@@ -207,7 +229,7 @@ const AddPostScreen = () => {
         ) : (
           <View style={{marginTop : 20}}>
           <SubmitBtn onPress={submitPost}    >
-            <SubmitBtnText styles>Post </SubmitBtnText>
+            <SubmitBtnText styles>작성 </SubmitBtnText>
             
           </SubmitBtn>
           </View>

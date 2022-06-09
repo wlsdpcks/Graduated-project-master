@@ -11,7 +11,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import StoriesScreen from "./ChatScreens/StoriesScreen";
 import MessagesScreen from "../screens/ChatScreen/MessagesScreen";
-import CallsScreens from "./ChatScreens/CallsScreen";
+import PresentScreen from "../screens/ChatScreen/PresentScreen";
 import { theme } from "./ChatTheme";
 const { width } = Dimensions.get("screen");
 
@@ -145,10 +145,11 @@ const HomeNavigator = () => {
         component={MessagesScreen}
         options={{
           tabBarLabel: "채팅",
+          
         }}
       />
     
-      <Tab.Screen name="전화" component={CallsScreens} />
+      <Tab.Screen name="선물" component={PresentScreen} />
     </Tab.Navigator>
   );
 };
