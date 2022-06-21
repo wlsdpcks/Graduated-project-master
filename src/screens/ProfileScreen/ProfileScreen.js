@@ -16,7 +16,7 @@ import firebase from '@react-native-firebase/app';
 import songs from '../../components/MusicPlayer/data.js';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import {songT} from '../../components/MusicPlayer/MusicPlayer';
+import {songT} from '../../components/MusicPlayer/PlayerScreen';
 const ProfileScreen = ({navigation, route}) => {
   const {user, logout} = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
